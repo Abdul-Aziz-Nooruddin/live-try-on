@@ -131,6 +131,9 @@ function renderLoop(timestamp: number) {
   }
 
   if (threeRenderer) {
+    if (rigState) {
+      threeRenderer.updateSkinTone(videoElement, rigState.chin[0], rigState.chin[1]);
+    }
     threeRenderer.update3DPose(rigState, 1.0);
     threeRenderer.render();
   }

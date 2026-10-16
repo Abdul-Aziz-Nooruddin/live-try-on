@@ -16,6 +16,8 @@ export interface TorsoRigState {
   chin: [number, number];           // Chin anchor
   elbowLeft: [number, number];      // Screen left elbow
   elbowRight: [number, number];     // Screen right elbow
+  wristLeft: [number, number];      // Screen left wrist
+  wristRight: [number, number];     // Screen right wrist
   shoulderWidth: number;
   torsoLength: number;
   torsoAngleRad: number;
@@ -48,6 +50,10 @@ export class BodyRigTracker {
   private filterLElbowY: OneEuroFilter;
   private filterRElbowX: OneEuroFilter;
   private filterRElbowY: OneEuroFilter;
+  private filterLWristX: OneEuroFilter;
+  private filterLWristY: OneEuroFilter;
+  private filterRWristX: OneEuroFilter;
+  private filterRWristY: OneEuroFilter;
   private filterNoseX: OneEuroFilter;
   private filterNoseY: OneEuroFilter;
   private baselineShoulderWidth: number | null = null;
@@ -73,6 +79,10 @@ export class BodyRigTracker {
     this.filterLElbowY = new OneEuroFilter(fc);
     this.filterRElbowX = new OneEuroFilter(fc);
     this.filterRElbowY = new OneEuroFilter(fc);
+    this.filterLWristX = new OneEuroFilter(fc);
+    this.filterLWristY = new OneEuroFilter(fc);
+    this.filterRWristX = new OneEuroFilter(fc);
+    this.filterRWristY = new OneEuroFilter(fc);
     this.filterNoseX = new OneEuroFilter(fc);
     this.filterNoseY = new OneEuroFilter(fc);
   }
@@ -117,6 +127,13 @@ export class BodyRigTracker {
     const rawX_elbRight = rawRElb ? (this.config.mirror ? rawRElb.x : rawLElb?.x ?? 0) : 0;
     const rawY_elbRight = rawRElb ? (this.config.mirror ? rawRElb.y : rawLElb?.y ?? 0) : 0;
 
+    const rawLWrist = landmarks[15];
+    const rawRWrist = landmarks[16];
+    const rawX_wristLeft = rawLWrist ? (this.config.mirror ? rawLWrist.x : rawRWrist?.x ?? 0) : 0;
+    const rawY_wristLeft = rawLWrist ? (this.config.mirror ? rawLWrist.y : rawRWrist?.y ?? 0) : 0;
+    const rawX_wristRight = rawRWrist ? (this.config.mirror ? rawRWrist.x : rawLWrist?.x ?? 0) : 0;
+    const rawY_wristRight = rawRWrist ? (this.config.mirror ? rawRWrist.y : rawLWrist?.y ?? 0) : 0;
+
     // Apply mirror mapping and One Euro filtering
     const sxL = this.filterLShoulderX.filter(this.mapX(rawX_screenLeft), timestampSec);
     const syL = this.filterLShoulderY.filter(rawY_screenLeft, timestampSec);
@@ -132,6 +149,11 @@ export class BodyRigTracker {
     const eyL = this.filterLElbowY.filter(rawY_elbLeft, timestampSec);
     const exR = this.filterRElbowX.filter(this.mapX(rawX_elbRight), timestampSec);
     const eyR = this.filterRElbowY.filter(rawY_elbRight, timestampSec);
+
+    const wxL = this.filterLWristX.filter(this.mapX(rawX_wristLeft), timestampSec);
+    const wyL = this.filterLWristY.filter(rawY_wristLeft, timestampSec);
+    const wxR = this.filterRWristX.filter(this.mapX(rawX_wristRight), timestampSec);
+    const wyR = this.filterRWristY.filter(rawY_wristRight, timestampSec);
 
     const noseX = rawNose ? this.filterNoseX.filter(this.mapX(rawNose.x), timestampSec) : (sxL + sxR) * 0.5;
     const noseY = rawNose ? this.filterNoseY.filter(rawNose.y, timestampSec) : Math.min(syL, syR) - 0.2;
@@ -208,6 +230,8 @@ export class BodyRigTracker {
       chin,
       elbowLeft: [exL, eyL],
       elbowRight: [exR, eyR],
+      wristLeft: [wxL, wyL],
+      wristRight: [wxR, wyR],
       shoulderWidth: rawShoulderWidth * (1.0 + 2 * ease),
       torsoLength,
       torsoAngleRad,
@@ -232,6 +256,10 @@ export class BodyRigTracker {
     this.filterLElbowY.reset();
     this.filterRElbowX.reset();
     this.filterRElbowY.reset();
+    this.filterLWristX.reset();
+    this.filterLWristY.reset();
+    this.filterRWristX.reset();
+    this.filterRWristY.reset();
     this.filterNoseX.reset();
     this.filterNoseY.reset();
     this.baselineShoulderWidth = null;
