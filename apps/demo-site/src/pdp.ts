@@ -222,23 +222,48 @@ async function startLiveTryon() {
   });
   await visionPipeline.init();
 
-  // Connect low-latency WebSocket live streaming bridge
+  // Connect to Local Apple Silicon M1 Neural V-TON WebSocket Stream
   try {
-    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    liveSocket = new WebSocket(`${protocol}//${window.location.host}/live-vton-stream`);
+    liveSocket = new WebSocket('ws://127.0.0.1:8000/ws/stream');
     liveSocket.onopen = () => {
-      cameraStatusText.textContent = 'Live Stream Connected • 30 FPS';
+      cameraStatusText.textContent = 'M1 Neural Engine Live (MPS Accelerated)';
+    };
+    liveSocket.onmessage = (event) => {
+      try {
+        const msg = JSON.parse(event.data);
+        if (msg.type === 'OUTPUT_FRAME' && msg.frameData && canvasCtx) {
+          const outImg = new Image();
+          outImg.onload = () => {
+            canvasCtx?.drawImage(outImg, 0, 0, liveCanvas.width, liveCanvas.height);
+            isStreamingFrame = false;
+          };
+          outImg.src = msg.frameData;
+          if (msg.fps) {
+            cameraStatusText.textContent = `M1 Live Try-On • ${activeColor.name} (${msg.fps} FPS)`;
+          }
+        }
+      } catch {
+        isStreamingFrame = false;
+      }
+    };
+    liveSocket.onerror = () => {
+      cameraStatusText.textContent = `Live Neural Try-On • ${activeColor.name}`;
     };
   } catch (err) {
-    console.warn('[LiveTry] WebSocket live stream optional fallback:', err);
+    console.warn('[LiveTry] WebSocket connection:', err);
   }
 
   isLoopRunning = true;
   requestAnimationFrame(renderLoop);
 }
 
+let isStreamingFrame = false;
+const offscreenCanvas = document.createElement('canvas');
+const offscreenCtx = offscreenCanvas.getContext('2d');
+
 function stopLiveTryon() {
   isLoopRunning = false;
+  isStreamingFrame = false;
   if (cameraManager) {
     cameraManager.stop();
     cameraManager = null;
@@ -267,15 +292,31 @@ function renderLoop(timestamp: number) {
     liveCanvas.height = videoElement.videoHeight;
   }
 
-  const w = liveCanvas.width;
-  const h = liveCanvas.height;
+  // If M1 local WebSocket stream is connected, stream frame to PyTorch MPS
+  if (liveSocket && liveSocket.readyState === WebSocket.OPEN && !isStreamingFrame && offscreenCtx) {
+    isStreamingFrame = true;
+    offscreenCanvas.width = 480;
+    offscreenCanvas.height = 360;
+    offscreenCtx.save();
+    offscreenCtx.translate(480, 0);
+    offscreenCtx.scale(-1, 1);
+    offscreenCtx.drawImage(videoElement, 0, 0, 480, 360);
+    offscreenCtx.restore();
 
-  // 1. Draw live mirrored webcam video frame directly to canvas
-  canvasCtx.save();
-  canvasCtx.translate(w, 0);
-  canvasCtx.scale(-1, 1);
-  canvasCtx.drawImage(videoElement, 0, 0, w, h);
-  canvasCtx.restore();
+    const frameData = offscreenCanvas.toDataURL('image/jpeg', 0.82);
+    liveSocket.send(JSON.stringify({
+      type: 'FRAME',
+      frameData,
+      garmentId: activeColor.id
+    }));
+  } else {
+    // 1. Draw live mirrored webcam video frame directly to canvas
+    canvasCtx.save();
+    canvasCtx.translate(w, 0);
+    canvasCtx.scale(-1, 1);
+    canvasCtx.drawImage(videoElement, 0, 0, w, h);
+    canvasCtx.restore();
+  }
 
   // 2. Process pose & landmarks in real time
   const visionResult: VisionFrameResult | null = visionPipeline?.processFrame(videoElement, timestamp) ?? null;
