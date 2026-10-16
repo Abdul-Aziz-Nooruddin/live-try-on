@@ -11,7 +11,8 @@
   "dependencies": {
     "@livetry/shared-types": "workspace:*",
     "@livetry/tryon-core": "workspace:*",
-    "@livetry/widget": "workspace:*"
+    "@livetry/widget": "workspace:*",
+    "three": "^0.186.1"
   },
   "devDependencies": {
     "typescript": "^5.7.3",

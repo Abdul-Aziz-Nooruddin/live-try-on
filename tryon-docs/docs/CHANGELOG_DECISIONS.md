@@ -39,3 +39,18 @@ Monolithic dependencies (rejected due to bundle bloat); Three.js in Tier 1 (defe
 Approved by:
 LiveTry Architecture & Standing Agent Rules (`.agents/rules/ui-ux-stack.md`).
 
+## 2026-10-16 — Activation of Tier 2: 3D Garment Pipeline (Three.js)
+Decision:
+Activate Tier 2 3D Garment Pipeline using Three.js and MediaPipe 3D World Landmarks (`poseWorldLandmarks`). Build volumetric 3D garment mesh with realistic torso curvature, depth, sleeve tubes, collar thickness, and PBR lighting, replacing flat 2D texture warping.
+
+Reason / measurements:
+Product owner review rejected flat 2D overlay ("i want a 3d not the 2d image just overlaying on screen, it should really look like i am wearing that outfit"). 2D image warping cannot convincingly wrap around the torso and shoulders or react to 3D lighting without volumetric geometry.
+
+Alternatives considered:
+1. 2D image mesh with displacement shader: inadequate side/shoulder depth.
+2. Full GLB asset pipeline: requires 3D scans / CLO3D files.
+3. Three.js volumetric procedural 3D garment: combines 3D mesh wrapping, depth buffers, lighting, and real-time metric landmark tracking.
+
+Approved by:
+Product Owner (Abdul Aziz).
+

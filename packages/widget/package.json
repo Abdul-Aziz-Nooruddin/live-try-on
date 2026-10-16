@@ -14,9 +14,11 @@
     "@livetry/shared-types": "workspace:*",
     "@livetry/tryon-core": "workspace:*",
     "@mediapipe/tasks-vision": "^0.10.21",
-    "focus-trap": "^7.6.4"
+    "focus-trap": "^7.6.4",
+    "three": "^0.186.1"
   },
   "devDependencies": {
+    "@types/three": "^0.186.0",
     "tweakpane": "^4.0.5",
     "typescript": "^5.7.3",
     "vite": "^6.2.0"

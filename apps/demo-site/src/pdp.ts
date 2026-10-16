@@ -1,8 +1,7 @@
 import { CameraManager } from '@livetry/widget/src/camera/camera-manager.js';
 import { VisionPipeline, type VisionFrameResult } from '@livetry/widget/src/vision/vision-pipeline.js';
-import { BodyRigTracker, generateGarmentMesh } from '@livetry/tryon-core';
-import { WebGLTryonRenderer } from '@livetry/widget/src/render/webgl-renderer.js';
-import type { GarmentAsset } from '@livetry/shared-types';
+import { BodyRigTracker } from '@livetry/tryon-core';
+import { ThreeTryonRenderer } from '@livetry/widget/src/render/three-tryon-renderer.js';
 
 // DOM Elements
 const tryonScrim = document.getElementById('tryon-scrim') as HTMLDivElement;
@@ -20,26 +19,12 @@ const cameraStatusText = document.getElementById('pdp-camera-status') as HTMLSpa
 let cameraManager: CameraManager | null = null;
 let visionPipeline: VisionPipeline | null = null;
 let rigTracker: BodyRigTracker | null = null;
-let renderer: WebGLTryonRenderer | null = null;
-let gl: WebGL2RenderingContext | null = null;
+let threeRenderer: ThreeTryonRenderer | null = null;
 let isLoopRunning = false;
 
 async function initPDP() {
-  gl = webglCanvas.getContext('webgl2', { alpha: false, premultipliedAlpha: false });
-  if (gl) {
-    renderer = new WebGLTryonRenderer(gl);
-    rigTracker = new BodyRigTracker();
-
-    try {
-      const res = await fetch('/fixtures/sample-tshirt.json');
-      const asset: GarmentAsset = await res.json();
-      const mesh = generateGarmentMesh(asset.keypoints.front, { gridCols: 16, gridRows: 20 });
-      renderer.setGarmentMesh(mesh, asset.physical.lengthToWidthRatio);
-      await renderer.loadGarmentTexture(asset.images.front.url);
-    } catch (e) {
-      console.error('Failed to load garment asset:', e);
-    }
-  }
+  threeRenderer = new ThreeTryonRenderer(webglCanvas);
+  rigTracker = new BodyRigTracker();
 
   // Hook PDP Try On Button
   btnOpenTryOn?.addEventListener('click', () => {
@@ -96,12 +81,15 @@ async function startLiveTryon() {
   const vh = videoElement.videoHeight || 480;
   webglCanvas.width = vw;
   webglCanvas.height = vh;
+  if (threeRenderer) {
+    threeRenderer.resize(vw, vh);
+  }
 
   visionPipeline = new VisionPipeline({
     useGpu: true,
     enableSegmentation: true,
     onModelLoaded: () => {
-      cameraStatusText.textContent = 'Live';
+      cameraStatusText.textContent = 'Live 3D';
     }
   });
   await visionPipeline.init();
@@ -134,18 +122,10 @@ function renderLoop(timestamp: number) {
     rigState = rigTracker.update(visionResult.landmarks, timestamp * 0.001);
   }
 
-  let hasSeg = false;
-  if (visionResult?.segmentationMask && renderer) {
-    renderer.updateSegmentationMask(
-      visionResult.segmentationMask as Uint8Array,
-      visionResult.maskWidth,
-      visionResult.maskHeight
-    );
-    hasSeg = true;
-  }
-
-  if (renderer && gl) {
-    renderer.render(videoElement, rigState, hasSeg, 1.0);
+  if (threeRenderer) {
+    threeRenderer.updateVideo(videoElement);
+    threeRenderer.update3DPose(rigState, 1.0);
+    threeRenderer.render();
   }
 
   requestAnimationFrame(renderLoop);
