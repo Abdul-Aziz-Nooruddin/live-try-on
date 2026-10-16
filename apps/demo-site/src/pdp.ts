@@ -292,7 +292,17 @@ function renderLoop(timestamp: number) {
     liveCanvas.height = videoElement.videoHeight;
   }
 
-  // If M1 local WebSocket stream is connected, stream frame to PyTorch MPS
+  const w = liveCanvas.width;
+  const h = liveCanvas.height;
+
+  // 1. Draw live mirrored webcam video frame directly to canvas
+  canvasCtx.save();
+  canvasCtx.translate(w, 0);
+  canvasCtx.scale(-1, 1);
+  canvasCtx.drawImage(videoElement, 0, 0, w, h);
+  canvasCtx.restore();
+
+  // If M1 local WebSocket stream is connected and ready, stream frame
   if (liveSocket && liveSocket.readyState === WebSocket.OPEN && !isStreamingFrame && offscreenCtx) {
     isStreamingFrame = true;
     offscreenCanvas.width = 480;
@@ -309,13 +319,6 @@ function renderLoop(timestamp: number) {
       frameData,
       garmentId: activeColor.id
     }));
-  } else {
-    // 1. Draw live mirrored webcam video frame directly to canvas
-    canvasCtx.save();
-    canvasCtx.translate(w, 0);
-    canvasCtx.scale(-1, 1);
-    canvasCtx.drawImage(videoElement, 0, 0, w, h);
-    canvasCtx.restore();
   }
 
   // 2. Process pose & landmarks in real time
