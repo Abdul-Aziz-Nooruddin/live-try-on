@@ -66,3 +66,16 @@ Alternatives considered:
 Approved by:
 Product Owner (Abdul Aziz).
 
+## 2026-10-16 — Evaluation of Decart AI (Anywear) Real-Time Generative Video Diffusion
+Decision / Investigation:
+Evaluated shopper reference video (`my-session.mp4`) demonstrating `tryanywear.ai` (Anywear by Decart AI). Documented technical architecture differences between on-device client WebGL/Three.js AR overlays and cloud-hosted real-time Generative Video Diffusion models (Decart's Lucy V-TON / Lucy-5B).
+
+Findings:
+1. `tryanywear.ai` does not use client-side 3D WebGL or landmark meshes. It streams the webcam video over WebRTC to Decart's cloud cluster of Nvidia H100s / TPUs.
+2. A 5-billion-parameter causal video diffusion model ("Lucy V-TON") redraws every video frame in real time at ~15-20 FPS using diffusion forcing, completely hallucinating the new garment, erasing old clothing, and rendering hand-fabric interactions.
+3. This creates photorealistic results, but directly contradicts standing Rule 5 & 6 in `AGENT_RULES.md` (which prohibit transmitting any camera frames off-device) and costs ~$0.15-$0.30 per active minute per shopper in cloud GPU infrastructure.
+4. Reported trade-offs and 3 actionable architectural paths to the product owner per Rule 3 of `AGENT_RULES.md`.
+
+Approved by:
+Product Owner (Abdul Aziz).
+
