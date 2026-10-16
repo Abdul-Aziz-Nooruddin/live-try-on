@@ -31,3 +31,4 @@ Standing rules for any coding agent working in this repository. If your tool sup
 18. Never show a Try On button for a product whose ingestion status is not `approved`.
 19. Degrade gracefully: no camera, denied permission, unsupported browser, low FPS. Each has a defined message and fallback (see PRD section 8).
 20. Before every designing or coding task, consult and strictly enforce `docs/09_UI_UX_STACK.md`. Never cross surface boundaries (e.g. no React, GSAP, or Lenis in the widget) and log all vetted dependencies in `docs/CHANGELOG_DECISIONS.md`.
+21. Strictly enforce `DESIGN.md`. All storefront, try-on modal, and widget UI must look like a quiet, editorial fashion retailer (warm off-white `--paper`, black text, large photography, hairline borders, Cormorant Garamond / Hanken Grotesk, radius 0, no gradients, no purple/indigo/blue, no glassmorphism, no SaaS styling, dev telemetry hidden unless `?debug=1`).

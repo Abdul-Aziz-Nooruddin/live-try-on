@@ -1,0 +1,33 @@
+/* DESIGN.md Tokens — Storefront and Try-On Design System */
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Hanken+Grotesk:wght@400;500;600&display=swap');
+
+:root {
+  /* 3.1 Colors */
+  --paper: #F7F4EF;
+  --white: #FFFFFF;
+  --sand: #ECE7DF;
+  --stone: #D9D2C7;
+  --taupe: #6B655C;
+  --ink: #141311;
+  --charcoal: #2B2926;
+  --clay: #A24A33;
+  --moss: #3E5B45;
+  --brick: #9B2C2C;
+  --scrim: rgba(20, 19, 17, 0.45);
+  --chip: rgba(20, 19, 17, 0.72);
+
+  /* 3.2 Typography */
+  --font-display: 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
+  --font-body: 'Hanken Grotesk', 'Helvetica Neue', Arial, sans-serif;
+
+  /* 3.3 Geometry */
+  --radius-none: 0px;
+  --radius-input: 2px;
+  --border-hairline: 1px solid var(--stone);
+
+  /* 3.4 Motion */
+  --duration-fast: 150ms;
+  --duration-normal: 250ms;
+  --duration-slow: 400ms;
+  --ease-editorial: cubic-bezier(0.2, 0, 0, 1);
+}
