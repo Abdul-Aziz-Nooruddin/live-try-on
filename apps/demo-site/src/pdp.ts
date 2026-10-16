@@ -261,6 +261,12 @@ function renderLoop(timestamp: number) {
     return;
   }
 
+  // Synchronize canvas dimensions to match video stream
+  if (videoElement.videoWidth > 0 && liveCanvas.width !== videoElement.videoWidth) {
+    liveCanvas.width = videoElement.videoWidth;
+    liveCanvas.height = videoElement.videoHeight;
+  }
+
   const w = liveCanvas.width;
   const h = liveCanvas.height;
 
@@ -279,7 +285,9 @@ function renderLoop(timestamp: number) {
     rigState = rigTracker.update(visionResult.landmarks, timestamp * 0.001);
   }
 
-  if (rigState && rigState.isFrontFacing) {
+  if (rigState) {
+    cameraStatusText.textContent = `Live Neural Try-On • ${activeColor.name}`;
+
     // 3. Calibrate live skin tone from chin/neck to erase polo collar
     sampleLiveSkinTone(rigState.chin[0] * w, rigState.chin[1] * h);
 
@@ -288,6 +296,8 @@ function renderLoop(timestamp: number) {
 
     // 5. Render realistic draped garment directly over the torso in live motion
     renderLiveDrapedGarment(rigState, w, h);
+  } else {
+    cameraStatusText.textContent = 'Aligning Shoulders...';
   }
 
   requestAnimationFrame(renderLoop);

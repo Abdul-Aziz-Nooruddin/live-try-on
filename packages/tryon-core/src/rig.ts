@@ -106,7 +106,7 @@ export class BodyRigTracker {
     const rawLElb = landmarks[13];
     const rawRElb = landmarks[14];
 
-    if (!rawLSh || !rawRSh || !rawLHip || !rawRHip) {
+    if (!rawLSh || !rawRSh) {
       return null;
     }
 
@@ -117,10 +117,18 @@ export class BodyRigTracker {
     const rawX_screenRight = this.config.mirror ? rawRSh.x : rawLSh.x;
     const rawY_screenRight = this.config.mirror ? rawRSh.y : rawLSh.y;
 
-    const rawX_hipLeft = this.config.mirror ? rawLHip.x : rawRHip.x;
-    const rawY_hipLeft = this.config.mirror ? rawLHip.y : rawRHip.y;
-    const rawX_hipRight = this.config.mirror ? rawRHip.x : rawLHip.x;
-    const rawY_hipRight = this.config.mirror ? rawRHip.y : rawLHip.y;
+    const dxShInit = rawX_screenRight - rawX_screenLeft;
+    const dyShInit = rawY_screenRight - rawY_screenLeft;
+    const initialShWidth = Math.max(0.1, Math.hypot(dxShInit, dyShInit));
+
+    // If hips are out of frame (e.g. user sitting in front of laptop webcam), extrapolate them
+    const hasHips = rawLHip && rawRHip && ((rawLHip.visibility ?? 1) > 0.15);
+    const estimatedTorsoLen = initialShWidth * 1.25;
+
+    const rawX_hipLeft = hasHips ? (this.config.mirror ? rawLHip.x : rawRHip.x) : rawX_screenLeft;
+    const rawY_hipLeft = hasHips ? (this.config.mirror ? rawLHip.y : rawRHip.y) : rawY_screenLeft + estimatedTorsoLen;
+    const rawX_hipRight = hasHips ? (this.config.mirror ? rawRHip.x : rawLHip.x) : rawX_screenRight;
+    const rawY_hipRight = hasHips ? (this.config.mirror ? rawRHip.y : rawLHip.y) : rawY_screenRight + estimatedTorsoLen;
 
     const rawX_elbLeft = rawLElb ? (this.config.mirror ? rawLElb.x : rawRElb?.x ?? 0) : 0;
     const rawY_elbLeft = rawLElb ? (this.config.mirror ? rawLElb.y : rawRElb?.y ?? 0) : 0;
@@ -208,10 +216,10 @@ export class BodyRigTracker {
     }
 
     const noseVis = rawNose?.visibility ?? 0;
-    const isFrontFacing = noseVis >= 0.4;
+    const isFrontFacing = noseVis >= 0.2 || rawShoulderWidth > 0.12;
 
     // Occlusion: determine if arms/wrists are in front of torso
-    const torsoZ = ((rawLSh.z ?? 0) + (rawRSh.z ?? 0) + (rawLHip.z ?? 0) + (rawRHip.z ?? 0)) * 0.25;
+    const torsoZ = ((rawLSh.z ?? 0) + (rawRSh.z ?? 0) + (rawLHip?.z ?? 0) + (rawRHip?.z ?? 0)) * 0.25;
     const lWrist = landmarks[15];
     const rWrist = landmarks[16];
 
@@ -219,7 +227,7 @@ export class BodyRigTracker {
     const leftArmInFront = ((lWrist?.z ?? 0) < torsoZ - zMargin) || ((rawLElb?.z ?? 0) < torsoZ - zMargin);
     const rightArmInFront = ((rWrist?.z ?? 0) < torsoZ - zMargin) || ((rawRElb?.z ?? 0) < torsoZ - zMargin);
 
-    const confidence = ((rawLSh.visibility ?? 1) + (rawRSh.visibility ?? 1) + (rawLHip.visibility ?? 1) + (rawRHip.visibility ?? 1)) * 0.25;
+    const confidence = ((rawLSh.visibility ?? 1) + (rawRSh.visibility ?? 1) + (rawLHip?.visibility ?? 1) + (rawRHip?.visibility ?? 1)) * 0.25;
 
     return {
       shoulderLeft: easedShoulderLeft,
