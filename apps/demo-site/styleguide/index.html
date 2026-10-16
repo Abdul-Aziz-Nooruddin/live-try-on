@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Living Styleguide — Studio Aelia</title>
+  <link rel="stylesheet" href="/src/tokens.css" />
+  <style>
+    .sg-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 64px 40px;
+    }
+
+    .sg-section {
+      margin-bottom: 72px;
+      border-bottom: 1px solid var(--stone);
+      padding-bottom: 48px;
+    }
+
+    .sg-title {
+      font-family: var(--font-display);
+      font-size: 40px;
+      line-height: 48px;
+      font-weight: 500;
+      margin-bottom: 8px;
+    }
+
+    .sg-subtitle {
+      font-size: 14px;
+      color: var(--taupe);
+      margin-bottom: 32px;
+    }
+
+    .sg-heading {
+      font-family: var(--font-display);
+      font-size: 24px;
+      font-weight: 500;
+      margin-bottom: 24px;
+      color: var(--ink);
+    }
+
+    .sg-grid-colors {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 16px;
+    }
+
+    .color-swatch-card {
+      border: 1px solid var(--stone);
+      background-color: var(--white);
+      overflow: hidden;
+    }
+
+    .color-preview {
+      height: 72px;
+      width: 100%;
+      border-bottom: 1px solid var(--stone);
+    }
+
+    .color-info {
+      padding: 12px;
+    }
+
+    .color-token {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--ink);
+    }
+
+    .color-hex {
+      font-size: 12px;
+      color: var(--taupe);
+      margin-top: 4px;
+    }
+
+    .sg-grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+    }
+
+    @media (max-width: 768px) {
+      .sg-grid-2 {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* 4.3 Buttons */
+    .btn-primary {
+      height: 52px;
+      background-color: var(--ink);
+      color: var(--paper);
+      border: none;
+      font-family: var(--font-body);
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0 32px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: background-color var(--duration-fast) var(--ease-editorial);
+    }
+
+    .btn-primary:hover {
+      background-color: var(--charcoal);
+    }
+
+    .btn-secondary {
+      height: 52px;
+      background-color: transparent;
+      color: var(--ink);
+      border: 1px solid var(--ink);
+      font-family: var(--font-body);
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0 32px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: background-color var(--duration-fast) var(--ease-editorial), color var(--duration-fast) var(--ease-editorial);
+    }
+
+    .btn-secondary:hover {
+      background-color: var(--ink);
+      color: var(--paper);
+    }
+
+    .btn-disabled {
+      height: 52px;
+      background-color: var(--sand);
+      color: var(--taupe);
+      border: none;
+      font-family: var(--font-body);
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0 32px;
+      cursor: not-allowed;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .btn-text-link {
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink);
+      text-decoration: underline;
+      text-underline-offset: 4px;
+      background: none;
+      border: none;
+      cursor: pointer;
+    }
+
+    .spinner-16 {
+      width: 16px;
+      height: 16px;
+      border: 2px solid var(--stone);
+      border-top-color: var(--paper);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* 4.4 Form fields */
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-width: 380px;
+    }
+
+    .form-label {
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--taupe);
+    }
+
+    .form-input {
+      height: 52px;
+      background-color: var(--white);
+      border: 1px solid var(--stone);
+      border-radius: var(--radius-input);
+      padding: 0 16px;
+      font-family: var(--font-body);
+      font-size: 15px;
+      color: var(--ink);
+      outline: none;
+    }
+
+    .form-input:hover {
+      border-color: var(--taupe);
+    }
+
+    .form-input:focus {
+      border-color: var(--ink);
+    }
+
+    /* 4.5 Product Card */
+    .card-preview {
+      width: 280px;
+      background-color: var(--paper);
+      position: relative;
+    }
+
+    .card-image-box {
+      width: 100%;
+      aspect-ratio: 3 / 4;
+      background-color: var(--sand);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .card-label-badge {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      background-color: var(--white);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 4px 10px;
+    }
+
+    .card-heart {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--ink);
+      cursor: pointer;
+    }
+
+    .card-meta {
+      padding-top: 12px;
+    }
+
+    .card-name {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--ink);
+      margin-bottom: 4px;
+    }
+
+    .card-price-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+
+    .card-price {
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--ink);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .card-color-count {
+      font-size: 13px;
+      color: var(--taupe);
+    }
+
+    .card-tryon-info {
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--taupe);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 6px;
+    }
+
+    /* 4.6 Size Selector */
+    .size-grid {
+      display: flex;
+      gap: 8px;
+    }
+
+    .size-btn {
+      width: 48px;
+      height: 48px;
+      background-color: var(--white);
+      border: 1px solid var(--stone);
+      color: var(--ink);
+      font-family: var(--font-body);
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .size-btn.selected {
+      background-color: var(--ink);
+      color: var(--paper);
+    }
+
+    .size-btn.disabled {
+      color: var(--taupe);
+      cursor: not-allowed;
+      position: relative;
+    }
+
+    .size-btn.disabled::after {
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 1px;
+      background-color: var(--stone);
+      transform: rotate(-45deg);
+    }
+
+    /* 4.7 Color Swatches */
+    .swatch-group {
+      display: flex;
+      gap: 12px;
+    }
+
+    .swatch-btn {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      border: 1px solid var(--stone);
+      cursor: pointer;
+      position: relative;
+    }
+
+    .swatch-btn.selected {
+      outline: 2px solid var(--ink);
+      outline-offset: 2px;
+    }
+
+    /* 4.8 Accordion */
+    .accordion-box {
+      border-top: 1px solid var(--stone);
+      border-bottom: 1px solid var(--stone);
+      padding: 16px 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink);
+      cursor: pointer;
+    }
+
+    /* 4.10 Chips & Skeletons */
+    .chip-filter {
+      height: 36px;
+      padding: 0 16px;
+      border: 1px solid var(--stone);
+      background-color: var(--white);
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      display: inline-flex;
+      align-items: center;
+      cursor: pointer;
+    }
+
+    .chip-filter.active {
+      background-color: var(--ink);
+      color: var(--paper);
+      border-color: var(--ink);
+    }
+
+    .skeleton-box {
+      width: 100%;
+      height: 160px;
+      background-color: var(--sand);
+      animation: pulse-soft 1.2s ease-in-out infinite alternate;
+    }
+
+    @keyframes pulse-soft {
+      from { opacity: 0.6; }
+      to { opacity: 1.0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="sg-container">
+    <header style="margin-bottom: 48px; border-bottom: 1px solid var(--stone); padding-bottom: 24px;">
+      <h1 class="sg-title">Studio Aelia — Living Styleguide</h1>
+      <p class="sg-subtitle">Strict implementation of DESIGN.md for storefront and try-on components.</p>
+      <div><a href="/pdp/" class="btn-text-link">→ Go to Product Detail Page (PDP)</a></div>
+    </header>
+
+    <!-- 3.1 Color Tokens -->
+    <section class="sg-section">
+      <h2 class="sg-heading">3.1 Color Tokens</h2>
+      <div class="sg-grid-colors">
+        <div class="color-swatch-card">
+          <div class="color-preview" style="background-color: #F7F4EF;"></div>
+          <div class="color-info">
+            <div class="color-token">--paper</div>
+            <div class="color-hex">#F7F4EF</div>
+          </div>
+        </div>
+        <div class="color-swatch-card">
+          <div class="color-preview" style="background-color: #FFFFFF;"></div>
+          <div class="color-info">
+            <div class="color-token">--white</div>
+            <div class="color-hex">#FFFFFF</div>
+          </div>
+        </div>
+        <div class="color-swatch-card">
+          <div class="color-preview" style="background-color: #ECE7DF;"></div>
+          <div class="color-info">
+            <div class="color-token">--sand</div>
+            <div class="color-hex">#ECE7DF</div>
+          </div>
+        </div>
+        <div class="color-swatch-card">
+          <div class="color-preview" style="background-color: #D9D2C7;"></div>
+          <div class="color-info">
+            <div class="color-token">--stone</div>
+            <div class="color-hex">#D9D2C7</div>
+          </div>
+        </div>
+        <div class="color-swatch-card">
+          <div class="color-preview" style="background-color: #6B655C;"></div>
+          <div class="color-info">
+            <div class="color-token">--taupe</div>
+            <div class="color-hex">#6B655C</div>
+          </div>
+        </div>
+        <div class="color-swatch-card">
+          <div class="color-preview" style="background-color: #141311;"></div>
+          <div class="color-info">
+            <div class="color-token">--ink</div>
+            <div class="color-hex">#141311</div>
+          </div>
+        </div>
+        <div class="color-swatch-card">
+          <div class="color-preview" style="background-color: #2B2926;"></div>
+          <div class="color-info">
+            <div class="color-token">--charcoal</div>
+            <div class="color-hex">#2B2926</div>
+          </div>
+        </div>
+        <div class="color-swatch-card">
+          <div class="color-preview" style="background-color: #A24A33;"></div>
+          <div class="color-info">
+            <div class="color-token">--clay</div>
+            <div class="color-hex">#A24A33</div>
+          </div>
+        </div>
+        <div class="color-swatch-card">
+          <div class="color-preview" style="background-color: #3E5B45;"></div>
+          <div class="color-info">
+            <div class="color-token">--moss</div>
+            <div class="color-hex">#3E5B45</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4.3 Buttons -->
+    <section class="sg-section">
+      <h2 class="sg-heading">4.3 Buttons</h2>
+      <div style="display: flex; flex-wrap: wrap; gap: 20px; align-items: center;">
+        <button class="btn-primary">Add to Bag (Primary)</button>
+        <button class="btn-secondary">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"></path>
+            <circle cx="12" cy="13" r="3"></circle>
+          </svg>
+          Try On (Secondary)
+        </button>
+        <button class="btn-primary" style="width: 200px;">
+          <div class="spinner-16"></div>
+        </button>
+        <button class="btn-disabled">Sold Out</button>
+        <button class="btn-text-link">View Full Details</button>
+      </div>
+    </section>
+
+    <!-- 4.4 Form Fields & 4.6 Size Selector -->
+    <section class="sg-section">
+      <div class="sg-grid-2">
+        <div>
+          <h2 class="sg-heading">4.4 Form Fields (2px radius)</h2>
+          <div class="form-group">
+            <label class="form-label">Email Address</label>
+            <input type="email" class="form-input" placeholder="name@domain.com" />
+          </div>
+        </div>
+        <div>
+          <h2 class="sg-heading">4.6 Size Selector (48x48px)</h2>
+          <div class="size-grid">
+            <button class="size-btn">XS</button>
+            <button class="size-btn selected">S</button>
+            <button class="size-btn">M</button>
+            <button class="size-btn">L</button>
+            <button class="size-btn disabled">XL</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4.5 Product Card & Swatches -->
+    <section class="sg-section">
+      <div class="sg-grid-2">
+        <div>
+          <h2 class="sg-heading">4.5 Product Card (3:4 ratio)</h2>
+          <div class="card-preview">
+            <div class="card-image-box">
+              <span class="card-label-badge">New</span>
+              <div class="card-heart">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                </svg>
+              </div>
+              <img src="/fixtures/sample-tshirt.png" alt="Card Preview" style="width: 100%; height: 100%; object-fit: cover;" />
+            </div>
+            <div class="card-meta">
+              <div class="card-name">Classic Heavyweight Boxy Tee</div>
+              <div class="card-price-row">
+                <span class="card-price">₹1,990</span>
+                <span class="card-color-count">3 colours</span>
+              </div>
+              <div class="card-tryon-info">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"></path>
+                  <circle cx="12" cy="13" r="3"></circle>
+                </svg>
+                <span>Try On</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <h2 class="sg-heading">4.7 Color Swatches & 4.8 Accordion</h2>
+          <div style="margin-bottom: 24px;">
+            <div style="font-size: 12px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--taupe); margin-bottom: 8px;">Colour: Olive</div>
+            <div class="swatch-group">
+              <button class="swatch-btn selected" style="background-color: #4b4b3b;"></button>
+              <button class="swatch-btn" style="background-color: #1e2024;"></button>
+              <button class="swatch-btn" style="background-color: #d1ccbe;"></button>
+            </div>
+          </div>
+
+          <div style="margin-bottom: 24px;">
+            <div class="accordion-box">
+              <span>Composition and Care</span>
+              <span>+</span>
+            </div>
+            <div class="accordion-box" style="border-top: none;">
+              <span>Shipping and Returns</span>
+              <span>+</span>
+            </div>
+          </div>
+
+          <div>
+            <h3 style="font-size: 14px; font-weight: 600; text-transform: uppercase; margin-bottom: 10px;">Filter Chips & Skeleton</h3>
+            <div style="display: flex; gap: 8px; margin-bottom: 16px;">
+              <div class="chip-filter active">Tops</div>
+              <div class="chip-filter">T-Shirts</div>
+              <div class="chip-filter">Try On Available</div>
+            </div>
+            <div class="skeleton-box" style="height: 48px;"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</body>
+</html>

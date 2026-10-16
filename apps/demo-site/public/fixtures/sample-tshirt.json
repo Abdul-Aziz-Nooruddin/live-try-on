@@ -1,0 +1,42 @@
+{
+  "productId": "sample-tshirt-001",
+  "variantId": "black-classic",
+  "status": "approved",
+  "category": "tshirt",
+  "images": {
+    "front": {
+      "url": "/fixtures/sample-tshirt.png",
+      "width": 1024,
+      "height": 1280
+    },
+    "back": null,
+    "side": null
+  },
+  "keypoints": {
+    "front": {
+      "neck_left": [0.42, 0.08],
+      "neck_right": [0.58, 0.08],
+      "neck_center_bottom": [0.50, 0.16],
+      "shoulder_left": [0.24, 0.12],
+      "shoulder_right": [0.76, 0.12],
+      "sleeve_left_end_top": [0.06, 0.28],
+      "sleeve_left_end_bottom": [0.18, 0.38],
+      "sleeve_right_end_top": [0.94, 0.28],
+      "sleeve_right_end_bottom": [0.82, 0.38],
+      "armpit_left": [0.26, 0.36],
+      "armpit_right": [0.74, 0.36],
+      "hem_left": [0.28, 0.95],
+      "hem_right": [0.72, 0.95],
+      "hem_center": [0.50, 0.95]
+    },
+    "back": null
+  },
+  "physical": {
+    "lengthToWidthRatio": 1.25,
+    "sleeveType": "short"
+  },
+  "shading": {
+    "meanLuminance": 0.25
+  },
+  "version": 1
+}

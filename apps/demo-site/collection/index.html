@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tops & Tailoring — Studio Aelia</title>
+  <link rel="stylesheet" href="/src/tokens.css" />
+  <style>
+    .announcement-bar {
+      background-color: var(--ink);
+      color: var(--paper);
+      font-size: 12px;
+      line-height: 16px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      font-weight: 500;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 16px;
+    }
+
+    .main-nav {
+      height: 72px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 40px;
+      border-bottom: 1px solid var(--stone);
+      background-color: var(--paper);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 28px;
+      list-style: none;
+    }
+
+    .nav-link {
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink);
+      text-decoration: none;
+    }
+
+    .brand-wordmark {
+      font-family: var(--font-display);
+      font-size: 26px;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--ink);
+      text-decoration: none;
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+    }
+
+    .nav-action-link {
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .bag-count {
+      width: 16px;
+      height: 16px;
+      background-color: var(--ink);
+      color: var(--paper);
+      border-radius: 50%;
+      font-size: 10px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Collection Header */
+    .collection-header {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 48px 40px 24px 40px;
+    }
+
+    .breadcrumb {
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--taupe);
+      margin-bottom: 12px;
+    }
+
+    .collection-title-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+    }
+
+    .collection-title {
+      font-family: var(--font-display);
+      font-size: 44px;
+      line-height: 52px;
+      font-weight: 500;
+      color: var(--ink);
+    }
+
+    .product-counter {
+      font-size: 14px;
+      color: var(--taupe);
+    }
+
+    /* Sticky Filter Toolbar */
+    .filter-toolbar {
+      position: sticky;
+      top: 72px;
+      background-color: var(--paper);
+      border-top: 1px solid var(--stone);
+      border-bottom: 1px solid var(--stone);
+      padding: 14px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 40;
+    }
+
+    .filter-chips {
+      display: flex;
+      gap: 8px;
+    }
+
+    .filter-chip {
+      height: 36px;
+      padding: 0 16px;
+      border: 1px solid var(--stone);
+      background-color: var(--white);
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--ink);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+    }
+
+    .filter-chip.active {
+      background-color: var(--ink);
+      color: var(--paper);
+      border-color: var(--ink);
+    }
+
+    /* Grid */
+    .grid-container {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 48px 40px;
+    }
+
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 24px;
+      row-gap: 56px;
+      margin-bottom: 64px;
+    }
+
+    @media (max-width: 1024px) {
+      .product-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .filter-toolbar {
+        padding: 12px 16px;
+      }
+      .grid-container {
+        padding: 24px 16px;
+      }
+      .collection-header {
+        padding: 24px 16px;
+      }
+    }
+
+    .card-link {
+      text-decoration: none;
+      color: var(--ink);
+    }
+
+    .card-photo-box {
+      width: 100%;
+      aspect-ratio: 3 / 4;
+      background-color: var(--sand);
+      position: relative;
+      margin-bottom: 12px;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .badge-label {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      background-color: var(--white);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 4px 10px;
+    }
+
+    .camera-badge {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--taupe);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 6px;
+    }
+
+    .pagination-row {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      padding: 40px 0;
+      border-top: 1px solid var(--stone);
+    }
+
+    .btn-load-more {
+      height: 48px;
+      padding: 0 32px;
+      background-color: transparent;
+      border: 1px solid var(--ink);
+      color: var(--ink);
+      font-family: var(--font-body);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      cursor: pointer;
+    }
+
+    .btn-load-more:hover {
+      background-color: var(--ink);
+      color: var(--paper);
+    }
+  </style>
+</head>
+<body>
+  <!-- Announcement -->
+  <div class="announcement-bar">
+    Free shipping over ₹1,999. Easy 7-day returns.
+  </div>
+
+  <!-- Header -->
+  <header class="main-nav">
+    <nav>
+      <ul class="nav-links">
+        <li><a href="/collection/" class="nav-link" style="color: var(--ink); font-weight: 600;">Women</a></li>
+        <li><a href="/collection/" class="nav-link">Men</a></li>
+        <li><a href="/collection/" class="nav-link">New</a></li>
+        <li><a href="/collection/" class="nav-link">Sale</a></li>
+        <li><a href="/styleguide/" class="nav-link" style="color: var(--clay);">Styleguide</a></li>
+      </ul>
+    </nav>
+    <a href="/" class="brand-wordmark">AELIA</a>
+    <div class="nav-actions">
+      <a href="#" class="nav-action-link">Search</a>
+      <a href="#" class="nav-action-link">Account</a>
+      <a href="#" class="nav-action-link">
+        Bag <span class="bag-count">0</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- Collection Header -->
+  <div class="collection-header">
+    <div class="breadcrumb">Home / Apparel / Tops</div>
+    <div class="collection-title-row">
+      <h1 class="collection-title">Tops & Tailoring</h1>
+      <span class="product-counter">Showing 8 of 32 items</span>
+    </div>
+  </div>
+
+  <!-- Toolbar -->
+  <div class="filter-toolbar">
+    <div class="filter-chips">
+      <button class="filter-chip active">All Tops</button>
+      <button class="filter-chip">T-Shirts</button>
+      <button class="filter-chip">Shirts</button>
+      <button class="filter-chip active" style="border-color: var(--ink);">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"></path>
+          <circle cx="12" cy="13" r="3"></circle>
+        </svg>
+        Try On Available
+      </button>
+    </div>
+    <div style="font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--taupe);">
+      Sort: Featured
+    </div>
+  </div>
+
+  <!-- Grid -->
+  <main class="grid-container">
+    <div class="product-grid">
+      <!-- Item 1: Try on active -->
+      <a href="/pdp/" class="card-link">
+        <div class="card-photo-box">
+          <span class="badge-label">New</span>
+          <img src="/fixtures/sample-tshirt.png" alt="Classic Boxy Tee" style="width: 100%; height: 100%; object-fit: cover;" />
+        </div>
+        <div style="font-size: 14px; font-weight: 500;">Classic Heavyweight Boxy Tee</div>
+        <div style="font-size: 15px; font-weight: 500; margin-top: 4px;">₹1,990</div>
+        <div class="camera-badge">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"></path>
+            <circle cx="12" cy="13" r="3"></circle>
+          </svg>
+          <span>Try On</span>
+        </div>
+      </a>
+
+      <!-- Item 2 -->
+      <a href="/pdp/" class="card-link">
+        <div class="card-photo-box">
+          <span style="font-size: 12px; color: var(--taupe); text-transform: uppercase;">Product Image 3:4</span>
+        </div>
+        <div style="font-size: 14px; font-weight: 500;">Relaxed Poplin Shirt</div>
+        <div style="font-size: 15px; font-weight: 500; margin-top: 4px;">₹2,490</div>
+        <div class="camera-badge">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"></path>
+            <circle cx="12" cy="13" r="3"></circle>
+          </svg>
+          <span>Try On</span>
+        </div>
+      </a>
+
+      <!-- Item 3 -->
+      <div class="card-link">
+        <div class="card-photo-box">
+          <span style="font-size: 12px; color: var(--taupe); text-transform: uppercase;">Product Image 3:4</span>
+        </div>
+        <div style="font-size: 14px; font-weight: 500;">Fine Knit Mercerized Tee</div>
+        <div style="font-size: 15px; font-weight: 500; margin-top: 4px;">₹1,790</div>
+      </div>
+
+      <!-- Item 4 -->
+      <div class="card-link">
+        <div class="card-photo-box">
+          <span class="badge-label" style="color: var(--clay);">Sale</span>
+          <span style="font-size: 12px; color: var(--taupe); text-transform: uppercase;">Product Image 3:4</span>
+        </div>
+        <div style="font-size: 14px; font-weight: 500;">Linen Studio Kurta</div>
+        <div style="font-size: 15px; font-weight: 500; margin-top: 4px; color: var(--clay);">₹2,890 <span style="text-decoration: line-through; color: var(--taupe); font-size: 14px; margin-left: 6px;">₹3,400</span></div>
+      </div>
+    </div>
+
+    <div class="pagination-row">
+      <span style="font-size: 13px; color: var(--taupe);">Showing 4 of 32 items</span>
+      <button class="btn-load-more">Load More</button>
+    </div>
+  </main>
+</body>
+</html>

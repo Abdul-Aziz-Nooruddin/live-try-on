@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Studio Aelia — Quiet Apparel & Tailoring</title>
+  <link rel="stylesheet" href="/src/tokens.css" />
+  <style>
+    /* 4.1 Header */
+    .announcement-bar {
+      background-color: var(--ink);
+      color: var(--paper);
+      font-size: 12px;
+      line-height: 16px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      font-weight: 500;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 16px;
+    }
+
+    .main-nav {
+      height: 72px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 40px;
+      border-bottom: 1px solid var(--stone);
+      background-color: var(--paper);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 28px;
+      list-style: none;
+    }
+
+    .nav-link {
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink);
+      text-decoration: none;
+    }
+
+    .nav-link:hover {
+      color: var(--taupe);
+    }
+
+    .brand-wordmark {
+      font-family: var(--font-display);
+      font-size: 26px;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--ink);
+      text-decoration: none;
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+    }
+
+    .nav-action-link {
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .bag-count {
+      width: 16px;
+      height: 16px;
+      background-color: var(--ink);
+      color: var(--paper);
+      border-radius: 50%;
+      font-size: 10px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* 6.1 Hero */
+    .hero-section {
+      height: 80vh;
+      min-height: 540px;
+      background-color: var(--sand);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: flex-end;
+      padding: 64px 40px;
+    }
+
+    .hero-scrim {
+      position: absolute;
+      inset: 0;
+      background-color: rgba(20, 19, 17, 0.25);
+      z-index: 1;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      max-width: 640px;
+    }
+
+    .hero-headline {
+      font-family: var(--font-display);
+      font-size: 56px;
+      line-height: 62px;
+      font-weight: 500;
+      color: var(--white);
+      margin-bottom: 24px;
+    }
+
+    .btn-text-hero {
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--white);
+      text-decoration: underline;
+      text-underline-offset: 6px;
+      background: none;
+      border: none;
+      cursor: pointer;
+    }
+
+    /* Sections */
+    .section-wrap {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 96px 40px;
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 36px;
+    }
+
+    .section-title {
+      font-family: var(--font-display);
+      font-size: 36px;
+      line-height: 42px;
+      font-weight: 500;
+      color: var(--ink);
+    }
+
+    .section-link {
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink);
+      text-decoration: underline;
+      text-underline-offset: 4px;
+    }
+
+    /* Category Entry */
+    .category-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+
+    .category-card {
+      text-decoration: none;
+      color: var(--ink);
+    }
+
+    .category-image {
+      width: 100%;
+      aspect-ratio: 4 / 5;
+      background-color: var(--sand);
+      border: 1px solid var(--stone);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .category-name {
+      font-family: var(--font-display);
+      font-size: 28px;
+      line-height: 34px;
+      font-weight: 500;
+      margin-bottom: 6px;
+    }
+
+    /* Product Grid */
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 24px;
+      row-gap: 48px;
+    }
+
+    @media (max-width: 1024px) {
+      .product-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .category-grid {
+        grid-template-columns: 1fr;
+      }
+      .section-wrap {
+        padding: 56px 16px;
+      }
+    }
+
+    .product-card {
+      text-decoration: none;
+      color: var(--ink);
+    }
+
+    .product-card-img-box {
+      width: 100%;
+      aspect-ratio: 3 / 4;
+      background-color: var(--sand);
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .product-card-badge {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      background-color: var(--white);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 4px 10px;
+    }
+
+    .product-card-tryon {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--taupe);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 6px;
+    }
+
+    /* 6.1 Section 7: Try-On Explainer Strip */
+    .tryon-explainer-strip {
+      background-color: var(--sand);
+      border-top: 1px solid var(--stone);
+      border-bottom: 1px solid var(--stone);
+      padding: 64px 40px;
+    }
+
+    .explainer-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .explainer-steps {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 32px;
+      margin-bottom: 32px;
+    }
+
+    @media (max-width: 768px) {
+      .explainer-steps {
+        grid-template-columns: 1fr;
+        gap: 24px;
+      }
+    }
+
+    .step-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .step-icon {
+      color: var(--ink);
+    }
+
+    .step-text {
+      font-family: var(--font-display);
+      font-size: 24px;
+      font-weight: 500;
+      color: var(--ink);
+    }
+
+    .explainer-disclaimer {
+      font-size: 13px;
+      color: var(--taupe);
+      margin-bottom: 12px;
+    }
+
+    /* 4.2 Footer */
+    footer {
+      background-color: var(--charcoal);
+      color: var(--paper);
+      padding: 72px 40px 32px 40px;
+    }
+
+    .footer-grid {
+      max-width: 1440px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 48px;
+      padding-bottom: 64px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    @media (max-width: 768px) {
+      .footer-grid {
+        grid-template-columns: 1fr;
+        gap: 32px;
+      }
+    }
+
+    .footer-heading {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--paper);
+      margin-bottom: 16px;
+    }
+
+    .footer-links {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .footer-link {
+      font-size: 14px;
+      color: #a8a29e;
+      text-decoration: none;
+    }
+
+    .footer-link:hover {
+      color: var(--paper);
+    }
+
+    .footer-bottom {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding-top: 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      color: #78716c;
+    }
+  </style>
+</head>
+<body>
+  <!-- Announcement -->
+  <div class="announcement-bar">
+    Free shipping over ₹1,999. Easy 7-day returns.
+  </div>
+
+  <!-- Header -->
+  <header class="main-nav">
+    <nav>
+      <ul class="nav-links">
+        <li><a href="/collection/" class="nav-link">Women</a></li>
+        <li><a href="/collection/" class="nav-link">Men</a></li>
+        <li><a href="/collection/" class="nav-link">New</a></li>
+        <li><a href="/collection/" class="nav-link">Sale</a></li>
+        <li><a href="/styleguide/" class="nav-link" style="color: var(--clay);">Styleguide</a></li>
+      </ul>
+    </nav>
+    <a href="/" class="brand-wordmark">AELIA</a>
+    <div class="nav-actions">
+      <a href="#" class="nav-action-link">Search</a>
+      <a href="#" class="nav-action-link">Account</a>
+      <a href="#" class="nav-action-link">
+        Bag <span class="bag-count">0</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- 6.1 Hero -->
+  <section class="hero-section">
+    <div class="hero-scrim"></div>
+    <div class="hero-content">
+      <h1 class="hero-headline">Structured Cotton & Quiet Tailoring</h1>
+      <a href="/collection/" class="btn-text-hero">Shop the new season</a>
+    </div>
+  </section>
+
+  <!-- Category Entry -->
+  <section class="section-wrap">
+    <div class="category-grid">
+      <a href="/collection/" class="category-card">
+        <div class="category-image">
+          <span style="font-size: 12px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--taupe);">Women's Edit 4:5</span>
+        </div>
+        <h2 class="category-name">Women</h2>
+        <span class="section-link">Shop Collection</span>
+      </a>
+      <a href="/collection/" class="category-card">
+        <div class="category-image">
+          <span style="font-size: 12px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--taupe);">Men's Edit 4:5</span>
+        </div>
+        <h2 class="category-name">Men</h2>
+        <span class="section-link">Shop Collection</span>
+      </a>
+      <a href="/collection/" class="category-card">
+        <div class="category-image">
+          <span style="font-size: 12px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--taupe);">Objects & Goods 4:5</span>
+        </div>
+        <h2 class="category-name">Objects</h2>
+        <span class="section-link">Explore</span>
+      </a>
+    </div>
+  </section>
+
+  <!-- New Arrivals -->
+  <section class="section-wrap" style="padding-top: 0;">
+    <div class="section-header">
+      <h2 class="section-title">New Arrivals</h2>
+      <a href="/collection/" class="section-link">View All</a>
+    </div>
+    <div class="product-grid">
+      <a href="/pdp/" class="product-card">
+        <div class="product-card-img-box">
+          <span class="product-card-badge">New</span>
+          <img src="/fixtures/sample-tshirt.png" alt="Classic Boxy Tee" style="width: 100%; height: 100%; object-fit: cover;" />
+        </div>
+        <div style="font-size: 14px; font-weight: 500;">Classic Heavyweight Boxy Tee</div>
+        <div style="font-size: 15px; font-weight: 500; margin-top: 4px;">₹1,990</div>
+        <div class="product-card-tryon">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"></path>
+            <circle cx="12" cy="13" r="3"></circle>
+          </svg>
+          <span>Try On Available</span>
+        </div>
+      </a>
+
+      <div class="product-card">
+        <div class="product-card-img-box">
+          <span style="font-size: 12px; color: var(--taupe); text-transform: uppercase;">Product Image 3:4</span>
+        </div>
+        <div style="font-size: 14px; font-weight: 500;">Relaxed Poplin Shirt</div>
+        <div style="font-size: 15px; font-weight: 500; margin-top: 4px;">₹2,490</div>
+      </div>
+
+      <div class="product-card">
+        <div class="product-card-img-box">
+          <span style="font-size: 12px; color: var(--taupe); text-transform: uppercase;">Product Image 3:4</span>
+        </div>
+        <div style="font-size: 14px; font-weight: 500;">Linen Studio Kurta</div>
+        <div style="font-size: 15px; font-weight: 500; margin-top: 4px;">₹3,200</div>
+      </div>
+
+      <div class="product-card">
+        <div class="product-card-img-box">
+          <span style="font-size: 12px; color: var(--taupe); text-transform: uppercase;">Product Image 3:4</span>
+        </div>
+        <div style="font-size: 14px; font-weight: 500;">Structured Twill Overshirt</div>
+        <div style="font-size: 15px; font-weight: 500; margin-top: 4px;">₹3,800</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6.1 Section 7: Try-On Explainer Strip -->
+  <section class="tryon-explainer-strip">
+    <div class="explainer-container">
+      <div class="explainer-steps">
+        <div class="step-box">
+          <svg class="step-icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"></path>
+            <circle cx="12" cy="13" r="3"></circle>
+          </svg>
+          <div class="step-text">Open your camera</div>
+        </div>
+        <div class="step-box">
+          <svg class="step-icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"></path>
+            <path d="M3 6h18"></path>
+            <path d="M16 10a4 4 0 0 1-8 0"></path>
+          </svg>
+          <div class="step-text">Pick an item</div>
+        </div>
+        <div class="step-box">
+          <svg class="step-icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <circle cx="12" cy="12" r="10"></circle>
+            <circle cx="12" cy="12" r="4"></circle>
+          </svg>
+          <div class="step-text">See it on you</div>
+        </div>
+      </div>
+      <div class="explainer-disclaimer">Shows how it looks, not how it fits.</div>
+      <div>
+        <a href="/pdp/" class="section-link">Try it on any product marked with the camera icon</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4.2 Footer -->
+  <footer>
+    <div class="footer-grid">
+      <div>
+        <div class="footer-heading">Shop</div>
+        <ul class="footer-links">
+          <li><a href="/collection/" class="footer-link">New Arrivals</a></li>
+          <li><a href="/collection/" class="footer-link">Tops & T-Shirts</a></li>
+          <li><a href="/collection/" class="footer-link">Shirts & Kurtas</a></li>
+          <li><a href="/collection/" class="footer-link">Sale</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-heading">Help</div>
+        <ul class="footer-links">
+          <li><a href="#" class="footer-link">Shipping & Returns</a></li>
+          <li><a href="#" class="footer-link">Size Guide</a></li>
+          <li><a href="#" class="footer-link">Care Instructions</a></li>
+          <li><a href="#" class="footer-link">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-heading">Company</div>
+        <ul class="footer-links">
+          <li><a href="#" class="footer-link">About Studio Aelia</a></li>
+          <li><a href="#" class="footer-link">Lookbook</a></li>
+          <li><a href="#" class="footer-link">Privacy Policy</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-heading">Newsletter</div>
+        <p style="font-size: 14px; color: #a8a29e; margin-bottom: 16px;">Sign up for quiet releases and private previews.</p>
+        <div style="display: flex;">
+          <input type="email" placeholder="email@domain.com" style="height: 48px; background-color: #1e1d1a; border: 1px solid #44403c; color: #fff; padding: 0 12px; font-size: 14px; flex: 1; outline: none; border-radius: 2px;" />
+          <button style="height: 48px; background-color: var(--paper); color: var(--ink); border: none; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; padding: 0 16px; cursor: pointer;">Join</button>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div>© 2026 Studio Aelia. All rights reserved.</div>
+      <div>Zero camera data retained. Runs locally.</div>
+    </div>
+  </footer>
+</body>
+</html>

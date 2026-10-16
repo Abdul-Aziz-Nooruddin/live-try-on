@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Classic Heavyweight Boxy Tee — Studio Aelia</title>
+  <link rel="stylesheet" href="/src/tokens.css" />
+  <style>
+    .announcement-bar {
+      background-color: var(--ink);
+      color: var(--paper);
+      font-size: 12px;
+      line-height: 16px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      font-weight: 500;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 16px;
+    }
+
+    .main-nav {
+      height: 72px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 40px;
+      border-bottom: 1px solid var(--stone);
+      background-color: var(--paper);
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 28px;
+      list-style: none;
+    }
+
+    .nav-link {
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink);
+      text-decoration: none;
+    }
+
+    .nav-link:hover {
+      color: var(--taupe);
+    }
+
+    .brand-wordmark {
+      font-family: var(--font-display);
+      font-size: 26px;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--ink);
+      text-decoration: none;
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+    }
+
+    .nav-action-link {
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .bag-count {
+      width: 16px;
+      height: 16px;
+      background-color: var(--ink);
+      color: var(--paper);
+      border-radius: 50%;
+      font-size: 10px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* PDP Grid */
+    .pdp-main {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 40px;
+      display: grid;
+      grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+      gap: 64px;
+    }
+
+    @media (max-width: 1024px) {
+      .pdp-main {
+        grid-template-columns: 1fr;
+        padding: 24px 16px;
+        gap: 32px;
+      }
+      .main-nav {
+        padding: 0 16px;
+        height: 56px;
+      }
+      .nav-links {
+        display: none;
+      }
+    }
+
+    .gallery-layout {
+      display: grid;
+      grid-template-columns: 64px 1fr;
+      gap: 16px;
+      align-items: start;
+    }
+
+    .thumb-strip {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .thumb-btn {
+      width: 64px;
+      aspect-ratio: 3 / 4;
+      background-color: var(--sand);
+      border: 1px solid var(--stone);
+      cursor: pointer;
+      overflow: hidden;
+    }
+
+    .thumb-btn.active {
+      border: 1px solid var(--ink);
+    }
+
+    .thumb-btn img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .main-image-viewport {
+      width: 100%;
+      aspect-ratio: 3 / 4;
+      background-color: var(--sand);
+      border: 1px solid var(--stone);
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .main-image-viewport img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .product-panel {
+      display: flex;
+      flex-direction: column;
+      max-width: 480px;
+    }
+
+    .breadcrumb {
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--taupe);
+      margin-bottom: 16px;
+    }
+
+    .product-title {
+      font-family: var(--font-display);
+      font-size: 36px;
+      line-height: 42px;
+      font-weight: 500;
+      color: var(--ink);
+      margin-bottom: 8px;
+    }
+
+    .product-price-row {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .product-price {
+      font-size: 18px;
+      font-weight: 500;
+      color: var(--ink);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .product-desc {
+      font-size: 15px;
+      line-height: 24px;
+      color: var(--taupe);
+      margin-bottom: 24px;
+      max-width: 65ch;
+    }
+
+    .option-block {
+      margin-bottom: 24px;
+    }
+
+    .option-label-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .option-title {
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink);
+    }
+
+    .size-guide-text {
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--ink);
+      text-decoration: underline;
+      text-underline-offset: 4px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .swatches-row {
+      display: flex;
+      gap: 12px;
+    }
+
+    .swatch-circle {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      border: 1px solid var(--stone);
+      cursor: pointer;
+    }
+
+    .swatch-circle.active {
+      outline: 2px solid var(--ink);
+      outline-offset: 2px;
+    }
+
+    .size-selector-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    .size-box {
+      width: 48px;
+      height: 48px;
+      background-color: var(--white);
+      border: 1px solid var(--stone);
+      color: var(--ink);
+      font-family: var(--font-body);
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: border-color var(--duration-fast) var(--ease-editorial);
+    }
+
+    .size-box:hover {
+      border-color: var(--ink);
+    }
+
+    .size-box.active {
+      background-color: var(--ink);
+      color: var(--paper);
+      border-color: var(--ink);
+    }
+
+    .low-stock-note {
+      font-size: 13px;
+      color: var(--clay);
+      margin-top: 10px;
+    }
+
+    .buttons-container {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 8px;
+      margin-bottom: 24px;
+    }
+
+    .btn-add-to-bag {
+      height: 52px;
+      background-color: var(--ink);
+      color: var(--paper);
+      border: none;
+      font-family: var(--font-body);
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background-color var(--duration-fast) var(--ease-editorial);
+    }
+
+    .btn-add-to-bag:hover {
+      background-color: var(--charcoal);
+    }
+
+    .btn-try-on {
+      height: 52px;
+      background-color: transparent;
+      color: var(--ink);
+      border: 1px solid var(--ink);
+      font-family: var(--font-body);
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: background-color var(--duration-fast) var(--ease-editorial), color var(--duration-fast) var(--ease-editorial);
+    }
+
+    .btn-try-on:hover {
+      background-color: var(--ink);
+      color: var(--paper);
+    }
+
+    .delivery-bar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 13px;
+      color: var(--taupe);
+      padding: 16px 0;
+      border-top: 1px solid var(--stone);
+      border-bottom: 1px solid var(--stone);
+      margin-bottom: 24px;
+    }
+
+    .accordion-row {
+      border-bottom: 1px solid var(--stone);
+      padding: 16px 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink);
+      cursor: pointer;
+    }
+
+    /* Modal Backdrop & Cards */
+    .tryon-scrim {
+      position: fixed;
+      inset: 0;
+      background-color: var(--scrim);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+
+    .tryon-scrim.visible {
+      display: flex;
+    }
+
+    /* Consent Modal */
+    .consent-dialog {
+      background-color: var(--white);
+      width: 100%;
+      max-width: 480px;
+      padding: 40px;
+      border: 1px solid var(--stone);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .consent-title {
+      font-family: var(--font-display);
+      font-size: 28px;
+      line-height: 34px;
+      font-weight: 500;
+      color: var(--ink);
+      margin-bottom: 16px;
+    }
+
+    .consent-text {
+      font-size: 15px;
+      line-height: 24px;
+      color: var(--ink);
+      margin-bottom: 12px;
+    }
+
+    .consent-disclaimer {
+      font-size: 13px;
+      color: var(--taupe);
+      margin-bottom: 32px;
+    }
+
+    .consent-btn-group {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      align-items: center;
+    }
+
+    .btn-dismiss {
+      background: none;
+      border: none;
+      font-family: var(--font-body);
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--taupe);
+      cursor: pointer;
+      text-decoration: underline;
+      text-underline-offset: 4px;
+    }
+
+    .btn-dismiss:hover {
+      color: var(--ink);
+    }
+
+    /* Live Try On Modal */
+    .live-tryon-modal {
+      background-color: var(--white);
+      width: 100%;
+      max-width: 1040px;
+      height: 680px;
+      border: 1px solid var(--stone);
+      display: none;
+      grid-template-columns: 580px 1fr;
+    }
+
+    .live-tryon-modal.visible {
+      display: grid;
+    }
+
+    @media (max-width: 1024px) {
+      .live-tryon-modal {
+        grid-template-columns: 1fr;
+        height: 100vh;
+        max-width: 100vw;
+      }
+    }
+
+    .camera-viewport {
+      background-color: #000000;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+    }
+
+    #webgl-canvas {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .chip-status {
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      background-color: var(--chip);
+      color: var(--white);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 6px 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      z-index: 10;
+    }
+
+    .dot-moss {
+      width: 6px;
+      height: 6px;
+      background-color: var(--moss);
+      border-radius: 50%;
+    }
+
+    .chip-close {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      width: 44px;
+      height: 44px;
+      background-color: var(--chip);
+      color: var(--white);
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+    }
+
+    .modal-side-panel {
+      padding: 40px;
+      background-color: var(--white);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .modal-p-title {
+      font-family: var(--font-display);
+      font-size: 28px;
+      line-height: 34px;
+      font-weight: 500;
+      color: var(--ink);
+      margin-bottom: 8px;
+    }
+
+    .modal-p-price {
+      font-size: 16px;
+      font-weight: 500;
+      color: var(--ink);
+      font-variant-numeric: tabular-nums;
+      margin-bottom: 24px;
+    }
+
+    .modal-disclaimer-note {
+      font-size: 12px;
+      color: var(--taupe);
+      line-height: 18px;
+      padding-top: 16px;
+      border-top: 1px solid var(--stone);
+    }
+  </style>
+</head>
+<body>
+  <!-- Announcement -->
+  <div class="announcement-bar">
+    Free shipping over ₹1,999. Easy 7-day returns.
+  </div>
+
+  <!-- Header -->
+  <header class="main-nav">
+    <nav>
+      <ul class="nav-links">
+        <li><a href="/collection/" class="nav-link">Women</a></li>
+        <li><a href="/collection/" class="nav-link">Men</a></li>
+        <li><a href="/collection/" class="nav-link">New</a></li>
+        <li><a href="/collection/" class="nav-link">Sale</a></li>
+        <li><a href="/styleguide/" class="nav-link" style="color: var(--clay);">Styleguide</a></li>
+      </ul>
+    </nav>
+    <a href="/" class="brand-wordmark">AELIA</a>
+    <div class="nav-actions">
+      <a href="#" class="nav-action-link">Search</a>
+      <a href="#" class="nav-action-link">Account</a>
+      <a href="#" class="nav-action-link">
+        Bag <span class="bag-count">0</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- Product Detail Page Layout -->
+  <main class="pdp-main">
+    <div class="gallery-layout">
+      <div class="thumb-strip">
+        <div class="thumb-btn active">
+          <img src="/fixtures/sample-tshirt.png" alt="Black Boxy T-Shirt Thumbnail" />
+        </div>
+      </div>
+      <div class="main-image-viewport">
+        <img src="/fixtures/sample-tshirt.png" alt="Classic Heavyweight Boxy Tee Front View" />
+      </div>
+    </div>
+
+    <div class="product-panel">
+      <div class="breadcrumb">Home / Men / Tops / T-Shirts</div>
+      <h1 class="product-title">Classic Heavyweight Boxy Tee</h1>
+      <div class="product-price-row">
+        <span class="product-price">₹1,990</span>
+      </div>
+      <p class="product-desc">
+        Constructed from 240 GSM organic combed cotton with a structured relaxed silhouette, dropped shoulders, and a reinforced ribbed collar.
+      </p>
+
+      <div class="option-block">
+        <div class="option-label-row">
+          <span class="option-title">Colour: Charcoal</span>
+        </div>
+        <div class="swatches-row">
+          <button class="swatch-circle active" style="background-color: #2b2926;" aria-label="Charcoal"></button>
+          <button class="swatch-circle" style="background-color: #4b4b3b;" aria-label="Olive"></button>
+        </div>
+      </div>
+
+      <div class="option-block">
+        <div class="option-label-row">
+          <span class="option-title">Size</span>
+          <span class="size-guide-text">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.4 2.4 0 0 1 0-3.4l2.6-2.6a2.4 2.4 0 0 1 3.4 0l12.6 12.6z"></path>
+              <line x1="7" y1="5.5" x2="8.5" y2="7"></line>
+              <line x1="10.5" y1="9" x2="12" y2="10.5"></line>
+              <line x1="14" y1="12.5" x2="15.5" y2="14"></line>
+            </svg>
+            Size Guide
+          </span>
+        </div>
+        <div class="size-selector-row">
+          <button class="size-box">S</button>
+          <button class="size-box active">M</button>
+          <button class="size-box">L</button>
+          <button class="size-box">XL</button>
+        </div>
+        <div class="low-stock-note">Only 3 left in size M</div>
+      </div>
+
+      <div class="buttons-container">
+        <button id="pdp-add-to-bag" class="btn-add-to-bag">Add to Bag</button>
+        <button id="pdp-try-on" class="btn-try-on">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"></path>
+            <circle cx="12" cy="13" r="3"></circle>
+          </svg>
+          Try On
+        </button>
+      </div>
+
+      <div class="delivery-bar">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <rect x="1" y="3" width="15" height="13"></rect>
+          <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon>
+          <circle cx="5.5" cy="18.5" r="2.5"></circle>
+          <circle cx="18.5" cy="18.5" r="2.5"></circle>
+        </svg>
+        <span>Free delivery over ₹1,999. Returns within 7 days.</span>
+      </div>
+
+      <div>
+        <div class="accordion-row">
+          <span>Description</span>
+          <span>+</span>
+        </div>
+        <div class="accordion-row">
+          <span>Composition and Care</span>
+          <span>+</span>
+        </div>
+        <div class="accordion-row">
+          <span>Delivery and Returns</span>
+          <span>+</span>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Try-on Modal Hierarchy -->
+  <div id="tryon-scrim" class="tryon-scrim" role="dialog" aria-modal="true">
+    <!-- Consent Screen -->
+    <div id="consent-view" class="consent-dialog">
+      <h2 class="consent-title">Try this on using your camera</h2>
+      <p class="consent-text">
+        Your camera is used only to show this item on you, live. Nothing is recorded, saved, or sent anywhere. Everything stays on your device.
+      </p>
+      <p class="consent-disclaimer">
+        Shows how it looks, not how it fits.
+      </p>
+      <div class="consent-btn-group">
+        <button id="btn-start-camera" class="btn-add-to-bag" style="width: 100%;">Start Camera</button>
+        <button id="btn-dismiss-consent" class="btn-dismiss">Not Now</button>
+      </div>
+    </div>
+
+    <!-- Live Try On Modal -->
+    <div id="live-view" class="live-tryon-modal">
+      <div class="camera-viewport">
+        <div class="chip-status">
+          <div class="dot-moss"></div>
+          <span id="pdp-camera-status">Live</span>
+        </div>
+
+        <button id="btn-exit-tryon" class="chip-close" aria-label="Close try on">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+
+        <canvas id="webgl-canvas"></canvas>
+        <video id="webcam-video" style="display: none;" playsinline muted></video>
+      </div>
+
+      <div class="modal-side-panel">
+        <div>
+          <h3 class="modal-p-title">Classic Heavyweight Boxy Tee</h3>
+          <div class="modal-p-price">₹1,990</div>
+
+          <div class="option-block">
+            <div class="option-label-row">
+              <span class="option-title">Colour: Charcoal</span>
+            </div>
+            <div class="swatches-row">
+              <button class="swatch-circle active" style="background-color: #2b2926;"></button>
+            </div>
+          </div>
+
+          <div class="option-block">
+            <div class="option-label-row">
+              <span class="option-title">Select Size</span>
+            </div>
+            <div class="size-selector-row">
+              <button class="size-box">S</button>
+              <button class="size-box active">M</button>
+              <button class="size-box">L</button>
+              <button class="size-box">XL</button>
+            </div>
+          </div>
+
+          <button class="btn-add-to-bag" style="width: 100%; margin-top: 24px;">Add to Bag</button>
+        </div>
+
+        <div class="modal-disclaimer-note">
+          Shows how it looks, not how it fits.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/pdp.ts"></script>
+</body>
+</html>
