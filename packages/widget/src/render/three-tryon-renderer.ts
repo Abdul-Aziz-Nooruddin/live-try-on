@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import type { TorsoRigState } from '@livetry/tryon-core';
 
 export class ThreeTryonRenderer {
@@ -10,15 +11,10 @@ export class ThreeTryonRenderer {
   private width = 640;
   private height = 480;
 
-  // 3D Garment Mesh & Material
+  // 3D Garment Hierarchy
   private garmentGroup: THREE.Group;
-  private garmentMesh: THREE.Mesh | null = null;
-  private garmentGeometry: THREE.PlaneGeometry | null = null;
-  private garmentTexture: THREE.Texture | null = null;
-  private fabricMaterial: THREE.MeshStandardMaterial;
-
-  private readonly gridCols = 32;
-  private readonly gridRows = 40;
+  private garment3D: THREE.Group | null = null;
+  private isModelLoaded = false;
 
   constructor(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
@@ -49,49 +45,65 @@ export class ThreeTryonRenderer {
     this.camera.position.set(0, 0, 500);
     this.camera.lookAt(0, 0, 0);
 
-    // 3. Editorial Studio Lighting for 3D Fabric Volume & Folds
-    const ambient = new THREE.AmbientLight(0xffffff, 1.3);
+    // 3. Editorial Studio Lighting to bring out 3D fabric folds and normal maps
+    const ambient = new THREE.AmbientLight(0xffffff, 1.4);
     this.scene.add(ambient);
 
-    // Key light: angled from front-right above to highlight chest curvature and collar
-    const keyLight = new THREE.DirectionalLight(0xffffff, 0.7);
-    keyLight.position.set(100, 200, 300);
+    // Directional key light from front-top-right to sculpt chest curvature and folds
+    const keyLight = new THREE.DirectionalLight(0xffffff, 0.95);
+    keyLight.position.set(150, 250, 350);
     this.scene.add(keyLight);
 
-    // Soft fill from opposite side
-    const fillLight = new THREE.DirectionalLight(0xf5f3ee, 0.4);
-    fillLight.position.set(-100, -50, 200);
+    // Soft fill light from front-left
+    const fillLight = new THREE.DirectionalLight(0xf5f3ee, 0.55);
+    fillLight.position.set(-150, -50, 200);
     this.scene.add(fillLight);
 
-    // 4. Load the Photorealistic Editorial Garment Texture
-    const textureLoader = new THREE.TextureLoader();
-    this.garmentTexture = textureLoader.load('/fixtures/sample-tshirt.png');
-    this.garmentTexture.colorSpace = THREE.SRGBColorSpace;
-    this.garmentTexture.generateMipmaps = true;
-    this.garmentTexture.minFilter = THREE.LinearMipmapLinearFilter;
-    this.garmentTexture.magFilter = THREE.LinearFilter;
-
-    // 5. Heavyweight Matte Cotton Material with PBR Lighting
-    this.fabricMaterial = new THREE.MeshStandardMaterial({
-      map: this.garmentTexture,
-      transparent: true,
-      alphaTest: 0.05,
-      roughness: 0.88,
-      metalness: 0.02,
-      side: THREE.DoubleSide
-    });
+    // Subtle back rim light for silhouette separation
+    const rimLight = new THREE.DirectionalLight(0xffffff, 0.4);
+    rimLight.position.set(0, 200, -200);
+    this.scene.add(rimLight);
 
     this.garmentGroup = new THREE.Group();
     this.scene.add(this.garmentGroup);
 
-    this.build3DGarment();
+    this.load3DGarmentModel();
   }
 
-  private build3DGarment(): void {
-    // 32 x 40 grid mesh allowing smooth 3D organic skinning across chest, sleeves, and collar
-    this.garmentGeometry = new THREE.PlaneGeometry(1, 1, this.gridCols, this.gridRows);
-    this.garmentMesh = new THREE.Mesh(this.garmentGeometry, this.fabricMaterial);
-    this.garmentGroup.add(this.garmentMesh);
+  private load3DGarmentModel(): void {
+    const loader = new GLTFLoader();
+    loader.load(
+      '/fixtures/shirt_baked.glb',
+      (gltf) => {
+        this.garment3D = gltf.scene;
+
+        // Apply high-end editorial charcoal cotton PBR material, preserving normal & AO maps
+        this.garment3D.traverse((child) => {
+          if ((child as THREE.Mesh).isMesh) {
+            const mesh = child as THREE.Mesh;
+            const origMat = mesh.material as THREE.MeshStandardMaterial;
+
+            mesh.material = new THREE.MeshStandardMaterial({
+              color: 0x242528, // Editorial Deep Charcoal Cotton
+              roughness: 0.86,
+              metalness: 0.02,
+              normalMap: origMat?.normalMap ?? null,
+              normalScale: new THREE.Vector2(2.0, 2.0),
+              aoMap: origMat?.aoMap ?? null,
+              aoMapIntensity: 1.3,
+              side: THREE.DoubleSide
+            });
+          }
+        });
+
+        this.garmentGroup.add(this.garment3D);
+        this.isModelLoaded = true;
+      },
+      undefined,
+      (err) => {
+        console.error('[LiveTry] Failed to load 3D garment model:', err);
+      }
+    );
   }
 
   public resize(width: number, height: number): void {
@@ -119,7 +131,7 @@ export class ThreeTryonRenderer {
   }
 
   public update3DPose(rig: TorsoRigState | null, opacity = 1.0): void {
-    if (!rig || opacity <= 0.01 || !this.garmentGeometry) {
+    if (!rig || opacity <= 0.01 || !this.garment3D || !this.isModelLoaded) {
       this.garmentGroup.visible = false;
       return;
     }
@@ -143,141 +155,54 @@ export class ThreeTryonRenderer {
     const hip_x = this.toPixelX(rig.hipMid[0]);
     const hip_y = this.toPixelY(rig.hipMid[1]);
 
-    const elbL_x = this.toPixelX(rig.elbowLeft[0]);
-    const elbL_y = this.toPixelY(rig.elbowLeft[1]);
-
-    const elbR_x = this.toPixelX(rig.elbowRight[0]);
-    const elbR_y = this.toPixelY(rig.elbowRight[1]);
-
     const shDx = shR_x - shL_x;
     const shDy = shR_y - shL_y;
     const shWidth = Math.hypot(shDx, shDy);
 
-    const shUnitX = shDx / (shWidth || 1);
-    const shUnitY = shDy / (shWidth || 1);
+    // Torso length from suprasternal notch to mid-hip
+    const torsoHeight = Math.hypot(hip_x - neck_x, hip_y - neck_y);
 
-    // Spine vector (from neck down to hips)
-    const spineDx = hip_x - neck_x;
-    const spineDy = hip_y - neck_y;
-    const spineLen = Math.hypot(spineDx, spineDy);
-    const spineUnitX = spineDx / (spineLen || 1);
-    const spineUnitY = spineDy / (spineLen || 1);
+    // Torso 2D roll angle (shoulder tilt)
+    const rollAngle = Math.atan2(shDy, shDx);
 
-    // Left and right arm vectors (shoulder to elbow)
-    const armL_dx = elbL_x - shL_x;
-    const armL_dy = elbL_y - shL_y;
-    const armL_len = Math.hypot(armL_dx, armL_dy);
-    const armL_unitX = armL_dx / (armL_len || 1);
-    const armL_unitY = armL_dy / (armL_len || 1);
-
-    const armR_dx = elbR_x - shR_x;
-    const armR_dy = elbR_y - shR_y;
-    const armR_len = Math.hypot(armR_dx, armR_dy);
-    const armR_unitX = armR_dx / (armR_len || 1);
-    const armR_unitY = armR_dy / (armR_len || 1);
-
+    // 3D Yaw angle (turning left/right)
     const yawRad = (rig.estimatedYawDeg * Math.PI) / 180;
-    const cosYaw = Math.cos(yawRad);
-    const sinYaw = Math.sin(yawRad);
 
-    const posAttr = this.garmentGeometry.attributes.position;
-    const cols = this.gridCols;
-    const rows = this.gridRows;
+    // --- 3D Scale Calibration ---
+    // The GLB model native bounds:
+    // Natural width ~ 0.55m, natural height ~ 0.61m, natural collar Y ~ +0.22m
+    const targetWidth = shWidth * 1.32; // Boxy streetwear tailoring
+    const scaleX = targetWidth / 0.55;
+    const targetHeight = Math.max(torsoHeight * 1.30, shWidth * 1.40);
+    const scaleY = targetHeight / 0.61;
+    const scaleZ = scaleX * 0.88; // Anatomical torso depth ratio
 
-    // Torso center for 3D yaw pivot
-    const centerX = (shMid_x + hip_x) * 0.5;
-    const centerY = (neck_y + hip_y) * 0.5;
+    this.garment3D.scale.set(scaleX, scaleY, scaleZ);
 
-    // Deform the 3D surface vertices according to the body rig
-    let vIdx = 0;
-    for (let r = 0; r <= rows; r++) {
-      const v = r / rows; // 0 = collar/shoulders, 1 = hem
+    // --- 3D Positioning ---
+    // In model space, the collar opening is at y ~ +0.22.
+    // We anchor the collar exactly at neckBase (suprasternal notch) to cover real collars.
+    const collarModelOffsetY = 0.22 * scaleY;
 
-      // Base spine anchor at height fraction v
-      const torsoYLen = Math.max(spineLen * 1.25, shWidth * 1.35);
-      const curSpineX = neck_x + spineUnitX * (v * torsoYLen);
-      const curSpineY = neck_y + spineUnitY * (v * torsoYLen);
+    // Position center of model so collar aligns with neckBase
+    const posX = neck_x;
+    const posY = neck_y - collarModelOffsetY;
+    const posZ = 30; // slightly in front of video plane
 
-      // Torso half-width at this height (editorial boxy cut)
-      const halfWidth = (shWidth * 0.5) * 1.22;
+    this.garment3D.position.set(posX, posY, posZ);
 
-      for (let c = 0; c <= cols; c++) {
-        const u = c / cols; // 0 = left sleeve, 0.5 = center, 1 = right sleeve
+    // --- 3D Rotations ---
+    // Apply yaw (turning) and roll (shoulder slope/tilt)
+    this.garment3D.rotation.set(0, yawRad, rollAngle);
 
-        let px: number;
-        let py: number;
-
-        if (u < 0.22) {
-          // --- Left Sleeve ---
-          // Fraction along the sleeve from shoulder seam to cuff
-          const tSleeve = (0.22 - u) / 0.22; // 0 at shoulder, 1 at cuff
-          const sleeveReach = Math.max(armL_len * 0.72, shWidth * 0.55);
-
-          // Position along left arm vector
-          const alongArmX = shL_x + armL_unitX * (tSleeve * sleeveReach);
-          const alongArmY = shL_y + armL_unitY * (tSleeve * sleeveReach);
-
-          // Sleeve thickness perpendicular to arm
-          const sleevePerpX = -armL_unitY;
-          const sleevePerpY = armL_unitX;
-          const sleeveWidth = shWidth * 0.38 * (1.0 - tSleeve * 0.15);
-          const sleeveOffset = (v - 0.25) * sleeveWidth;
-
-          px = alongArmX + sleevePerpX * sleeveOffset;
-          py = alongArmY + sleevePerpY * sleeveOffset;
-        } else if (u > 0.78) {
-          // --- Right Sleeve ---
-          const tSleeve = (u - 0.78) / 0.22; // 0 at shoulder, 1 at cuff
-          const sleeveReach = Math.max(armR_len * 0.72, shWidth * 0.55);
-
-          const alongArmX = shR_x + armR_unitX * (tSleeve * sleeveReach);
-          const alongArmY = shR_y + armR_unitY * (tSleeve * sleeveReach);
-
-          const sleevePerpX = armR_unitY;
-          const sleevePerpY = -armR_unitX;
-          const sleeveWidth = shWidth * 0.38 * (1.0 - tSleeve * 0.15);
-          const sleeveOffset = (v - 0.25) * sleeveWidth;
-
-          px = alongArmX + sleevePerpX * sleeveOffset;
-          py = alongArmY + sleevePerpY * sleeveOffset;
-        } else {
-          // --- Main Torso & Shoulders ---
-          // Normalized horizontal position across torso: -1 (left) to +1 (right)
-          const s = (u - 0.5) / 0.28; // in [-1..1]
-          px = curSpineX + shUnitX * (s * halfWidth);
-          py = curSpineY + shUnitY * (s * halfWidth);
-
-          // Shoulder slope at top row (clavicle line connecting neck to shoulder joints)
-          if (v < 0.2) {
-            const slopeFactor = (0.2 - v) / 0.2;
-            const trapSlope = Math.abs(s) * (shWidth * 0.12) * slopeFactor;
-            px += spineUnitX * trapSlope;
-            py += spineUnitY * trapSlope;
-          }
-        }
-
-        // --- 3D Depth (Z-axis) & Chest Volume Curvature ---
-        // Chest profile curves outward along +Z (peaks around mid-chest, v ~ 0.35)
-        const vChest = Math.sin(Math.min(v * 1.8, 1.0) * Math.PI);
-        // Lateral curve: peaks at center u = 0.5, wraps around ribcage at sides
-        const uCurvature = Math.cos((u - 0.5) * Math.PI);
-        const depthZ = (shWidth * 0.24) * vChest * Math.max(uCurvature, 0);
-
-        // --- 3D Yaw Rotation around Torso Spine Axis ---
-        const relX = px - centerX;
-        const rotatedX = centerX + relX * cosYaw - depthZ * sinYaw;
-        const rotatedZ = relX * sinYaw + depthZ * cosYaw + 40; // in front of camera feed
-
-        posAttr.setXYZ(vIdx, rotatedX, py, rotatedZ);
-        vIdx++;
+    // Material opacity
+    this.garment3D.traverse((child) => {
+      if ((child as THREE.Mesh).isMesh) {
+        const mat = (child as THREE.Mesh).material as THREE.MeshStandardMaterial;
+        mat.opacity = opacity;
+        mat.transparent = opacity < 0.99;
       }
-    }
-
-    posAttr.needsUpdate = true;
-    this.garmentGeometry.computeVertexNormals();
-
-    this.fabricMaterial.opacity = opacity;
-    this.fabricMaterial.transparent = opacity < 0.99;
+    });
   }
 
   public render(): void {
@@ -286,8 +211,5 @@ export class ThreeTryonRenderer {
 
   public dispose(): void {
     this.renderer.dispose();
-    this.fabricMaterial.dispose();
-    this.garmentTexture?.dispose();
-    this.garmentGeometry?.dispose();
   }
 }
