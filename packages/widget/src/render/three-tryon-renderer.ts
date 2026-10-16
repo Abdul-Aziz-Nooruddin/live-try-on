@@ -7,114 +7,105 @@ export class ThreeTryonRenderer {
   private scene: THREE.Scene;
   private camera: THREE.OrthographicCamera;
 
-  // Background video plane
-  private videoTexture: THREE.VideoTexture | null = null;
-  private videoMesh: THREE.Mesh | null = null;
+  private width = 640;
+  private height = 480;
 
-  // 3D Garment Mesh Group
+  // 3D Garment Group
   private garmentGroup: THREE.Group;
   private torsoMesh: THREE.Mesh | null = null;
+  private shoulderYokeMesh: THREE.Mesh | null = null;
   private leftSleeveMesh: THREE.Mesh | null = null;
   private rightSleeveMesh: THREE.Mesh | null = null;
   private collarMesh: THREE.Mesh | null = null;
   private fabricMaterial: THREE.MeshStandardMaterial;
 
-  // Lights
-  private ambientLight: THREE.AmbientLight;
-  private dirLight: THREE.DirectionalLight;
-
   constructor(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
+    this.width = canvas.width || 640;
+    this.height = canvas.height || 480;
 
-    // 1. Initialize WebGL Renderer
+    // 1. WebGL Renderer with full alpha transparency so camera video underneath shines through
     this.renderer = new THREE.WebGLRenderer({
       canvas: this.canvas,
       antialias: true,
-      alpha: false,
+      alpha: true,
       powerPreference: 'high-performance'
     });
-    this.renderer.setSize(canvas.width || 640, canvas.height || 480, false);
+    this.renderer.setSize(this.width, this.height, false);
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    this.renderer.toneMappingExposure = 1.0;
+    this.renderer.setClearColor(0x000000, 0); // 100% transparent background
 
-    // 2. Setup Scene & Orthographic Camera in Normalized Screen Space [0..1]
+    // 2. Pixel-Space Orthographic Camera (center at 0, 0)
     this.scene = new THREE.Scene();
-    this.camera = new THREE.OrthographicCamera(0, 1, 0, 1, -100, 100);
-    this.camera.position.z = 10;
+    this.camera = new THREE.OrthographicCamera(
+      -this.width / 2,
+      this.width / 2,
+      this.height / 2,
+      -this.height / 2,
+      0.1,
+      2000
+    );
+    this.camera.position.set(0, 0, 500);
+    this.camera.lookAt(0, 0, 0);
 
-    // 3. Lighting for realistic 3D fabric depth
-    this.ambientLight = new THREE.AmbientLight(0xffffff, 0.95);
-    this.scene.add(this.ambientLight);
+    // 3. Editorial Studio Lighting for 3D Fabric Volume & Folds
+    const ambient = new THREE.AmbientLight(0xffffff, 1.2);
+    this.scene.add(ambient);
 
-    this.dirLight = new THREE.DirectionalLight(0xffffff, 0.65);
-    this.dirLight.position.set(0.5, 0.2, 5);
-    this.scene.add(this.dirLight);
+    // Key light: angled from front-right above to highlight chest curvature and collar
+    const keyLight = new THREE.DirectionalLight(0xffffff, 0.85);
+    keyLight.position.set(150, 250, 300);
+    this.scene.add(keyLight);
 
-    // 4. Fabric Material (Rich Matte Charcoal Cotton)
+    // Fill light: soft fill from left
+    const fillLight = new THREE.DirectionalLight(0xf0ede6, 0.45);
+    fillLight.position.set(-150, -80, 200);
+    this.scene.add(fillLight);
+
+    // 4. Heavyweight Matte Cotton PBR Material
     this.fabricMaterial = new THREE.MeshStandardMaterial({
-      color: 0x1c1e22,
-      roughness: 0.88,
-      metalness: 0.05,
+      color: 0x232427, // Editorial Deep Charcoal
+      roughness: 0.86,
+      metalness: 0.03,
       side: THREE.DoubleSide
     });
 
     this.garmentGroup = new THREE.Group();
     this.scene.add(this.garmentGroup);
 
-    this.initBackgroundPlane();
-    this.build3DGarmentGeometry();
+    this.build3DGarment();
   }
 
-  private initBackgroundPlane(): void {
-    // Background plane in screen space: x from 0 to 1, y from 0 to 1 (inverted Y in Three.js)
-    const geom = new THREE.PlaneGeometry(1, 1);
-    const mat = new THREE.MeshBasicMaterial({
-      color: 0xffffff,
-      depthTest: true,
-      depthWrite: false
-    });
-    this.videoMesh = new THREE.Mesh(geom, mat);
-    // Position at screen center (0.5, 0.5) and far behind (z = -10)
-    this.videoMesh.position.set(0.5, 0.5, -10);
-    this.videoMesh.scale.set(1, -1, 1); // Flip Y to match browser coordinates
-    this.scene.add(this.videoMesh);
-  }
-
-  private build3DGarmentGeometry(): void {
-    // 1. Torso 3D Curved Cylinder (front, sides, and back wrapping around chest)
-    const torsoGeom = new THREE.CylinderGeometry(
-      0.5, // top radius (shoulder/chest level)
-      0.48, // bottom radius (hem level)
-      1.0, // height
-      32, // radial segments
-      24, // height segments
-      true // open-ended
-    );
-    // Flatten in Z so it's an ellipse matching human chest cross-section (depth is ~60% of width)
-    torsoGeom.scale(1.0, 1.0, 0.55);
-
+  private build3DGarment(): void {
+    // 1. Main Torso (Chest down to hips): 3D curved elliptical volume
+    const torsoGeom = new THREE.CylinderGeometry(0.5, 0.48, 1.0, 36, 16, false);
+    torsoGeom.scale(1.0, 1.0, 0.58);
     this.torsoMesh = new THREE.Mesh(torsoGeom, this.fabricMaterial);
-    this.torsoMesh.castShadow = true;
-    this.torsoMesh.receiveShadow = true;
     this.garmentGroup.add(this.torsoMesh);
 
-    // 2. Left Sleeve 3D Cylinder
-    const sleeveGeomL = new THREE.CylinderGeometry(0.22, 0.19, 0.45, 20, 10, true);
-    sleeveGeomL.scale(1.0, 1.0, 0.7);
+    // 2. Shoulder Yoke: solid curved volume covering clavicles, shoulder line & trapezius
+    // This ensures NO gaps on top of shoulders, completely concealing underlying shirts/collars
+    const yokeGeom = new THREE.SphereGeometry(0.5, 32, 16);
+    yokeGeom.scale(1.0, 0.35, 0.55);
+    this.shoulderYokeMesh = new THREE.Mesh(yokeGeom, this.fabricMaterial);
+    this.garmentGroup.add(this.shoulderYokeMesh);
+
+    // 3. Left Sleeve: 3D tapered cylinder with volume
+    const sleeveGeomL = new THREE.CylinderGeometry(0.24, 0.19, 1.0, 24, 8, false);
+    sleeveGeomL.scale(1.0, 1.0, 0.75);
     this.leftSleeveMesh = new THREE.Mesh(sleeveGeomL, this.fabricMaterial);
     this.garmentGroup.add(this.leftSleeveMesh);
 
-    // 3. Right Sleeve 3D Cylinder
-    const sleeveGeomR = new THREE.CylinderGeometry(0.22, 0.19, 0.45, 20, 10, true);
-    sleeveGeomR.scale(1.0, 1.0, 0.7);
+    // 4. Right Sleeve: 3D tapered cylinder with volume
+    const sleeveGeomR = new THREE.CylinderGeometry(0.24, 0.19, 1.0, 24, 8, false);
+    sleeveGeomR.scale(1.0, 1.0, 0.75);
     this.rightSleeveMesh = new THREE.Mesh(sleeveGeomR, this.fabricMaterial);
     this.garmentGroup.add(this.rightSleeveMesh);
 
-    // 4. Ribbed Collar Ring
-    const collarGeom = new THREE.TorusGeometry(0.18, 0.025, 12, 32);
+    // 5. Ribbed Crewneck Collar: raised torus sitting snugly around base of throat
+    const collarGeom = new THREE.TorusGeometry(0.22, 0.042, 16, 40);
     const collarMat = new THREE.MeshStandardMaterial({
-      color: 0x24272c,
+      color: 0x1f2022,
       roughness: 0.92,
       metalness: 0.02
     });
@@ -123,22 +114,28 @@ export class ThreeTryonRenderer {
     this.garmentGroup.add(this.collarMesh);
   }
 
-  public updateVideo(video: HTMLVideoElement): void {
-    if (!this.videoTexture) {
-      this.videoTexture = new THREE.VideoTexture(video);
-      this.videoTexture.minFilter = THREE.LinearFilter;
-      this.videoTexture.magFilter = THREE.LinearFilter;
-      this.videoTexture.format = THREE.RGBAFormat;
-      // Mirror horizontally so front camera behaves as a real mirror
-      this.videoTexture.wrapS = THREE.RepeatWrapping;
-      this.videoTexture.repeat.x = -1;
-      this.videoTexture.offset.x = 1;
+  public resize(width: number, height: number): void {
+    if (width <= 0 || height <= 0) return;
+    this.width = width;
+    this.height = height;
 
-      if (this.videoMesh) {
-        (this.videoMesh.material as THREE.MeshBasicMaterial).map = this.videoTexture;
-        (this.videoMesh.material as THREE.MeshBasicMaterial).needsUpdate = true;
-      }
-    }
+    this.renderer.setSize(width, height, false);
+
+    this.camera.left = -width / 2;
+    this.camera.right = width / 2;
+    this.camera.top = height / 2;
+    this.camera.bottom = -height / 2;
+    this.camera.updateProjectionMatrix();
+  }
+
+  // Convert normalized [0..1] coordinates to pixel coordinates with center at (0, 0)
+  private toPixelX(normX: number): number {
+    return (normX - 0.5) * this.width;
+  }
+
+  private toPixelY(normY: number): number {
+    // Invert Y because Three.js +Y is up, while screen +Y is down
+    return (0.5 - normY) * this.height;
   }
 
   public update3DPose(rig: TorsoRigState | null, opacity = 1.0): void {
@@ -149,78 +146,101 @@ export class ThreeTryonRenderer {
 
     this.garmentGroup.visible = true;
 
-    // Rig geometry in normalized screen coordinates [0..1]
-    const shL = rig.shoulderLeft;
-    const shR = rig.shoulderRight;
-    const shMid = rig.shoulderMid;
-    const hipMid = rig.hipMid;
-    const neckBase = rig.neckBase;
-    const elbL = rig.elbowLeft;
-    const elbR = rig.elbowRight;
+    // Convert rig points to pixel coordinates
+    const shL_x = this.toPixelX(rig.shoulderLeft[0]);
+    const shL_y = this.toPixelY(rig.shoulderLeft[1]);
 
-    const shWidth = Math.sqrt(
-      Math.pow(shR[0] - shL[0], 2) + Math.pow(shR[1] - shL[1], 2)
-    );
-    const torsoHeight = Math.sqrt(
-      Math.pow(hipMid[0] - shMid[0], 2) + Math.pow(hipMid[1] - shMid[1], 2)
-    );
+    const shR_x = this.toPixelX(rig.shoulderRight[0]);
+    const shR_y = this.toPixelY(rig.shoulderRight[1]);
 
-    // Torso rotation angle
-    const angleRad = Math.atan2(hipMid[1] - shMid[1], hipMid[0] - shMid[0]) - Math.PI / 2;
+    const shMid_x = this.toPixelX(rig.shoulderMid[0]);
+    const shMid_y = this.toPixelY(rig.shoulderMid[1]);
+
+    const neck_x = this.toPixelX(rig.neckBase[0]);
+    const neck_y = this.toPixelY(rig.neckBase[1]);
+
+    const hip_x = this.toPixelX(rig.hipMid[0]);
+    const hip_y = this.toPixelY(rig.hipMid[1]);
+
+    const elbL_x = this.toPixelX(rig.elbowLeft[0]);
+    const elbL_y = this.toPixelY(rig.elbowLeft[1]);
+
+    const elbR_x = this.toPixelX(rig.elbowRight[0]);
+    const elbR_y = this.toPixelY(rig.elbowRight[1]);
+
+    const shWidth = Math.hypot(shR_x - shL_x, shR_y - shL_y);
+    const torsoHeight = Math.hypot(hip_x - shMid_x, hip_y - shMid_y);
+
+    const torsoAngle = Math.atan2(hip_y - shMid_y, hip_x - shMid_x) + Math.PI / 2;
     const yawRad = (rig.estimatedYawDeg * Math.PI) / 180;
 
-    // 1. Position and Scale Torso 3D Cylinder
+    // 1. Torso Mesh: 3D curved elliptical cylinder spanning chest to hips
     if (this.torsoMesh) {
-      const torsoCenterY = (neckBase[1] + hipMid[1]) * 0.5;
-      const torsoCenterX = (shMid[0] + hipMid[0]) * 0.5;
+      const torsoCenterX = (shMid_x + hip_x) * 0.5;
+      const torsoCenterY = (neck_y + hip_y) * 0.5;
 
-      this.torsoMesh.position.set(torsoCenterX, torsoCenterY, 0.5);
+      this.torsoMesh.position.set(torsoCenterX, torsoCenterY, 30);
 
-      const tWidth = shWidth * 1.15;
-      const tHeight = torsoHeight * 1.28;
-      this.torsoMesh.scale.set(tWidth, tHeight, tWidth * 0.5);
+      const tWidth = shWidth * 1.22;
+      const tHeight = Math.max(torsoHeight * 1.28, shWidth * 1.35);
+      const tDepth = shWidth * 0.56;
+      this.torsoMesh.scale.set(tWidth, tHeight, tDepth);
 
-      this.torsoMesh.rotation.set(0, yawRad, angleRad);
+      this.torsoMesh.rotation.set(0, yawRad, torsoAngle);
     }
 
-    // 2. Position & Orient Collar Ring around Neck Base
+    // 2. Shoulder Yoke: sits right across the clavicles/trapezius to cover underlying collar & shirts
+    if (this.shoulderYokeMesh) {
+      const yokeX = (shMid_x + neck_x) * 0.5;
+      const yokeY = (shMid_y + neck_y) * 0.5;
+
+      this.shoulderYokeMesh.position.set(yokeX, yokeY, 35);
+      const yokeWidth = shWidth * 1.32;
+      const yokeHeight = shWidth * 0.42;
+      const yokeDepth = shWidth * 0.58;
+      this.shoulderYokeMesh.scale.set(yokeWidth, yokeHeight, yokeDepth);
+      this.shoulderYokeMesh.rotation.set(0, yawRad, torsoAngle);
+    }
+
+    // 3. Crewneck Collar: sits high around the suprasternal notch & base of throat
     if (this.collarMesh) {
-      this.collarMesh.position.set(neckBase[0], neckBase[1] - 0.02, 0.6);
-      this.collarMesh.scale.set(shWidth * 0.75, shWidth * 0.6, shWidth * 0.75);
-      this.collarMesh.rotation.set(Math.PI / 2 - 0.2, yawRad, angleRad);
+      this.collarMesh.position.set(neck_x, neck_y, 45);
+      const collarRadius = shWidth * 0.72;
+      this.collarMesh.scale.set(collarRadius, collarRadius * 0.68, collarRadius);
+      this.collarMesh.rotation.set(Math.PI / 2 - 0.12, yawRad, torsoAngle);
     }
 
-    // 3. Left Sleeve: connects screen-left shoulder to elbow
+    // 4. Left Sleeve: connects screen-left shoulder to elbow
     if (this.leftSleeveMesh) {
-      const armVecX = elbL[0] - shL[0];
-      const armVecY = elbL[1] - shL[1];
-      const armLen = Math.sqrt(armVecX * armVecX + armVecY * armVecY);
-      const armAngle = Math.atan2(armVecY, armVecX) - Math.PI / 2;
+      const armDx = elbL_x - shL_x;
+      const armDy = elbL_y - shL_y;
+      const armLen = Math.hypot(armDx, armDy);
+      const armAngle = Math.atan2(armDy, armDx) + Math.PI / 2;
 
-      const sleeveCenterX = shL[0] + armVecX * 0.35;
-      const sleeveCenterY = shL[1] + armVecY * 0.35;
+      const sleeveLength = Math.max(armLen * 0.68, shWidth * 0.58);
+      const sleeveCenterX = shL_x + armDx * 0.35;
+      const sleeveCenterY = shL_y + armDy * 0.35;
 
-      this.leftSleeveMesh.position.set(sleeveCenterX, sleeveCenterY, 0.5);
-      const sRadius = shWidth * 0.38;
-      const sLength = Math.max(armLen * 0.7, shWidth * 0.65);
-      this.leftSleeveMesh.scale.set(sRadius, sLength, sRadius * 0.7);
+      this.leftSleeveMesh.position.set(sleeveCenterX, sleeveCenterY, 32);
+      const sleeveRadius = shWidth * 0.42;
+      this.leftSleeveMesh.scale.set(sleeveRadius, sleeveLength, sleeveRadius * 0.76);
       this.leftSleeveMesh.rotation.set(0, yawRad, armAngle);
     }
 
-    // 4. Right Sleeve: connects screen-right shoulder to elbow
+    // 5. Right Sleeve: connects screen-right shoulder to elbow
     if (this.rightSleeveMesh) {
-      const armVecX = elbR[0] - shR[0];
-      const armVecY = elbR[1] - shR[1];
-      const armLen = Math.sqrt(armVecX * armVecX + armVecY * armVecY);
-      const armAngle = Math.atan2(armVecY, armVecX) - Math.PI / 2;
+      const armDx = elbR_x - shR_x;
+      const armDy = elbR_y - shR_y;
+      const armLen = Math.hypot(armDx, armDy);
+      const armAngle = Math.atan2(armDy, armDx) + Math.PI / 2;
 
-      const sleeveCenterX = shR[0] + armVecX * 0.35;
-      const sleeveCenterY = shR[1] + armVecY * 0.35;
+      const sleeveLength = Math.max(armLen * 0.68, shWidth * 0.58);
+      const sleeveCenterX = shR_x + armDx * 0.35;
+      const sleeveCenterY = shR_y + armDy * 0.35;
 
-      this.rightSleeveMesh.position.set(sleeveCenterX, sleeveCenterY, 0.5);
-      const sRadius = shWidth * 0.38;
-      const sLength = Math.max(armLen * 0.7, shWidth * 0.65);
-      this.rightSleeveMesh.scale.set(sRadius, sLength, sRadius * 0.7);
+      this.rightSleeveMesh.position.set(sleeveCenterX, sleeveCenterY, 32);
+      const sleeveRadius = shWidth * 0.42;
+      this.rightSleeveMesh.scale.set(sleeveRadius, sleeveLength, sleeveRadius * 0.76);
       this.rightSleeveMesh.rotation.set(0, yawRad, armAngle);
     }
 
@@ -230,10 +250,6 @@ export class ThreeTryonRenderer {
 
   public render(): void {
     this.renderer.render(this.scene, this.camera);
-  }
-
-  public resize(width: number, height: number): void {
-    this.renderer.setSize(width, height, false);
   }
 
   public dispose(): void {

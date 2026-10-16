@@ -57,11 +57,22 @@ export class CameraManager {
         this.videoElement.style.transform = 'none';
       }
 
-      await new Promise<void>((resolve) => {
-        this.videoElement.onloadedmetadata = () => {
-          this.videoElement.play().then(() => resolve());
-        };
-      });
+      if (this.videoElement.readyState >= HTMLMediaElement.HAVE_METADATA) {
+        await this.videoElement.play();
+      } else {
+        await new Promise<void>((resolve) => {
+          let resolved = false;
+          const markDone = () => {
+            if (!resolved) {
+              resolved = true;
+              this.videoElement.play().then(() => resolve()).catch(() => resolve());
+            }
+          };
+          this.videoElement.onloadedmetadata = markDone;
+          this.videoElement.oncanplay = markDone;
+          setTimeout(markDone, 500);
+        });
+      }
 
       this.isRunning = true;
       document.addEventListener('visibilitychange', this.handleVisibilityChange);

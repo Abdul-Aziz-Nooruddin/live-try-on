@@ -115,6 +115,14 @@ function renderLoop(timestamp: number) {
     return;
   }
 
+  if (videoElement.videoWidth > 0 && webglCanvas.width !== videoElement.videoWidth) {
+    const vw = videoElement.videoWidth;
+    const vh = videoElement.videoHeight;
+    webglCanvas.width = vw;
+    webglCanvas.height = vh;
+    threeRenderer?.resize(vw, vh);
+  }
+
   const visionResult: VisionFrameResult | null = visionPipeline?.processFrame(videoElement, timestamp) ?? null;
 
   let rigState = null;
@@ -123,7 +131,6 @@ function renderLoop(timestamp: number) {
   }
 
   if (threeRenderer) {
-    threeRenderer.updateVideo(videoElement);
     threeRenderer.update3DPose(rigState, 1.0);
     threeRenderer.render();
   }
