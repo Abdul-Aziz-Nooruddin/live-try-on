@@ -24,7 +24,7 @@ let isLoopRunning = false;
 
 async function initPDP() {
   threeRenderer = new ThreeTryonRenderer(webglCanvas);
-  rigTracker = new BodyRigTracker();
+  rigTracker = new BodyRigTracker({ mirror: false });
 
   // Hook PDP Try On Button
   btnOpenTryOn?.addEventListener('click', () => {

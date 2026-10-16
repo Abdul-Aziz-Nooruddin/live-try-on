@@ -179,7 +179,7 @@ export class ThreeTryonRenderer {
 
     // Position vertically so the collar opening sits right at neckBase,
     // comfortably framing the throat and completely concealing underlying shirts/collars
-    const collarOffsetY = 0.205 * scaleY;
+    const collarOffsetY = 0.155 * scaleY;
     const posY = neck_y - collarOffsetY;
     const posZ = 20; // In front of the camera feed
 
