@@ -224,8 +224,18 @@ function renderLoop(timestamp: number) {
     rigState = rigTracker.update(visionResult.landmarks, timestamp * 0.001);
   }
 
+  let hasSeg = false;
+  if (visionResult?.segmentationMask && renderer) {
+    renderer.updateSegmentationMask(
+      visionResult.segmentationMask as Uint8Array,
+      visionResult.maskWidth,
+      visionResult.maskHeight
+    );
+    hasSeg = true;
+  }
+
   if (renderer && gl) {
-    renderer.render(videoElement, rigState, PARAMS.garmentOpacity);
+    renderer.render(videoElement, rigState, hasSeg, PARAMS.garmentOpacity);
   }
 
   if (debugCtx) {

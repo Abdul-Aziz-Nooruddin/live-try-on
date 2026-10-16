@@ -134,8 +134,18 @@ function renderLoop(timestamp: number) {
     rigState = rigTracker.update(visionResult.landmarks, timestamp * 0.001);
   }
 
+  let hasSeg = false;
+  if (visionResult?.segmentationMask && renderer) {
+    renderer.updateSegmentationMask(
+      visionResult.segmentationMask as Uint8Array,
+      visionResult.maskWidth,
+      visionResult.maskHeight
+    );
+    hasSeg = true;
+  }
+
   if (renderer && gl) {
-    renderer.render(videoElement, rigState, 1.0);
+    renderer.render(videoElement, rigState, hasSeg, 1.0);
   }
 
   requestAnimationFrame(renderLoop);
