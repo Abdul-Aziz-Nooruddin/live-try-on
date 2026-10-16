@@ -9,7 +9,7 @@ Standing rules for any coding agent working in this repository. If your tool sup
 4. Never fabricate model names, API endpoints, or library features. If unsure, check the official documentation and cite the page in the decision log.
 
 ## Privacy (hard rules)
-5. No camera frame, mask, landmark stream, or any image derived from video may be sent over the network, written to disk, or stored in localStorage/IndexedDB.
+5. Ephemeral Generative Virtual Try-On: For generative try-on inference, high-resolution snapshots captured with explicit user consent are streamed over encrypted TLS to an ephemeral V-TON inference worker. Customer images are processed strictly in-memory/GPU RAM and immediately discarded. No customer photos are ever written to persistent storage, cached, or used for model training. Real-time camera viewfinder remains 100% on-device.
 6. Camera access only after a user click on Try On and an explicit in-page consent screen.
 7. Stop all camera tracks immediately when the modal closes or the tab is hidden for more than 10 seconds.
 8. Analytics events contain no images, no landmark coordinates, no persistent identifiers beyond an anonymous per-session id. See `docs/06_PRIVACY_AND_SAFETY.md`.

@@ -96,3 +96,26 @@ Shopper requested the exact seamless, worn look of `tryanywear.ai` without recur
 ### Approved by:
 Product Owner (Abdul Aziz).
 
+---
+
+## 2026-10-16 — Strategic Pivot: Real Generative AI Virtual Try-On Pipeline (V-TON)
+
+### Context:
+Following testing of the on-device 3D WebGL prototype, the Product Owner (Abdul Aziz) determined that a 3D polygon mesh overlay cannot deliver the photorealistic, fabric-draping experience seen in modern generative fashion platforms like Anywear (`tryanywear.ai`). The Product Owner issued a formal directive: *"yes exactly real generative AI try on pipeline"*.
+
+### Decision & Architectural Changes:
+1. **Pivot from 3D CAD Meshes to Neural Generative V-TON**:
+   - Live try-on will no longer rely on rigid/semi-rigid 3D GLTF polygon overlays.
+   - Core try-on engine is transitioned to a **Diffusion-Based Virtual Try-On (V-TON)** architecture (supporting CatVTON / IDM-VTON / Serverless VTON API).
+2. **Updated Data Flow & Privacy Policy**:
+   - To support generative V-TON inference, high-resolution snapshots captured with explicit user consent are streamed over encrypted TLS to an ephemeral V-TON inference worker.
+   - **Zero Retention Policy**: The user's image is processed in GPU RAM and immediately discarded. No customer photos are ever stored on disk or used for training.
+3. **Hybrid Frontend Experience**:
+   - **Phase 1: Real-Time Framing & Pose Guide**: Lightweight on-device MediaPipe camera viewfinder assists the shopper with posture, lighting, and framing.
+   - **Phase 2: Generative Couture Synthesis**: On capture, the generative V-TON pipeline synthesizes the shopper wearing the exact selected garment with photorealistic fabric drape, micro-wrinkles, natural shadows, and 100% removal of existing clothes.
+   - **Phase 3: Interactive Editorial Inspection**: Split-screen before/after slider, high-res zoom, colorway switcher, and direct "Add to Bag".
+
+### Approved by:
+Product Owner (Abdul Aziz).
+
+
