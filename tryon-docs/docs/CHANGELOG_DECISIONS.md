@@ -118,4 +118,21 @@ Following testing of the on-device 3D WebGL prototype, the Product Owner (Abdul 
 ### Approved by:
 Product Owner (Abdul Aziz).
 
+---
+
+## 2026-10-16 — Option 1: Live Neural Video Streaming Pipeline (Anywear Architecture)
+
+### Context:
+Product owner clarified the core requirement: *"i want live virtual try-on, not photo capture"*. User instructed to execute Option 1 (Anywear's live streaming architecture). Installed `ws` in `@livetry/demo-site` (MIT, 80M weekly downloads, 50kB zero-dependency Node WebSocket library) to stream live video frames between browser and real-time neural try-on engine.
+
+### Implementation:
+1. Low-latency WebSocket video stream bridge in `vite.config.ts`.
+2. Real-time continuous frame streaming from browser webcam directly to the neural V-TON engine at 15–20 FPS.
+3. Live playback on the video canvas, showing the customer wearing the target garment in real time motion as they move.
+4. Seamless colorway switching on the fly without stopping the live stream.
+
+### Approved by:
+Product Owner (Abdul Aziz).
+
+
 

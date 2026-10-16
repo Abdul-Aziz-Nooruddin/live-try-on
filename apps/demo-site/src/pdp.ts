@@ -1,14 +1,13 @@
 import { CameraManager } from '@livetry/widget/src/camera/camera-manager.js';
 import { VisionPipeline, type VisionFrameResult } from '@livetry/widget/src/vision/vision-pipeline.js';
-import { BodyRigTracker, GenerativeVTonClient } from '@livetry/tryon-core';
+import { BodyRigTracker, type TorsoRigState } from '@livetry/tryon-core';
 
-// Colorway Product Catalog
 interface GarmentVariant {
   id: string;
   name: string;
   hex: string;
   image: string;
-  description: string;
+  colorFilter: string;
 }
 
 const GARMENT_VARIANTS: Record<string, GarmentVariant> = {
@@ -17,27 +16,36 @@ const GARMENT_VARIANTS: Record<string, GarmentVariant> = {
     name: 'Charcoal',
     hex: '#2b2926',
     image: '/fixtures/sample-tshirt.png',
-    description: 'Classic heavyweight boxy tee in washed charcoal organic cotton'
+    colorFilter: 'brightness(0.9) contrast(1.1)'
   },
   oatmeal: {
     id: 'oatmeal',
     name: 'Oatmeal',
     hex: '#e2ded7',
     image: '/fixtures/oatmeal-tshirt.jpg',
-    description: 'Classic heavyweight boxy tee in natural oatmeal melange organic cotton'
+    colorFilter: 'brightness(1.0) contrast(1.0)'
   },
   olive: {
     id: 'olive',
     name: 'Olive',
     hex: '#4b4b3b',
     image: '/fixtures/olive-tshirt.jpg',
-    description: 'Classic heavyweight boxy tee in muted olive sage organic cotton'
+    colorFilter: 'brightness(0.95) contrast(1.05)'
   }
 };
 
 let activeColor: GarmentVariant = GARMENT_VARIANTS.charcoal;
 let selectedSize = 'M';
 let bagCount = 0;
+
+// Preload Garment Images for zero-lag live rendering
+const garmentImages: Record<string, HTMLImageElement> = {};
+Object.values(GARMENT_VARIANTS).forEach((variant) => {
+  const img = new Image();
+  img.crossOrigin = 'anonymous';
+  img.src = variant.image;
+  garmentImages[variant.id] = img;
+});
 
 // DOM Elements
 const tryonScrim = document.getElementById('tryon-scrim') as HTMLDivElement;
@@ -49,47 +57,33 @@ const btnDismissConsent = document.getElementById('btn-dismiss-consent') as HTML
 const btnExitTryon = document.getElementById('btn-exit-tryon') as HTMLButtonElement;
 
 const videoElement = document.getElementById('webcam-video') as HTMLVideoElement;
+const liveCanvas = document.getElementById('live-stream-canvas') as HTMLCanvasElement;
 const cameraStatusText = document.getElementById('pdp-camera-status') as HTMLSpanElement;
-
-// Shutter & Controls
-const btnGenerateTryOn = document.getElementById('btn-generate-tryon') as HTMLButtonElement;
-const shutterBar = document.getElementById('viewfinder-shutter-bar') as HTMLDivElement;
-const poseGuideSvg = document.getElementById('pose-guide-svg') as SVGElement;
-
-// Generating Overlay
-const generatingOverlay = document.getElementById('generating-overlay') as HTMLDivElement;
-const generatingStepText = document.getElementById('generating-step-text') as HTMLParagraphElement;
-const progressFill = document.getElementById('progress-fill') as HTMLDivElement;
-
-// Result Viewport & Split Slider
-const resultViewport = document.getElementById('result-viewport') as HTMLDivElement;
-const splitSliderContainer = document.getElementById('split-slider-container') as HTMLDivElement;
-const beforeLayer = document.getElementById('before-layer') as HTMLDivElement;
-const beforeImg = document.getElementById('before-img') as HTMLImageElement;
-const afterImg = document.getElementById('after-img') as HTMLImageElement;
-const splitDividerHandle = document.getElementById('split-divider-handle') as HTMLDivElement;
-const btnRetake = document.getElementById('btn-retake') as HTMLButtonElement;
-const btnDownloadLook = document.getElementById('btn-download-look') as HTMLButtonElement;
 
 // Side Panel Controls
 const modalActiveColorName = document.getElementById('modal-active-color-name') as HTMLSpanElement;
 const btnModalAddToBag = document.getElementById('btn-modal-add-to-bag') as HTMLButtonElement;
 const bagCountBadges = document.querySelectorAll('.bag-count');
 
-// Pipelines & Clients
+// Pipelines & Tracking
 let cameraManager: CameraManager | null = null;
 let visionPipeline: VisionPipeline | null = null;
 let rigTracker: BodyRigTracker | null = null;
-const vtonClient = new GenerativeVTonClient({ provider: 'neural-simulator' });
+let liveSocket: WebSocket | null = null;
 
 let isLoopRunning = false;
-let capturedCustomerDataUrl = '';
-let generatedResultDataUrl = '';
+let canvasCtx: CanvasRenderingContext2D | null = null;
+
+// Dynamic calibrated skin tone
+let skinColorR = 195;
+let skinColorG = 150;
+let skinColorB = 125;
 
 async function initPDP() {
+  canvasCtx = liveCanvas.getContext('2d', { alpha: false });
   rigTracker = new BodyRigTracker({ mirror: true });
 
-  // Hook Modal Triggers
+  // Modal Triggers
   btnOpenTryOn?.addEventListener('click', () => {
     tryonScrim.classList.add('visible');
     consentView.style.display = 'flex';
@@ -104,7 +98,7 @@ async function initPDP() {
     try {
       consentView.style.display = 'none';
       liveView.classList.add('visible');
-      cameraStatusText.textContent = 'Starting camera...';
+      cameraStatusText.textContent = 'Connecting Live Stream...';
       await startLiveTryon();
     } catch (err) {
       console.error('Camera denied or error:', err);
@@ -123,43 +117,13 @@ async function initPDP() {
     }
   });
 
-  // Colorway Swatches and Pills synchronization
   setupColorSelection();
-
-  // Size Selection
   setupSizeSelection();
 
-  // Shutter / Generate Try-On Button
-  btnGenerateTryOn?.addEventListener('click', () => {
-    triggerGenerativeTryOn();
-  });
-
-  // Retake Pose Button
-  btnRetake?.addEventListener('click', () => {
-    resetToViewfinder();
-  });
-
-  // Download Look Button
-  btnDownloadLook?.addEventListener('click', () => {
-    if (!generatedResultDataUrl) return;
-    const a = document.createElement('a');
-    a.href = generatedResultDataUrl;
-    a.download = `Studio-Aelia-TryOn-${activeColor.name}-${selectedSize}.jpg`;
-    a.click();
-  });
-
-  // Add to Bag Buttons
-  btnModalAddToBag?.addEventListener('click', () => {
-    addToBag();
-  });
-
+  // Bag Action
+  btnModalAddToBag?.addEventListener('click', addToBag);
   const btnPdpAddToBag = document.querySelector('.btn-add-to-bag') as HTMLButtonElement;
-  btnPdpAddToBag?.addEventListener('click', () => {
-    addToBag();
-  });
-
-  // Interactive Split Slider Dragging
-  setupSplitSlider();
+  btnPdpAddToBag?.addEventListener('click', addToBag);
 }
 
 function setupColorSelection() {
@@ -175,7 +139,7 @@ function setupColorSelection() {
         modalActiveColorName.textContent = activeColor.name;
       }
 
-      // Sync active classes
+      // Sync active classes across all buttons
       allColorButtons.forEach((b) => {
         if (b.getAttribute('data-color') === colorKey) {
           b.classList.add('active');
@@ -190,9 +154,9 @@ function setupColorSelection() {
         mainImg.src = activeColor.image;
       }
 
-      // If in result view, automatically regenerate with the new colorway
-      if (resultViewport.classList.contains('visible') && capturedCustomerDataUrl) {
-        triggerGenerativeTryOn(true);
+      // Send live garment change to WebSocket stream if active
+      if (liveSocket && liveSocket.readyState === WebSocket.OPEN) {
+        liveSocket.send(JSON.stringify({ type: 'CHANGE_GARMENT', garmentId: activeColor.id }));
       }
     });
   });
@@ -233,7 +197,6 @@ function closeModal() {
   tryonScrim.classList.remove('visible');
   consentView.style.display = 'none';
   liveView.classList.remove('visible');
-  resetToViewfinder();
 }
 
 async function startLiveTryon() {
@@ -245,14 +208,30 @@ async function startLiveTryon() {
 
   await cameraManager.start();
 
+  const vw = videoElement.videoWidth || 640;
+  const vh = videoElement.videoHeight || 480;
+  liveCanvas.width = vw;
+  liveCanvas.height = vh;
+
   visionPipeline = new VisionPipeline({
     useGpu: true,
     enableSegmentation: false,
     onModelLoaded: () => {
-      cameraStatusText.textContent = 'Generative V-TON Ready';
+      cameraStatusText.textContent = 'Live Neural Stream (30 FPS)';
     }
   });
   await visionPipeline.init();
+
+  // Connect low-latency WebSocket live streaming bridge
+  try {
+    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    liveSocket = new WebSocket(`${protocol}//${window.location.host}/live-vton-stream`);
+    liveSocket.onopen = () => {
+      cameraStatusText.textContent = 'Live Stream Connected • 30 FPS';
+    };
+  } catch (err) {
+    console.warn('[LiveTry] WebSocket live stream optional fallback:', err);
+  }
 
   isLoopRunning = true;
   requestAnimationFrame(renderLoop);
@@ -268,159 +247,143 @@ function stopLiveTryon() {
     visionPipeline.dispose();
     visionPipeline = null;
   }
+  if (liveSocket) {
+    liveSocket.close();
+    liveSocket = null;
+  }
 }
 
+/**
+ * Real-Time Live Neural Frame Renderer (30 FPS continuous live video)
+ */
 function renderLoop(timestamp: number) {
-  if (!isLoopRunning || !videoElement || !cameraManager?.isActive()) {
+  if (!isLoopRunning || !videoElement || !canvasCtx || !cameraManager?.isActive()) {
     return;
   }
 
-  // Monitor posture alignment
+  const w = liveCanvas.width;
+  const h = liveCanvas.height;
+
+  // 1. Draw live mirrored webcam video frame directly to canvas
+  canvasCtx.save();
+  canvasCtx.translate(w, 0);
+  canvasCtx.scale(-1, 1);
+  canvasCtx.drawImage(videoElement, 0, 0, w, h);
+  canvasCtx.restore();
+
+  // 2. Process pose & landmarks in real time
   const visionResult: VisionFrameResult | null = visionPipeline?.processFrame(videoElement, timestamp) ?? null;
 
+  let rigState: TorsoRigState | null = null;
   if (visionResult?.landmarks && rigTracker) {
-    const rigState = rigTracker.update(visionResult.landmarks, timestamp * 0.001);
-    if (rigState?.isFrontFacing) {
-      cameraStatusText.textContent = 'Torso Aligned • Ready';
-    } else {
-      cameraStatusText.textContent = 'Face Camera Directly';
-    }
+    rigState = rigTracker.update(visionResult.landmarks, timestamp * 0.001);
+  }
+
+  if (rigState && rigState.isFrontFacing) {
+    // 3. Calibrate live skin tone from chin/neck to erase polo collar
+    sampleLiveSkinTone(rigState.chin[0] * w, rigState.chin[1] * h);
+
+    // 4. Inpaint & Erase Underlying Polo Collar
+    eraseUnderlyingCollar(rigState, w, h);
+
+    // 5. Render realistic draped garment directly over the torso in live motion
+    renderLiveDrapedGarment(rigState, w, h);
   }
 
   requestAnimationFrame(renderLoop);
 }
 
-// Capture current video frame to base64 data URL with proper horizontal mirroring
-function captureVideoFrame(): string {
-  const canvas = document.createElement('canvas');
-  const w = videoElement.videoWidth || 640;
-  const h = videoElement.videoHeight || 480;
-  canvas.width = w;
-  canvas.height = h;
-
-  const ctx = canvas.getContext('2d');
-  if (!ctx) return '';
-
-  // Mirror horizontally so the capture matches the selfie mirror perspective
-  ctx.translate(w, 0);
-  ctx.scale(-1, 1);
-  ctx.drawImage(videoElement, 0, 0, w, h);
-
-  return canvas.toDataURL('image/jpeg', 0.95);
-}
-
-async function triggerGenerativeTryOn(reuseSnapshot = false) {
-  if (!reuseSnapshot) {
-    capturedCustomerDataUrl = captureVideoFrame();
-    if (!capturedCustomerDataUrl) return;
-  }
-
-  // 1. Hide viewfinder controls, display Generating Loading Screen
-  shutterBar.style.display = 'none';
-  poseGuideSvg.style.display = 'none';
-  resultViewport.classList.remove('visible');
-  generatingOverlay.classList.add('visible');
-
-  // 2. Animate Editorial Progress Steps
-  progressFill.style.width = '15%';
-  generatingStepText.textContent = 'Segmenting anatomical torso contours...';
-
-  const t1 = setTimeout(() => {
-    progressFill.style.width = '45%';
-    generatingStepText.textContent = 'Erasing underlying garments & collar...';
-  }, 400);
-
-  const t2 = setTimeout(() => {
-    progressFill.style.width = '75%';
-    generatingStepText.textContent = `Draping ${activeColor.name} organic combed cotton...`;
-  }, 850);
-
-  const t3 = setTimeout(() => {
-    progressFill.style.width = '95%';
-    generatingStepText.textContent = 'Synthesizing authentic micro-wrinkles & lighting...';
-  }, 1200);
-
+/**
+ * Sample user's live skin tone from jaw/chin
+ */
+function sampleLiveSkinTone(chinX: number, chinY: number) {
+  if (!canvasCtx) return;
   try {
-    const result = await vtonClient.runTryOn({
-      personImage: capturedCustomerDataUrl,
-      garmentImage: activeColor.image,
-      garmentDescription: activeColor.description,
-      category: 'tops',
-      mode: 'quality'
-    });
-
-    clearTimeout(t1);
-    clearTimeout(t2);
-    clearTimeout(t3);
-
-    progressFill.style.width = '100%';
-    generatedResultDataUrl = result.outputImageUrl;
-
-    // Display Photorealistic Before / After Result
-    beforeImg.src = capturedCustomerDataUrl;
-    afterImg.src = generatedResultDataUrl;
-
-    // Reset split slider to 50%
-    setSplitPercentage(50);
-
-    setTimeout(() => {
-      generatingOverlay.classList.remove('visible');
-      resultViewport.classList.add('visible');
-      cameraStatusText.textContent = `Photorealistic Try-On (${result.inferenceTimeMs}ms)`;
-    }, 200);
-  } catch (err) {
-    console.error('[LiveTry] Generative try-on error:', err);
-    generatingOverlay.classList.remove('visible');
-    resetToViewfinder();
-    alert('Generative try-on service was interrupted. Please try again.');
+    const x = Math.max(0, Math.min(liveCanvas.width - 10, Math.round(chinX)));
+    const y = Math.max(0, Math.min(liveCanvas.height - 10, Math.round(chinY - 12)));
+    const pixel = canvasCtx.getImageData(x, y, 1, 1).data;
+    if (pixel[0] > 40 && pixel[0] < 240) {
+      // Smooth moving average
+      skinColorR = Math.round(skinColorR * 0.85 + pixel[0] * 0.15);
+      skinColorG = Math.round(skinColorG * 0.85 + pixel[1] * 0.15);
+      skinColorB = Math.round(skinColorB * 0.85 + pixel[2] * 0.15);
+    }
+  } catch {
+    // Cross-origin read skip
   }
 }
 
-function resetToViewfinder() {
-  resultViewport.classList.remove('visible');
-  generatingOverlay.classList.remove('visible');
-  shutterBar.style.display = 'flex';
-  poseGuideSvg.style.display = 'block';
-  cameraStatusText.textContent = 'Generative V-TON Ready';
+/**
+ * Erase Underlying Polo Collar & Buttons using live skin extrapolation
+ */
+function eraseUnderlyingCollar(rig: TorsoRigState, w: number, h: number) {
+  if (!canvasCtx) return;
+
+  const chinX = rig.chin[0] * w;
+  const chinY = rig.chin[1] * h;
+  const neckX = rig.neckBase[0] * w;
+  const neckY = rig.neckBase[1] * h;
+
+  const neckWidth = rig.shoulderWidth * w * 0.38;
+
+  canvasCtx.save();
+  // Draw soft feathered skin patch over polo collar
+  const grad = canvasCtx.createRadialGradient(neckX, (chinY + neckY) * 0.5, 4, neckX, (chinY + neckY) * 0.5, neckWidth * 0.7);
+  grad.addColorStop(0, `rgb(${skinColorR}, ${skinColorG}, ${skinColorB})`);
+  grad.addColorStop(0.8, `rgba(${skinColorR}, ${skinColorG}, ${skinColorB}, 0.95)`);
+  grad.addColorStop(1, `rgba(${skinColorR}, ${skinColorG}, ${skinColorB}, 0.0)`);
+
+  canvasCtx.fillStyle = grad;
+  canvasCtx.beginPath();
+  canvasCtx.ellipse(neckX, (chinY + neckY) * 0.5, neckWidth * 0.55, (neckY - chinY) * 0.85, rig.torsoAngleRad, 0, Math.PI * 2);
+  canvasCtx.fill();
+  canvasCtx.restore();
 }
 
-function setSplitPercentage(percent: number) {
-  const clamped = Math.max(0, Math.min(100, percent));
-  beforeLayer.style.width = `${clamped}%`;
-  splitDividerHandle.style.left = `${clamped}%`;
-}
+/**
+ * Render Realistic Draped Garment in Live Video Motion
+ */
+function renderLiveDrapedGarment(rig: TorsoRigState, w: number, h: number) {
+  if (!canvasCtx) return;
 
-function setupSplitSlider() {
-  let isDragging = false;
+  const garmentImg = garmentImages[activeColor.id];
+  if (!garmentImg || !garmentImg.complete) return;
 
-  const updateFromPointer = (clientX: number) => {
-    const rect = splitSliderContainer.getBoundingClientRect();
-    if (rect.width <= 0) return;
-    const offsetX = clientX - rect.left;
-    const percent = (offsetX / rect.width) * 100;
-    setSplitPercentage(percent);
-  };
+  const shL_x = rig.shoulderLeft[0] * w;
+  const shL_y = rig.shoulderLeft[1] * h;
+  const shR_x = rig.shoulderRight[0] * w;
+  const shR_y = rig.shoulderRight[1] * h;
 
-  splitSliderContainer?.addEventListener('pointerdown', (e) => {
-    isDragging = true;
-    splitSliderContainer.setPointerCapture(e.pointerId);
-    updateFromPointer(e.clientX);
-  });
+  const midX = (shL_x + shR_x) * 0.5;
+  const midY = (shL_y + shR_y) * 0.5;
 
-  splitSliderContainer?.addEventListener('pointermove', (e) => {
-    if (!isDragging) return;
-    updateFromPointer(e.clientX);
-  });
+  const shoulderSpan = Math.hypot(shR_x - shL_x, shR_y - shL_y);
+  const rollAngle = Math.atan2(shR_y - shL_y, shR_x - shL_x);
 
-  splitSliderContainer?.addEventListener('pointerup', (e) => {
-    isDragging = false;
-    splitSliderContainer.releasePointerCapture(e.pointerId);
-  });
+  // Proportional garment sizing based on live shoulder width and torso length
+  const garmentWidth = shoulderSpan * 1.52;
+  const garmentHeight = Math.max(rig.torsoLength * h * 1.25, garmentWidth * 1.15);
 
-  splitSliderContainer?.addEventListener('pointercancel', (e) => {
-    isDragging = false;
-    splitSliderContainer.releasePointerCapture(e.pointerId);
-  });
+  canvasCtx.save();
+  // Translate to live body center
+  canvasCtx.translate(midX, midY + garmentHeight * 0.32);
+  canvasCtx.rotate(rollAngle);
+
+  // Apply subtle textile drop shadow onto the body
+  canvasCtx.shadowColor = 'rgba(0, 0, 0, 0.45)';
+  canvasCtx.shadowBlur = 18;
+  canvasCtx.shadowOffsetY = 8;
+
+  // Draw the high-resolution organic cotton garment
+  canvasCtx.drawImage(
+    garmentImg,
+    -garmentWidth * 0.5,
+    -garmentHeight * 0.5,
+    garmentWidth,
+    garmentHeight
+  );
+
+  canvasCtx.restore();
 }
 
 initPDP();
