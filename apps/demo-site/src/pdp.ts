@@ -334,30 +334,30 @@ function eraseUnderlyingCollar(rig: TorsoRigState, w: number, h: number) {
   const neckX = rig.neckBase[0] * w;
   const neckY = rig.neckBase[1] * h;
 
-  const neckWidth = rig.shoulderWidth * w * 0.38;
+  const neckWidth = rig.shoulderWidth * w * 0.36;
 
   canvasCtx.save();
   // Draw soft feathered skin patch over polo collar
-  const grad = canvasCtx.createRadialGradient(neckX, (chinY + neckY) * 0.5, 4, neckX, (chinY + neckY) * 0.5, neckWidth * 0.7);
+  const grad = canvasCtx.createRadialGradient(neckX, (chinY + neckY) * 0.5, 4, neckX, (chinY + neckY) * 0.5, neckWidth * 0.65);
   grad.addColorStop(0, `rgb(${skinColorR}, ${skinColorG}, ${skinColorB})`);
-  grad.addColorStop(0.8, `rgba(${skinColorR}, ${skinColorG}, ${skinColorB}, 0.95)`);
+  grad.addColorStop(0.85, `rgba(${skinColorR}, ${skinColorG}, ${skinColorB}, 0.95)`);
   grad.addColorStop(1, `rgba(${skinColorR}, ${skinColorG}, ${skinColorB}, 0.0)`);
 
   canvasCtx.fillStyle = grad;
   canvasCtx.beginPath();
-  canvasCtx.ellipse(neckX, (chinY + neckY) * 0.5, neckWidth * 0.55, (neckY - chinY) * 0.85, rig.torsoAngleRad, 0, Math.PI * 2);
+  canvasCtx.ellipse(neckX, (chinY + neckY) * 0.5, neckWidth * 0.5, Math.max(15, (neckY - chinY) * 0.8), rig.torsoAngleRad, 0, Math.PI * 2);
   canvasCtx.fill();
   canvasCtx.restore();
 }
 
 /**
- * Render Realistic Draped Garment in Live Video Motion
+ * Render Realistic Draped Garment in Live Video Motion (Anchored ON the body)
  */
 function renderLiveDrapedGarment(rig: TorsoRigState, w: number, h: number) {
   if (!canvasCtx) return;
 
   const garmentImg = garmentImages[activeColor.id];
-  if (!garmentImg || !garmentImg.complete) return;
+  if (!garmentImg || !garmentImg.complete || garmentImg.naturalWidth === 0) return;
 
   const shL_x = rig.shoulderLeft[0] * w;
   const shL_y = rig.shoulderLeft[1] * h;
@@ -370,25 +370,31 @@ function renderLiveDrapedGarment(rig: TorsoRigState, w: number, h: number) {
   const shoulderSpan = Math.hypot(shR_x - shL_x, shR_y - shL_y);
   const rollAngle = Math.atan2(shR_y - shL_y, shR_x - shL_x);
 
-  // Proportional garment sizing based on live shoulder width and torso length
-  const garmentWidth = shoulderSpan * 1.52;
-  const garmentHeight = Math.max(rig.torsoLength * h * 1.25, garmentWidth * 1.15);
+  // Exact Anatomical Alignment:
+  // In the studio flat-lay, shoulder seam span is exactly 52% of image width (0.24 to 0.76)
+  // Shoulder seam line is at y = 12% of image height
+  const garmentWidth = shoulderSpan / 0.52;
+  const aspectRatio = (garmentImg.naturalHeight || 1280) / (garmentImg.naturalWidth || 1024);
+  const garmentHeight = garmentWidth * aspectRatio;
 
   canvasCtx.save();
-  // Translate to live body center
-  canvasCtx.translate(midX, midY + garmentHeight * 0.32);
+  // Translate to the person's exact shoulder midpoint and rotate with shoulder tilt
+  canvasCtx.translate(midX, midY);
   canvasCtx.rotate(rollAngle);
 
-  // Apply subtle textile drop shadow onto the body
-  canvasCtx.shadowColor = 'rgba(0, 0, 0, 0.45)';
-  canvasCtx.shadowBlur = 18;
-  canvasCtx.shadowOffsetY = 8;
+  // NO floating shadow: garment is ON the body, not hovering in front
+  canvasCtx.shadowColor = 'transparent';
+  canvasCtx.shadowBlur = 0;
+  canvasCtx.shadowOffsetY = 0;
 
-  // Draw the high-resolution organic cotton garment
+  // Align shoulder seam line (y = 0.12 * height) exactly with the user's shoulder midpoint (0, 0)
+  const drawX = -0.50 * garmentWidth;
+  const drawY = -0.12 * garmentHeight;
+
   canvasCtx.drawImage(
     garmentImg,
-    -garmentWidth * 0.5,
-    -garmentHeight * 0.5,
+    drawX,
+    drawY,
     garmentWidth,
     garmentHeight
   );
