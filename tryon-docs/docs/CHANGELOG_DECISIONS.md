@@ -51,6 +51,18 @@ Alternatives considered:
 2. Full GLB asset pipeline: requires 3D scans / CLO3D files.
 3. Three.js volumetric procedural 3D garment: combines 3D mesh wrapping, depth buffers, lighting, and real-time metric landmark tracking.
 
+## 2026-10-16 — Integration of Real 3D GLTF Clothing Asset with Baked Normal & AO Maps
+Decision:
+Upgraded the 3D rendering pipeline from procedural geometric shapes and 2D texture warping to a real rigged 3D GLTF clothing model (`shirt_baked.glb`) loaded via Three.js `GLTFLoader`. Preserved high-fidelity normal maps for physical fabric wrinkles, creases, and seams, and baked ambient occlusion maps with studio three-point PBR lighting.
+
+Reason / measurements:
+User testing and visual verification revealed that 2D image warping looks like a flat sticker pasted on the user ("it is looking like just image of shirt is pasted on me"), while primitive CAD cylinders look like floating blocks. A genuine 3D GLB model provides true volume (front, back, tubular sleeves, ribbed neck band), wraps naturally around the body, and reacts realistically to 3D yaw rotation and light.
+
+Alternatives considered:
+1. Skinned 2D plane with displacement map: causes edge tearing and rubbery stretching at the sleeves.
+2. Procedural CAD primitives: looks robotic and artificial.
+3. GLTF 3D garment asset: delivers authentic physical fabric wrinkles, depth, and seamless fitting around shoulders and neck.
+
 Approved by:
 Product Owner (Abdul Aziz).
 
