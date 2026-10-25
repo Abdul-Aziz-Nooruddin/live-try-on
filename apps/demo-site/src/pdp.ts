@@ -57,7 +57,7 @@ const ITEM_CATALOG: Record<string, CatalogItem> = {
         '/fixtures/women-silk-blouse-drape.jpg',
         '/fixtures/women-silk-blouse-texture.jpg'
       ],
-      prompt: 'Substitute only the shirt. Replace the upper clothing with this crisp pure white mulberry silk crepe relaxed blouse. Preserve the exact person’s face, head, hair, skin tone, neck, hands, body proportions, and background completely identical to the live camera stream without alteration. Do not modify or replace the person.'
+      prompt: 'Substitute the current top with this crisp pure white mulberry silk crepe relaxed blouse from the reference image, matching its color, material, and fit.'
     }
   },
   'linen-shirt': {
@@ -83,7 +83,7 @@ const ITEM_CATALOG: Record<string, CatalogItem> = {
         '/fixtures/women-linen-shirt-drape.jpg',
         '/fixtures/women-linen-shirt-texture.jpg'
       ],
-      prompt: 'Substitute only the shirt. Replace the upper clothing with this relaxed terracotta blush oversized French linen studio shirt with open camp collar. Preserve the exact person’s face, head, hair, skin tone, neck, hands, body proportions, and background completely identical to the live camera stream without alteration. Do not modify or replace the person.'
+      prompt: 'Substitute the current top with this relaxed terracotta blush oversized French linen studio shirt with open camp collar from the reference image, matching its color, material, and fit.'
     }
   },
   'merino-knit': {
@@ -108,7 +108,7 @@ const ITEM_CATALOG: Record<string, CatalogItem> = {
         '/fixtures/women-merino-knit-drape.jpg',
         '/fixtures/women-merino-knit-texture.jpg'
       ],
-      prompt: 'Substitute only the shirt. Replace the upper clothing with this soft camel oat ribbed merino wool knit wide boatneck top. Preserve the exact person’s face, head, hair, skin tone, neck, hands, body proportions, and background completely identical to the live camera stream without alteration. Do not modify or replace the person.'
+      prompt: 'Substitute the current top with this soft camel oat ribbed merino wool knit wide boatneck top from the reference image, matching its color, material, and fit.'
     }
   },
   'poplin-shirt': {
@@ -133,7 +133,7 @@ const ITEM_CATALOG: Record<string, CatalogItem> = {
         '/fixtures/men-poplin-shirt-drape.jpg',
         '/fixtures/men-poplin-shirt-texture.jpg'
       ],
-      prompt: 'Substitute only the shirt. Replace the upper clothing with this crisp chalk white relaxed button-down poplin shirt with clean point collar. Preserve the exact person’s face, head, hair, skin tone, neck, hands, body proportions, and background completely identical to the live camera stream without alteration. Do not modify or replace the person.'
+      prompt: 'Substitute the current top with this crisp chalk white relaxed button-down poplin shirt with clean point collar from the reference image, matching its color, material, and fit.'
     }
   },
   'linen-kurta': {
@@ -159,7 +159,7 @@ const ITEM_CATALOG: Record<string, CatalogItem> = {
         '/fixtures/linen-studio-kurta-drape.jpg',
         '/fixtures/linen-studio-kurta-texture.jpg'
       ],
-      prompt: 'Substitute only the shirt. Replace the upper clothing with this natural oatmeal flax linen mandarin collar studio kurta tunic. Preserve the exact person’s face, head, hair, skin tone, neck, hands, body proportions, and background completely identical to the live camera stream without alteration. Do not modify or replace the person.'
+      prompt: 'Substitute the current top with this natural oatmeal flax linen mandarin collar studio kurta tunic from the reference image, matching its color, material, and fit.'
     }
   },
   'overshirt': {
@@ -184,7 +184,7 @@ const ITEM_CATALOG: Record<string, CatalogItem> = {
         '/fixtures/men-overshirt-drape.jpg',
         '/fixtures/men-overshirt-texture.jpg'
       ],
-      prompt: 'Substitute only the shirt. Replace the upper clothing with this structured slate indigo washed cotton twill button-up overshirt with dual flap pockets. Preserve the exact person’s face, head, hair, skin tone, neck, hands, body proportions, and background completely identical to the live camera stream without alteration. Do not modify or replace the person.'
+      prompt: 'Substitute the current top with this structured slate indigo washed cotton twill button-up overshirt with dual flap pockets from the reference image, matching its color, material, and fit.'
     }
   }
 };
@@ -201,7 +201,7 @@ const GARMENT_VARIANTS: Record<'charcoal' | 'oatmeal' | 'olive', GarmentVariant>
       '/fixtures/tshirt-back.jpg',
       '/fixtures/tshirt-collar.jpg'
     ],
-    prompt: "Substitute only the shirt. Replace the upper clothing with this relaxed boxy washed charcoal black heavy cotton crewneck t-shirt. Curved front crewneck dipping naturally below the throat and collarbone. Preserve the exact person’s face, head, hair, skin tone, neck, hands, body proportions, and background completely identical to the live camera stream without alteration. Do not modify or replace the person."
+    prompt: "Substitute the current top with this relaxed boxy washed charcoal black heavy cotton crewneck t-shirt from the reference image, matching its color, material, and fit."
   },
   oatmeal: {
     id: 'oatmeal',
@@ -214,7 +214,7 @@ const GARMENT_VARIANTS: Record<'charcoal' | 'oatmeal' | 'olive', GarmentVariant>
       '/fixtures/oatmeal-back.jpg',
       '/fixtures/oatmeal-collar.jpg'
     ],
-    prompt: "Substitute only the shirt. Replace the upper clothing with this relaxed boxy oatmeal beige heavy cotton crewneck t-shirt. Curved front crewneck dipping naturally below the throat and collarbone. Preserve the exact person’s face, head, hair, skin tone, neck, hands, body proportions, and background completely identical to the live camera stream without alteration. Do not modify or replace the person."
+    prompt: "Substitute the current top with this relaxed boxy oatmeal beige heavy cotton crewneck t-shirt from the reference image, matching its color, material, and fit."
   },
   olive: {
     id: 'olive',
@@ -227,11 +227,28 @@ const GARMENT_VARIANTS: Record<'charcoal' | 'oatmeal' | 'olive', GarmentVariant>
       '/fixtures/olive-back.jpg',
       '/fixtures/olive-collar.jpg'
     ],
-    prompt: "Substitute only the shirt. Replace the upper clothing with this relaxed boxy muted olive green heavy cotton crewneck t-shirt. Curved front crewneck dipping naturally below the throat and collarbone. Preserve the exact person’s face, head, hair, skin tone, neck, hands, body proportions, and background completely identical to the live camera stream without alteration. Do not modify or replace the person."
+    prompt: "Substitute the current top with this relaxed boxy muted olive green heavy cotton crewneck t-shirt from the reference image, matching its color, material, and fit."
   }
 };
 
-let activeColor: GarmentVariant = GARMENT_VARIANTS.charcoal;
+function getInitialActiveGarment(): GarmentVariant {
+  if (typeof window !== 'undefined') {
+    try {
+      const p = new URLSearchParams(window.location.search);
+      const it = p.get('item');
+      if (it && ITEM_CATALOG[it]) {
+        return ITEM_CATALOG[it].variant;
+      }
+      const col = p.get('color') as keyof typeof GARMENT_VARIANTS;
+      if (col && GARMENT_VARIANTS[col]) {
+        return GARMENT_VARIANTS[col];
+      }
+    } catch (_) {}
+  }
+  return GARMENT_VARIANTS.charcoal;
+}
+
+let activeColor: GarmentVariant = getInitialActiveGarment();
 let selectedSize = 'M';
 let bagCount = 0;
 
@@ -313,6 +330,16 @@ function setupColorSelection() {
 
       // Update both the main image AND all sidebar thumbnails
       updateGalleryForVariant(activeColor);
+
+      // Cleanly sync URL state without index.html
+      try {
+        const p = new URLSearchParams(window.location.search);
+        const it = p.get('item');
+        const q: string[] = [];
+        if (it) q.push(`item=${encodeURIComponent(it)}`);
+        q.push(`color=${encodeURIComponent(colorKey)}`);
+        window.history.replaceState(null, '', `/?${q.join('&')}`);
+      } catch (_) {}
     });
   });
 }
@@ -734,13 +761,8 @@ function setupUGCInteractions() {
 
 function initPDP() {
   console.log('[LiveTry PDP] Initializing storefront interactivity...');
-  try { setupGalleryThumbnails(); } catch (err) { console.error('[LiveTry] Failed to setup gallery thumbnails:', err); }
-  try { setupColorSelection(); } catch (err) { console.error('[LiveTry] Failed to setup color selection:', err); }
-  try { setupSizeSelection(); } catch (err) { console.error('[LiveTry] Failed to setup size selection:', err); }
-  try { setupImageZoomAndLightbox(); } catch (err) { console.error('[LiveTry] Failed to setup lightbox:', err); }
-  try { setupUGCInteractions(); } catch (err) { console.error('[LiveTry] Failed to setup UGC interactions:', err); }
 
-  // Support deep-linking by ?item= or ?color= URL param
+  // 1. Synchronize product from URL parameter FIRST so all components bind to the right item
   try {
     const urlParams = new URLSearchParams(window.location.search);
     const itemParam = urlParams.get('item');
@@ -802,6 +824,15 @@ function initPDP() {
       updateGalleryForVariant(activeColor);
     }
 
+    // Clean URL in browser address bar immediately so index.html is never shown
+    try {
+      const q: string[] = [];
+      if (itemParam) q.push(`item=${encodeURIComponent(itemParam)}`);
+      if (colorParam) q.push(`color=${encodeURIComponent(colorParam)}`);
+      const cleanSearch = q.length > 0 ? `?${q.join('&')}` : '?studio';
+      window.history.replaceState(null, '', `/${cleanSearch}${window.location.hash}`);
+    } catch (_) {}
+
     // Support deep-linking to lightbox via ?lightbox=1
     if (urlParams.get('lightbox') === '1') {
       setTimeout(() => {
@@ -811,6 +842,13 @@ function initPDP() {
   } catch (err) {
     console.error('[LiveTry] URL param deep-linking error:', err);
   }
+
+  // 2. Setup interactive components with the synchronized product
+  try { setupGalleryThumbnails(); } catch (err) { console.error('[LiveTry] Failed to setup gallery thumbnails:', err); }
+  try { setupColorSelection(); } catch (err) { console.error('[LiveTry] Failed to setup color selection:', err); }
+  try { setupSizeSelection(); } catch (err) { console.error('[LiveTry] Failed to setup size selection:', err); }
+  try { setupImageZoomAndLightbox(); } catch (err) { console.error('[LiveTry] Failed to setup lightbox:', err); }
+  try { setupUGCInteractions(); } catch (err) { console.error('[LiveTry] Failed to setup UGC interactions:', err); }
 
   // Live Try-On Real-Time WebRTC Implementation
   try { setupTryOnFeature(); } catch (err) { console.error('[LiveTry] Failed to setup try-on feature:', err); }
@@ -822,9 +860,9 @@ function initPDP() {
     console.error('[LiveTry] Failed to bind Add to Bag Stepper:', err);
   }
 
-  // Pre-fetch Decart token in the background immediately so startTryOn has 0 wait
+  // Pre-warm Decart token and all garment assets in background immediately so startTryOn has 0 wait
   try {
-    prefetchDecartToken();
+    prewarmGarments();
   } catch (_) {}
 
   console.log('[LiveTry PDP] All storefront buttons and event listeners initialized successfully.');
@@ -835,19 +873,19 @@ let localMediaStream: MediaStream | null = null;
 let isTryOnActive = false;
 let isStartingTryOn = false;
 let tryonRetryCount = 0;
-
-const DEMO_KEYS = [
-  'dct_general_zoGyETEHQfjYZTPMkUXNXyqqkGMcyNsoSXqfXLBXjlMBBXnwziMQwyBpurwMjPQw',
-  'dct_key3_CrNjyQMJLmSawHECSzgLnVTGkVzECWCVBIizjcxToQZedIXuCRomtNwiPlEOqprh',
-  'dct_key4_wSMvvGyBZCFAAdottIQwQMuBPduBcTwZDJVrrfFIhIxIXmkNuUjnajPXfYSHbrgu'
-];
-let activeFallbackKeyIdx = 0;
+let _backendAvailable = typeof window !== 'undefined' && !window.location.hostname.includes('.hf.space') && !window.location.hostname.includes('github.io');
+let cachedToken: string | null = null;
 let cachedTokenPromise: Promise<string> | null = null;
 
 function prefetchDecartToken() {
+  if (cachedToken) return;
   if (!cachedTokenPromise) {
     console.log('[LiveTry Token] Pre-fetching ephemeral Decart client token in background...');
-    cachedTokenPromise = fetchDecartToken(false).catch((err) => {
+    cachedTokenPromise = fetchDecartToken(false).then((token) => {
+      cachedToken = token;
+      cachedTokenPromise = null;
+      return token;
+    }).catch((err) => {
       console.warn('[LiveTry Token] Prefetch notice:', err);
       cachedTokenPromise = null;
       return '';
@@ -855,23 +893,54 @@ function prefetchDecartToken() {
   }
 }
 
+function prewarmGarments() {
+  prefetchDecartToken();
+  const allImages = [
+    '/fixtures/women-silk-blouse.jpg',
+    '/fixtures/women-linen-shirt.jpg',
+    '/fixtures/women-merino-knit.jpg',
+    '/fixtures/men-poplin-shirt.jpg',
+    '/fixtures/linen-studio-kurta.jpg',
+    '/fixtures/men-overshirt.jpg',
+    '/fixtures/charcoal-front.jpg',
+    '/fixtures/oatmeal-tshirt.jpg',
+    '/fixtures/olive-tshirt.jpg'
+  ];
+  if (activeColor?.image) {
+    tryonEngine.prewarm(activeColor.image).catch(() => {});
+  }
+  setTimeout(() => {
+    allImages.forEach(img => tryonEngine.prewarm(img).catch(() => {}));
+  }, 200);
+}
+
 async function getDecartToken(rotate = false): Promise<string> {
+  if (!rotate && cachedToken) {
+    const token = cachedToken;
+    cachedToken = null; // Consume token
+    return token;
+  }
   if (!rotate && cachedTokenPromise) {
     try {
       const token = await cachedTokenPromise;
-      if (token) {
-        cachedTokenPromise = null; // Clear so subsequent reconnects fetch anew
-        return token;
-      }
+      if (token) return token;
     } catch {}
   }
   return fetchDecartToken(rotate);
 }
 
+// Keys injected at build time from VITE_DECART_API_KEYS in .env — never hardcoded in source.
+// Format in .env:  VITE_DECART_API_KEYS=dct_key1,dct_key2,dct_key3
+const _rawEnvKeys = (import.meta as any).env?.VITE_DECART_API_KEYS || '';
+const _DECART_KEY_POOL: string[] = String(_rawEnvKeys)
+  .split(',')
+  .map((k: string) => k.trim())
+  .filter((k: string) => k.startsWith('dct_'));
+let _keyPoolIndex = 0;
+
 async function fetchDecartToken(rotate = false): Promise<string> {
-  // 1. Try local or custom backend endpoint only if running locally
-  const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-  if (isLocalhost) {
+  // Primary: route through backend only if backend is active (skip on static spaces for 0ms overhead)
+  if (_backendAvailable) {
     try {
       const res = await fetch('/api/tryon/token', {
         method: 'POST',
@@ -881,63 +950,52 @@ async function fetchDecartToken(rotate = false): Promise<string> {
       if (res.ok) {
         const data = await res.json();
         if (data.apiKey) {
-          console.log(`[LiveTry Token] Minted ephemeral token via backend (#${data.key_index || 1})`);
+          console.log(`[LiveTry Token] Minted ephemeral token via backend (Key #${data.key_index || 1}/${data.total_keys || '?'})`);
           return data.apiKey;
         }
+      } else {
+        _backendAvailable = false;
       }
     } catch {
-      // Backend unavailable (static hosting mode)
+      _backendAvailable = false;
     }
   }
 
-  // 2. Direct client token fallback for Hugging Face Static Space
+  // Fallback: use keys from VITE_DECART_API_KEYS env var (static / no-backend deploy)
+  if (_DECART_KEY_POOL.length === 0) {
+    throw new Error('No Decart API keys configured. Set VITE_DECART_API_KEYS in .env and rebuild, or configure backend DECART_API_KEY.');
+  }
   if (rotate) {
-    activeFallbackKeyIdx = (activeFallbackKeyIdx + 1) % DEMO_KEYS.length;
+    _keyPoolIndex = (_keyPoolIndex + 1) % _DECART_KEY_POOL.length;
   }
-  const keyToUse = DEMO_KEYS[activeFallbackKeyIdx] || '';
-
-  try {
-    const directRes = await fetch('https://api.decart.ai/v1/client/tokens', {
-      method: 'POST',
-      headers: {
-        'X-API-KEY': keyToUse,
-        'Content-Type': 'application/json',
-        'User-Agent': 'LiveTry/1.0'
-      },
-      body: '{}'
-    });
-
-    if (directRes.ok) {
-      const data = await directRes.json();
-      if (data.apiKey) {
-        console.log(`[LiveTry Token] Minted ephemeral token direct via Decart API (Key #${activeFallbackKeyIdx + 1})`);
-        return data.apiKey;
-      }
-    }
-
-    // If key exhausted or error, rotate and retry
-    activeFallbackKeyIdx = (activeFallbackKeyIdx + 1) % DEMO_KEYS.length;
-    const retryRes = await fetch('https://api.decart.ai/v1/client/tokens', {
-      method: 'POST',
-      headers: {
-        'X-API-KEY': DEMO_KEYS[activeFallbackKeyIdx] || '',
-        'Content-Type': 'application/json'
-      },
-      body: '{}'
-    });
-    const retryData = await retryRes.json();
-    if (retryData.apiKey) return retryData.apiKey;
-    throw new Error(retryData.message || 'Direct token minting failed');
-  } catch (err: any) {
-    console.error('[LiveTry Token] Error minting token:', err);
-    throw err;
+  const key: string = _DECART_KEY_POOL[_keyPoolIndex] || '';
+  if (!key) {
+    throw new Error('No active Decart API key available');
   }
+  console.log(`[LiveTry Token] Minting token directly via env key #${_keyPoolIndex + 1}/${_DECART_KEY_POOL.length}`);
+  const headers: Record<string, string> = {
+    'X-API-KEY': key,
+    'Content-Type': 'application/json'
+  };
+  const res = await fetch('https://api.decart.ai/v1/client/tokens', {
+    method: 'POST',
+    headers,
+    body: '{}'
+  });
+  if (!res.ok) {
+    _keyPoolIndex = (_keyPoolIndex + 1) % _DECART_KEY_POOL.length;
+    throw new Error(`Decart token mint failed (${res.status})`);
+  }
+  const data = await res.json();
+  if (data.apiKey) return data.apiKey;
+  throw new Error(data.message || 'Decart returned no apiKey');
 }
 
 const tryonEngine = new DecartRealtimeVtonEngine({
   tokenProvider: async () => getDecartToken(false),
   mirror: false, // Mirrored via hardware CSS transform: scaleX(-1) on video element
-  modelName: 'lucy-vton-3.6'
+  modelName: 'lucy-vton-latest',
+  speed: 'fast' // High-priority compute tier for minimum latency & instant cold-starts
 });
 
 function syncTryonModalSwatches(colorId: string) {
@@ -969,6 +1027,24 @@ async function startTryOn() {
   // Sync swatches inside modal to match current activeColor
   syncTryonModalSwatches(activeColor.id);
 
+  const isDebug = new URLSearchParams(window.location.search).get('debug') === '1';
+  if (telemetryEl) {
+    if (isDebug) {
+      telemetryEl.classList.add('debug-visible');
+    } else {
+      telemetryEl.classList.remove('debug-visible');
+    }
+  }
+
+  // Ensure default wide-angle view on mobile
+  const viewportWrap = document.getElementById('tryon-viewport-wrap');
+  if (window.innerWidth <= 768 && viewportWrap) {
+    viewportWrap.classList.remove('fit-cover');
+    viewportWrap.style.setProperty('--tryon-zoom', '0.95');
+    document.getElementById('tryon-zoom-out-btn')?.classList.add('active');
+    document.getElementById('tryon-zoom-in-btn')?.classList.remove('active');
+  }
+
   if (loader) loader.classList.remove('hidden');
   if (loaderText) loaderText.textContent = 'Requesting camera access...';
   if (statusText) statusText.textContent = 'Requesting Camera';
@@ -982,15 +1058,41 @@ async function startTryOn() {
   // 1. Acquire Camera Stream
     try {
       if (!localMediaStream || !localMediaStream.active) {
+        const isMobile = window.innerWidth <= 768 || /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+        const videoConstraints: MediaTrackConstraints = {
+          facingMode: 'user',
+          frameRate: { ideal: 30, min: 24 }
+        };
+
+        if (isMobile) {
+          // Mobile portrait: Request vertical orientation so camera HAL does not center-crop
+          videoConstraints.width = { ideal: 720 };
+          videoConstraints.height = { ideal: 1280 };
+          videoConstraints.aspectRatio = { ideal: 9 / 16 };
+        } else {
+          videoConstraints.width = { ideal: 1280, max: 1280 };
+          videoConstraints.height = { ideal: 720, max: 720 };
+          videoConstraints.aspectRatio = { ideal: 16 / 9 };
+        }
+
         localMediaStream = await navigator.mediaDevices.getUserMedia({
           audio: false,
-          video: {
-            width: { ideal: 1280, max: 1280 },
-            height: { ideal: 720, max: 720 },
-            frameRate: { ideal: 30, min: 24 },
-            facingMode: 'user'
-          }
+          video: videoConstraints
         });
+
+        // Ensure mobile camera is pulled back to maximum wide angle (disable hardware single-person selfie crop)
+        const [track] = localMediaStream.getVideoTracks();
+        if (track && typeof (track as any).getCapabilities === 'function') {
+          try {
+            const caps = (track as any).getCapabilities();
+            if (caps && caps.zoom) {
+              const minZoom = caps.zoom.min ?? 1;
+              await (track as any).applyConstraints({
+                advanced: [{ zoom: minZoom }]
+              }).catch(() => {});
+            }
+          } catch (_) {}
+        }
       }
     } catch (camErr: any) {
       console.error('[TryOn] Camera access error:', camErr);
@@ -1180,7 +1282,12 @@ async function startTryOn() {
           if (modal.classList.contains('active')) {
             setTimeout(() => startTryOn(), 1200);
           }
-        }).catch(() => {});
+        }).catch((err) => {
+          console.error('[TryOn] Token rotation failed during reconnect:', err);
+          if (loaderText) loaderText.textContent = `Virtual try-on error: ${err.message || 'Connection failed'}. Click to retry.`;
+          if (statusText) statusText.textContent = 'Error';
+          if (statusDot) statusDot.classList.remove('live');
+        });
       } else {
         // Stop infinite loop and give user clean actionable feedback
         if (loaderText) {
@@ -1254,6 +1361,11 @@ function setupTryOnFeature() {
     btn.style.pointerEvents = 'auto';
     btn.title = 'Start Live Video-to-Video Virtual Try-On';
     btn.addEventListener('click', startTryOn);
+    // Instant pre-warm when cursor hovers over or fingers touch button
+    btn.addEventListener('pointerenter', () => {
+      prefetchDecartToken();
+      if (activeColor?.image) tryonEngine.prewarm(activeColor.image).catch(() => {});
+    });
   });
 
   closeBtn?.addEventListener('click', stopTryOn);
@@ -1309,6 +1421,34 @@ function setupTryOnFeature() {
       }, 1500);
     }
   });
+
+  // Viewport Zoom / Framing controls (Wide View vs Fill)
+  const zoomOutBtn = document.getElementById('tryon-zoom-out-btn');
+  const zoomInBtn = document.getElementById('tryon-zoom-in-btn');
+  const viewportWrap = document.getElementById('tryon-viewport-wrap');
+
+  const setZoomMode = (mode: 'wide' | 'fill') => {
+    if (!viewportWrap) return;
+    if (mode === 'wide') {
+      viewportWrap.classList.remove('fit-cover');
+      viewportWrap.style.setProperty('--tryon-zoom', '0.95');
+      zoomOutBtn?.classList.add('active');
+      zoomInBtn?.classList.remove('active');
+    } else {
+      viewportWrap.classList.add('fit-cover');
+      viewportWrap.style.setProperty('--tryon-zoom', '1');
+      zoomInBtn?.classList.add('active');
+      zoomOutBtn?.classList.remove('active');
+    }
+  };
+
+  zoomOutBtn?.addEventListener('click', () => setZoomMode('wide'));
+  zoomInBtn?.addEventListener('click', () => setZoomMode('fill'));
+
+  // Default to Wide on mobile so the outfit and upper body are fully visible
+  if (window.innerWidth <= 768) {
+    setZoomMode('wide');
+  }
 }
 
 if (document.readyState === 'loading') {

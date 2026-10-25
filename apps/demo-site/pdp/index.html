@@ -4,21 +4,39 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Classic Heavyweight Boxy Tee — Studio Aelia</title>
+  <script>
+    (function() {
+      try {
+        if (window.history && window.history.replaceState) {
+          var p = new URLSearchParams(window.location.search);
+          var it = p.get('item');
+          var col = p.get('color');
+          var q = [];
+          if (it) q.push('item=' + encodeURIComponent(it));
+          if (col) q.push('color=' + encodeURIComponent(col));
+          var cleanSearch = q.length > 0 ? ('?' + q.join('&')) : '?studio';
+          window.history.replaceState(null, '', '/' + cleanSearch + window.location.hash);
+        }
+      } catch (_) {}
+    })();
+  </script>
   <link rel="stylesheet" href="/src/tokens.css" />
   <style>
     .announcement-bar {
       background-color: var(--ink);
       color: var(--paper);
-      font-size: 12px;
-      line-height: 16px;
-      letter-spacing: 0.12em;
+      font-size: 10px;
+      line-height: 14px;
+      letter-spacing: 0.1em;
       text-transform: uppercase;
       font-weight: 500;
-      height: 36px;
+      min-height: 32px;
+      height: auto;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 0 16px;
+      padding: 6px 16px;
+      text-align: center;
     }
 
     .main-nav {
@@ -29,12 +47,127 @@
       padding: 0 40px;
       border-bottom: 1px solid var(--stone);
       background-color: var(--paper);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .mobile-menu-btn {
+      display: none;
+      background: transparent;
+      border: none;
+      color: var(--ink);
+      padding: 8px;
+      margin-left: -8px;
+      cursor: pointer;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Mobile Drawer */
+    .mobile-drawer {
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      display: flex;
+      pointer-events: none;
+      visibility: hidden;
+      transition: visibility 0.25s ease;
+    }
+
+    .mobile-drawer.open {
+      pointer-events: auto;
+      visibility: visible;
+    }
+
+    .mobile-drawer-backdrop {
+      position: absolute;
+      inset: 0;
+      background-color: rgba(20, 19, 17, 0.6);
+      opacity: 0;
+      transition: opacity 0.25s ease;
+    }
+
+    .mobile-drawer.open .mobile-drawer-backdrop {
+      opacity: 1;
+    }
+
+    .mobile-drawer-content {
+      position: relative;
+      width: 82%;
+      max-width: 320px;
+      height: 100%;
+      background-color: var(--paper);
+      border-right: 1px solid var(--stone);
+      display: flex;
+      flex-direction: column;
+      transform: translateX(-100%);
+      transition: transform 0.28s cubic-bezier(0.2, 0, 0, 1);
+      box-shadow: 4px 0 24px rgba(0, 0, 0, 0.15);
+      z-index: 2;
+      overflow-y: auto;
+    }
+
+    .mobile-drawer.open .mobile-drawer-content {
+      transform: translateX(0);
+    }
+
+    .mobile-drawer-header {
+      height: 56px;
+      padding: 0 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--stone);
+    }
+
+    .mobile-drawer-close {
+      background: transparent;
+      border: none;
+      color: var(--ink);
+      cursor: pointer;
+      padding: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .mobile-drawer-links {
+      list-style: none;
+      padding: 24px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      flex: 1;
+      margin: 0;
+    }
+
+    .mobile-drawer-link {
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink);
+      text-decoration: none;
+      transition: color var(--duration-fast);
+    }
+
+    .mobile-drawer-footer {
+      padding: 20px;
+      border-top: 1px solid var(--stone);
+      font-size: 11px;
+      color: var(--taupe);
+      letter-spacing: 0.08em;
     }
 
     .nav-links {
       display: flex;
       gap: 28px;
       list-style: none;
+      margin: 0;
+      padding: 0;
     }
 
     .nav-link {
@@ -120,8 +253,88 @@
         padding: 0 16px;
         height: 56px;
       }
+      .mobile-menu-btn {
+        display: flex;
+      }
       .nav-links {
+        display: none !important;
+      }
+      .brand-wordmark {
+        font-size: 22px;
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+      }
+      .nav-actions {
+        gap: 12px;
+      }
+      .nav-actions .nav-action-link:not(:last-child) {
         display: none;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .gallery-layout {
+        display: flex;
+        flex-direction: column-reverse;
+        gap: 12px;
+      }
+      .thumb-strip {
+        flex-direction: row;
+        justify-content: center;
+        gap: 8px;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        padding-bottom: 4px;
+      }
+      .thumb-btn {
+        width: 52px;
+        height: 68px;
+        flex-shrink: 0;
+      }
+      .main-image-viewport {
+        max-height: 400px;
+        width: 100%;
+      }
+      .pdp-main {
+        padding: 16px 16px 36px 16px;
+        gap: 20px;
+      }
+      .product-title {
+        font-size: 26px;
+        line-height: 32px;
+      }
+      .tryon-dialog {
+        width: 95%;
+        max-height: 94vh;
+        overflow-y: auto;
+      }
+      .tryon-header {
+        height: 50px;
+        padding: 0 16px;
+      }
+      .tryon-title {
+        font-size: 16px;
+      }
+      .tryon-viewport-wrap {
+        aspect-ratio: 3 / 4;
+        max-height: 52vh;
+      }
+      .tryon-footer {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+        padding: 12px 16px;
+      }
+      .tryon-footer-controls {
+        display: flex;
+        width: 100%;
+        gap: 8px;
+      }
+      .tryon-footer-btn {
+        flex: 1;
+        text-align: center;
+        justify-content: center;
       }
     }
 
@@ -938,7 +1151,7 @@
     .tryon-viewport-wrap {
       position: relative;
       width: 100%;
-      aspect-ratio: 4 / 3;
+      aspect-ratio: 3 / 4;
       max-height: 520px;
       background-color: #0d0c0b;
       overflow: hidden;
@@ -950,8 +1163,55 @@
     .tryon-viewport-wrap video {
       width: 100%;
       height: 100%;
+      object-fit: contain;
+      object-position: center center;
+      transform: scaleX(-1) scale(var(--tryon-zoom, 1));
+      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .tryon-viewport-wrap.fit-cover video {
       object-fit: cover;
-      transform: scaleX(-1);
+    }
+
+    .tryon-view-controls {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      display: flex;
+      gap: 2px;
+      z-index: 6;
+      background-color: rgba(18, 17, 16, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      padding: 2px;
+    }
+
+    .tryon-view-btn {
+      background: transparent;
+      border: none;
+      color: rgba(255, 255, 255, 0.7);
+      padding: 4px 8px;
+      font-family: var(--font-body);
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+      border-radius: 0;
+      transition: background-color var(--duration-fast), color var(--duration-fast);
+    }
+
+    .tryon-view-btn:hover {
+      color: var(--paper);
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .tryon-view-btn.active {
+      background-color: var(--paper);
+      color: var(--noir);
+      font-weight: 600;
     }
 
     .tryon-loader {
@@ -1004,10 +1264,14 @@
       font-size: 10px;
       letter-spacing: 0.08em;
       color: rgba(255, 255, 255, 0.85);
-      display: flex;
+      display: none;
       gap: 12px;
       z-index: 4;
       font-variant-numeric: tabular-nums;
+    }
+
+    .tryon-telemetry.debug-visible {
+      display: flex;
     }
 
     .tryon-footer {
@@ -1106,16 +1370,23 @@
 
   <!-- Header -->
   <header class="main-nav">
-    <nav>
+    <button class="mobile-menu-btn" id="mobile-menu-btn" aria-label="Open Navigation Menu">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+        <line x1="3" y1="6" x2="21" y2="6"></line>
+        <line x1="3" y1="12" x2="21" y2="12"></line>
+        <line x1="3" y1="18" x2="21" y2="18"></line>
+      </svg>
+    </button>
+    <nav class="desktop-nav">
       <ul class="nav-links">
-        <li><a href="../collection/index.html?category=women" class="nav-link">Women</a></li>
-        <li><a href="../collection/index.html?category=men" class="nav-link">Men</a></li>
-        <li><a href="../collection/index.html?category=new" class="nav-link">New</a></li>
-        <li><a href="../collection/index.html?category=sale" class="nav-link">Sale</a></li>
-        <li><a href="../collection/index.html?category=all" class="nav-link" style="color: var(--clay);">All Tops</a></li>
+        <li><a href="/?category=women" class="nav-link">Women</a></li>
+        <li><a href="/?category=men" class="nav-link">Men</a></li>
+        <li><a href="/?category=new" class="nav-link">New</a></li>
+        <li><a href="/?category=sale" class="nav-link">Sale</a></li>
+        <li><a href="/?category=all" class="nav-link" style="color: var(--clay);">All Tops</a></li>
       </ul>
     </nav>
-    <a href="../index.html" class="brand-wordmark">AELIA</a>
+    <a href="/" class="brand-wordmark">AELIA</a>
     <div class="nav-actions">
       <a href="#" class="nav-action-link">Search</a>
       <a href="#" class="nav-action-link">Account</a>
@@ -1124,6 +1395,42 @@
       </a>
     </div>
   </header>
+
+  <!-- Mobile Navigation Drawer -->
+  <div id="mobile-drawer" class="mobile-drawer" aria-hidden="true">
+    <div class="mobile-drawer-backdrop" id="mobile-drawer-backdrop"></div>
+    <div class="mobile-drawer-content">
+      <div class="mobile-drawer-header">
+        <span class="brand-wordmark" style="font-size: 20px;">AELIA</span>
+        <button id="mobile-drawer-close" class="mobile-drawer-close" aria-label="Close Menu">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      <ul class="mobile-drawer-links">
+        <li><a href="/?category=women" class="mobile-drawer-link">Women’s Collection</a></li>
+        <li><a href="/?category=men" class="mobile-drawer-link">Men’s Collection</a></li>
+        <li><a href="/?category=new" class="mobile-drawer-link">New Arrivals</a></li>
+        <li><a href="/?category=sale" class="mobile-drawer-link">Archive &amp; Sale</a></li>
+        <li><a href="/?category=all" class="mobile-drawer-link">All Tops</a></li>
+        <li style="margin-top: 12px; padding-top: 14px; border-top: 1px solid var(--stone);">
+          <a href="/?studio" class="mobile-drawer-link" style="color: var(--clay); font-weight: 600; display: flex; align-items: center; gap: 8px;">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"></path>
+              <circle cx="12" cy="13" r="3"></circle>
+            </svg>
+            Live Try-On Studio
+          </a>
+        </li>
+      </ul>
+      <div class="mobile-drawer-footer">
+        <div>Studio Aelia SS26</div>
+        <div style="font-size: 11px; color: var(--taupe); margin-top: 4px;">Real-Time WebRTC Lucy VTON</div>
+      </div>
+    </div>
+  </div>
 
   <!-- Product Detail Page Layout -->
   <main class="pdp-main">
@@ -1176,6 +1483,48 @@
           <button class="swatch-circle" data-color="olive" style="background-color: #4b4b3b;" aria-label="Olive"></button>
         </div>
       </div>
+
+      <script>
+        (function() {
+          try {
+            var p = new URLSearchParams(window.location.search);
+            var it = p.get('item');
+            var cat = {
+              'silk-blouse': { title: 'Relaxed Silk Crepe Blouse', bc: 'Home / Women / Blouses', price: '₹3,490', desc: 'Cut from fluid 18 momme mulberry silk crepe with a soft relaxed silhouette, dropped shoulder drape, and refined French seams.', col: 'Ivory Bone', sw: [{hex: '#f5f3ee', name: 'Ivory Bone'}, {hex: '#e8e6e1', name: 'Mist White'}], g: ['/fixtures/women-silk-blouse.jpg', '/fixtures/women-silk-blouse-collar.jpg', '/fixtures/women-silk-blouse-drape.jpg', '/fixtures/women-silk-blouse-texture.jpg'] },
+              'linen-shirt': { title: 'Studio Oversized Linen Shirt', bc: 'Home / Women / Shirts', price: '₹2,890', desc: 'Spun from artisanal French flax linen, pre-washed for effortless softness with an easy camp collar and relaxed boxy drape.', col: 'Terracotta Blush', sw: [{hex: '#c47b6a', name: 'Terracotta Blush'}, {hex: '#e2d8ce', name: 'Raw Flax'}], g: ['/fixtures/women-linen-shirt.jpg', '/fixtures/women-linen-shirt-collar.jpg', '/fixtures/women-linen-shirt-drape.jpg', '/fixtures/women-linen-shirt-texture.jpg'] },
+              'merino-knit': { title: 'Ribbed Merino Wool Knit Top', bc: 'Home / Women / Knitwear', price: '₹3,890', desc: 'Finely spun 19.5-micron extrafine merino wool in a delicate ribbed gauge with an elegant boatneck collar and long clean sleeves.', col: 'Soft Camel', sw: [{hex: '#c8a782', name: 'Soft Camel'}, {hex: '#e3ded8', name: 'Oat Melange'}], g: ['/fixtures/women-merino-knit.jpg', '/fixtures/women-merino-knit-collar.jpg', '/fixtures/women-merino-knit-drape.jpg', '/fixtures/women-merino-knit-texture.jpg'] },
+              'poplin-shirt': { title: 'Relaxed Giza Poplin Shirt', bc: 'Home / Men / Shirts', price: '₹2,690', desc: 'Tailored from crisp 120s two-ply Egyptian Giza cotton poplin. Clean point collar, mother-of-pearl buttons, and structured drape.', col: 'Chalk White', sw: [{hex: '#ffffff', name: 'Chalk White'}, {hex: '#d2dce6', name: 'Light Sky'}], g: ['/fixtures/men-poplin-shirt.jpg', '/fixtures/men-poplin-shirt-collar.jpg', '/fixtures/men-poplin-shirt-drape.jpg', '/fixtures/men-poplin-shirt-texture.jpg'] },
+              'linen-kurta': { title: 'Linen Studio Kurta Tunic', bc: 'Home / Men / Shirts', price: '₹2,490', desc: 'Crafted from textured hand-spun flax linen featuring a clean mandarin collar, hidden horn button placket, and relaxed vented hem.', col: 'Natural Oatmeal', sw: [{hex: '#dcd6cc', name: 'Natural Oatmeal'}, {hex: '#3d3c39', name: 'Charcoal Flax'}], g: ['/fixtures/linen-studio-kurta.jpg', '/fixtures/linen-studio-kurta-collar.jpg', '/fixtures/linen-studio-kurta-drape.jpg', '/fixtures/linen-studio-kurta-texture.jpg'] },
+              'overshirt': { title: 'Structured Twill Overshirt', bc: 'Home / Men / Outerwear', price: '₹4,290', desc: 'Heavyweight 340gsm Japanese cotton twill garment-dyed in slate indigo. Features dual utilitarian chest flap pockets and reinforced stitching.', col: 'Slate Indigo', sw: [{hex: '#3d4954', name: 'Slate Indigo'}, {hex: '#262627', name: 'Deep Charcoal'}], g: ['/fixtures/men-overshirt.jpg', '/fixtures/men-overshirt-collar.jpg', '/fixtures/men-overshirt-drape.jpg', '/fixtures/men-overshirt-texture.jpg'] }
+            };
+            var d = cat[it];
+            if (d) {
+              document.title = d.title + ' — Studio Aelia';
+              var m = document.getElementById('main-product-img');
+              if (m) { m.src = d.g[0]; m.alt = d.title; }
+              var thumbs = document.querySelectorAll('.thumb-btn');
+              thumbs.forEach(function(btn, i) {
+                if (d.g[i]) {
+                  btn.setAttribute('data-img', d.g[i]);
+                  var im = btn.querySelector('img');
+                  if (im) { im.src = d.g[i]; im.alt = d.title + ' view ' + (i+1); }
+                }
+              });
+              var b = document.querySelector('.breadcrumb'); if (b) b.textContent = d.bc;
+              var t = document.querySelector('.product-title'); if (t) t.textContent = d.title;
+              var pr = document.querySelector('.product-price'); if (pr) pr.textContent = d.price;
+              var de = document.querySelector('.product-desc'); if (de) de.textContent = d.desc;
+              var opt = document.querySelector('.option-title'); if (opt) opt.textContent = 'Colour: ' + d.col;
+              var sw = document.querySelector('.swatches-row');
+              if (sw && d.sw) {
+                sw.innerHTML = d.sw.map(function(s, idx) {
+                  return '<button class="swatch-circle ' + (idx === 0 ? 'active' : '') + '" style="background-color: ' + s.hex + ';" aria-label="' + s.name + '" title="' + s.name + '"></button>';
+                }).join('');
+              }
+            }
+          } catch(e) {}
+        })();
+      </script>
 
       <div class="option-block">
         <div class="option-label-row">
@@ -1382,17 +1731,38 @@
         </div>
       </div>
 
-      <div class="tryon-viewport-wrap">
+      <div class="tryon-viewport-wrap" id="tryon-viewport-wrap">
         <!-- Live Video Element for WebRTC remote stream -->
         <video id="tryon-video" autoplay playsinline muted></video>
         
+        <!-- View Controls (Wide / Fill Zoom) -->
+        <div class="tryon-view-controls">
+          <button id="tryon-zoom-out-btn" class="tryon-view-btn active" title="Wide View (Zoom Out)" aria-label="Wide View">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              <line x1="8" y1="11" x2="14" y2="11"></line>
+            </svg>
+            <span>Wide</span>
+          </button>
+          <button id="tryon-zoom-in-btn" class="tryon-view-btn" title="Fill View" aria-label="Fill View">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              <line x1="11" y1="8" x2="11" y2="14"></line>
+              <line x1="8" y1="11" x2="14" y2="11"></line>
+            </svg>
+            <span>Fill</span>
+          </button>
+        </div>
+
         <!-- Loading / Connecting Overlay -->
         <div id="tryon-loader" class="tryon-loader">
           <div class="tryon-spinner"></div>
           <p id="tryon-loader-text">Starting Camera &amp; Decart WebRTC...</p>
         </div>
 
-        <!-- Telemetry bar -->
+        <!-- Telemetry bar (visible only with ?debug=1) -->
         <div class="tryon-telemetry" id="tryon-telemetry">
           <span>Decart Lucy VTON</span>
           <span id="tryon-fps">30 FPS</span>
@@ -1427,5 +1797,56 @@
   </div>
 
   <script type="module" src="/src/pdp.ts"></script>
+  <script>
+    document.addEventListener('click', function(e) {
+      var a = e.target.closest('a');
+      if (!a || !a.href) return;
+      try {
+        var targetUrl = new URL(a.href, window.location.origin);
+        if (targetUrl.origin !== window.location.origin) return;
+        if (e.metaKey || e.ctrlKey || e.shiftKey || a.target === '_blank') return;
+
+        var p = targetUrl.searchParams;
+        if (p.has('category')) {
+          e.preventDefault();
+          window.location.href = '/collection/index.html' + targetUrl.search + targetUrl.hash;
+          return;
+        }
+        if ((targetUrl.pathname === '/' || targetUrl.pathname.endsWith('index.html')) && targetUrl.search === '') {
+          e.preventDefault();
+          window.location.href = '/index.html';
+          return;
+        }
+      } catch (_) {}
+    });
+
+    // Mobile Navigation Drawer Toggle
+    (function() {
+      var menuBtn = document.getElementById('mobile-menu-btn');
+      var drawer = document.getElementById('mobile-drawer');
+      var drawerClose = document.getElementById('mobile-drawer-close');
+      var drawerBackdrop = document.getElementById('mobile-drawer-backdrop');
+
+      function openDrawer() {
+        if (drawer) {
+          drawer.classList.add('open');
+          drawer.setAttribute('aria-hidden', 'false');
+          document.body.style.overflow = 'hidden';
+        }
+      }
+
+      function closeDrawer() {
+        if (drawer) {
+          drawer.classList.remove('open');
+          drawer.setAttribute('aria-hidden', 'true');
+          document.body.style.overflow = '';
+        }
+      }
+
+      if (menuBtn) menuBtn.addEventListener('click', openDrawer);
+      if (drawerClose) drawerClose.addEventListener('click', closeDrawer);
+      if (drawerBackdrop) drawerBackdrop.addEventListener('click', closeDrawer);
+    })();
+  </script>
 </body>
 </html>
