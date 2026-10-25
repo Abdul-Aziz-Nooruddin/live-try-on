@@ -1,0 +1,47 @@
+{
+  "run_id": "2026-10-22-0618-teleprompter-review",
+  "status": "completed",
+  "started_at": "2026-10-22T06:52:02Z",
+  "last_activity_at": "2026-10-22T07:25:34.474552+00:00",
+  "completed_at": "2026-10-22T07:25:34.474552+00:00",
+  "current_stage": 1,
+  "stages_completed": [
+    1
+  ],
+  "stages_pending": [],
+  "stages": [
+    {
+      "index": 1,
+      "name": "design-review",
+      "status": "completed",
+      "started_at": "2026-10-22T07:07:52.227781+00:00",
+      "completed_at": "2026-10-22T07:25:34.474552+00:00",
+      "verdict_path": "stages/1-design-review/verdict.md",
+      "decision_source": "format-fallback"
+    }
+  ],
+  "checkpoint": {
+    "paused_after_stage": null,
+    "paused_at": null,
+    "type": null,
+    "next_stage": null
+  },
+  "budget_remaining": {
+    "wall_clock_sec": 0,
+    "tokens": 0
+  },
+  "approval": {
+    "approved": true,
+    "user_reply": "a",
+    "scope": "Revised Gemini-only design review and subsequent requested separate-project build"
+  },
+  "turns_dispatched": 4,
+  "resume_prerequisites": [
+    "Configure Gemini credentials locally without exposing them in chat",
+    "Audit and acquire an isolated Gemini CLI; verify headless authentication"
+  ],
+  "implementation_started": false,
+  "review_resumed_at": "2026-10-22T07:07:52.227781+00:00",
+  "review_complete_with_fallback": true,
+  "review_approval": false
+}

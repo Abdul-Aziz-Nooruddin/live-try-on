@@ -1,0 +1,23 @@
+- document:
+  - main:
+    - img "Vaniger"
+    - heading "Welcome back" [level=1]
+    - paragraph: Sign in to continue to your personal dashboard.
+    - textbox "Enter your email":
+      - /placeholder: " "
+    - text: Enter your email
+    - textbox "Enter your password":
+      - /placeholder: " "
+    - text: Enter your password
+    - button "Show password"
+    - checkbox "Remember me" [checked]
+    - text: Remember me
+    - link "Forgot password?":
+      - /url: /forgot-password
+    - button "Log In"
+    - button "Sign in with Google"
+    - paragraph:
+      - text: Don't have an account?
+      - link "Sign up":
+        - /url: /signup
+  - alert

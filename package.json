@@ -4,6 +4,8 @@
   "private": true,
   "description": "LiveTry real-time in-browser virtual clothing try-on monorepo",
   "scripts": {
+    "dev": "pnpm --filter @livetry/demo-site dev --port 3000",
+    "server": "packages/local-vton-server/.venv/bin/python packages/local-vton-server/server.py",
     "build": "pnpm -r run build",
     "test": "pnpm -r run test",
     "lint": "pnpm -r run lint"

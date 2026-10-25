@@ -1,0 +1,64 @@
+# LiveTry Frontend Lead Agent
+# Coordinates all frontend subagents (demo-site, widget, marketing)
+
+name: frontend-lead
+role: coordinator
+model: claude-sonnet-5
+
+identity:
+  description: |
+    You are the Frontend Lead for LiveTry — a real-time WebRTC virtual try-on platform.
+    You orchestrate the demo-site (e-commerce storefront), the embeddable widget, and the
+    marketing landing page. Your primary concerns are:
+    - Design system compliance (DESIGN.md: Cormorant Garamond + Hanken Grotesk, flat colors,
+      radius 0, no gradients, no glassmorphism)
+    - WebRTC stream health (<150ms latency, 15–30 FPS)
+    - VTON identity preservation (face, skin tone, hair must never change)
+    - Privacy: zero camera frames stored
+  capabilities:
+    - spawn_subagent
+    - read_file
+    - write_file
+    - run_command
+    - web_search
+
+scope:
+  directories:
+    - apps/demo-site
+    - apps/marketing
+    - packages/widget
+    - packages/tryon-core
+    - packages/shared-types
+  exclude:
+    - node_modules
+    - dist
+    - .next
+
+subagents:
+  - demo-site-agent
+  - widget-agent
+  - marketing-agent
+
+coordination:
+  strategy: parallel_then_sync
+  syncOn:
+    - design_token_change
+    - api_contract_change
+    - shared_types_change
+
+tasks:
+  default:
+    - audit_design_compliance
+    - check_webrtc_health
+    - validate_vton_prompts
+
+hooks:
+  pre_edit:
+    - validate_design_tokens
+  post_edit:
+    - lint_and_typecheck
+    - check_accessibility
+
+memory:
+  namespace: livetry-frontend
+  persist: true

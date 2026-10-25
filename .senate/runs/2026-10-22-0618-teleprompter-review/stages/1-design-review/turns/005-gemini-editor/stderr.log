@@ -1,0 +1,25 @@
+npm warn Unknown project config "only-built-dependencies". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+Ripgrep is not available. Falling back to GrepTool.
+[STARTUP] Phase 'cleanup_ops' was started but never ended. Skipping metrics.
+[STARTUP] Cannot measure phase 'cleanup_ops': start mark 'startup:cleanup_ops:start' not found (likely cleared by reset).
+Error when talking to Gemini API Full report available at: /var/folders/x9/j_q902x15ysb6bbd2h0n6lcm0000gn/T/gemini-client-error-Turn.run-sendMessageStream-2026-10-22T07-23-43-574Z.json ModelNotFoundError: This model models/gemini-2.5-flash-lite is no longer available to new users. Please update your code to use models/gemini-3.5-flash-lite for the latest features and improvements. We recommend you to use the Interactions API (https://ai.google.dev/gemini-api/docs/get-started).
+    at classifyGoogleError (file:///Users/abdulaziz/.npm/_npx/ae6973133cad079f/node_modules/@google/gemini-cli/bundle/chunk-DKZARV6U.js:308323:12)
+    at retryWithBackoff (file:///Users/abdulaziz/.npm/_npx/ae6973133cad079f/node_modules/@google/gemini-cli/bundle/chunk-DKZARV6U.js:309095:29)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async GeminiChat.makeApiCallAndProcessStream (file:///Users/abdulaziz/.npm/_npx/ae6973133cad079f/node_modules/@google/gemini-cli/bundle/chunk-DKZARV6U.js:334134:28)
+    at async GeminiChat.streamWithRetries (file:///Users/abdulaziz/.npm/_npx/ae6973133cad079f/node_modules/@google/gemini-cli/bundle/chunk-DKZARV6U.js:333829:29)
+    at async Turn.run (file:///Users/abdulaziz/.npm/_npx/ae6973133cad079f/node_modules/@google/gemini-cli/bundle/chunk-DKZARV6U.js:334873:24)
+    at async GeminiClient.processTurn (file:///Users/abdulaziz/.npm/_npx/ae6973133cad079f/node_modules/@google/gemini-cli/bundle/chunk-DKZARV6U.js:348818:22)
+    at async GeminiClient.sendMessageStream (file:///Users/abdulaziz/.npm/_npx/ae6973133cad079f/node_modules/@google/gemini-cli/bundle/chunk-DKZARV6U.js:348915:14)
+    at async file:///Users/abdulaziz/.npm/_npx/ae6973133cad079f/node_modules/@google/gemini-cli/bundle/gemini-GLQ4MVLB.js:12219:26
+    at async main (file:///Users/abdulaziz/.npm/_npx/ae6973133cad079f/node_modules/@google/gemini-cli/bundle/gemini-GLQ4MVLB.js:17814:5) {
+  code: 404
+}
+{
+  "session_id": "b564fb79-e176-4aae-91e2-e2a00f774e59",
+  "error": {
+    "type": "Error",
+    "message": "This model models/gemini-2.5-flash-lite is no longer available to new users. Please update your code to use models/gemini-3.5-flash-lite for the latest features and improvements. We recommend you to use the Interactions API (https://ai.google.dev/gemini-api/docs/get-started).",
+    "code": 1
+  }
+}

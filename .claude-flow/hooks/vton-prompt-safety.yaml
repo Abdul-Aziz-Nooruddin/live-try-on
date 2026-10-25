@@ -1,0 +1,42 @@
+# Pre-Send Hook: VTON Prompt Safety Gate
+# Fires before any agent edits VTON prompt strings
+# Blocks prompts that could cause identity substitution
+
+name: vton-prompt-safety
+event: pre_edit
+scope:
+  - apps/demo-site/src/pdp.ts
+  - packages/tryon-core/src/**/*.ts
+  - packages/widget/src/**/*.ts
+
+checks:
+  - name: no_face_substitution
+    pattern: "replace.*face|substitute.*face|different.*person|new face|change.*appearance"
+    message: "CRITICAL: Prompt instructs VTON to change the user's face/identity. BLOCKED."
+    severity: error
+
+  - name: no_body_change
+    pattern: "different body|change body|replace body|new body type"
+    message: "CRITICAL: Prompt instructs VTON to change the user's body. BLOCKED."
+    severity: error
+
+  - name: must_preserve_identity
+    pattern: "preserve|keep.*face|maintain.*identity|original.*person"
+    message: "INFO: Prompt correctly includes identity preservation instruction."
+    severity: info
+    required: true  # Must be present
+
+  - name: no_background_bleed
+    pattern: "change.*background|new background|replace.*background"
+    message: "WARNING: Background modification should not be in garment-swap prompts."
+    severity: warning
+
+required_phrases:
+  - "preserve the person's face"
+  - "preserve skin tone"
+  - "keep hair"
+
+onViolation:
+  error: block_edit
+  warning: log_and_continue
+  missing_required: block_edit

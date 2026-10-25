@@ -1,0 +1,231 @@
+{
+  "evidence_id": "ev_41b7b3811a8248f5b130a5a4ab656f20f390eb2b935d52c2e2173684f0d8b3ce",
+  "provider": {
+    "id": "rea-playwright-browser-scenario",
+    "name": "REA Playwright browser scenario capture provider",
+    "version": "1"
+  },
+  "confidence": "observed",
+  "authority": "controlled-replay",
+  "limitations": [
+    "Artifact identity is unavailable for this observation.",
+    "Event sequence records provider receipt order; simultaneous browser causality is not inferred.",
+    "Network content is retained only when selected; Playwright response-body bytes are API results and are not guaranteed to match wire bytes.",
+    "Request bytes are limited to what Playwright exposes; not_exposed does not establish body absence or multipart file coverage.",
+    "Network content reads settle within 5 seconds each and the observer does not request bodies from unfinished responses.",
+    "Playwright scenario events do not expose request initiator stacks; receipt order does not prove causality.",
+    "Storage values are hashed only after declared-secret redaction.",
+    "Browser host platform and architecture were not observed."
+  ],
+  "browser": {
+    "mode": "launch",
+    "process_ownership": "provider-owned",
+    "cleanup": "terminated-owned-process",
+    "product": "Chromium",
+    "version": "156.0.8078.47"
+  },
+  "steps": [
+    {
+      "step_index": 0,
+      "step_id": "scenario_start",
+      "action": "goto_start",
+      "elapsed_ms": 11108,
+      "before_url": {
+        "url": "about:blank",
+        "origin": null,
+        "query_parameter_names": [],
+        "redacted": false
+      },
+      "after_url": {
+        "url": "https://www.vaniger.com/",
+        "origin": "https://www.vaniger.com",
+        "query_parameter_names": [],
+        "redacted": false
+      },
+      "event_sequence_start": 1,
+      "event_sequence_end": 350,
+      "completeness": {
+        "status": "complete",
+        "equality_eligible": true,
+        "missing_sections": [],
+        "truncated_sections": []
+      },
+      "status": "completed",
+      "error": null,
+      "artifact_states": {
+        "screenshot": "not_requested",
+        "dom": "captured",
+        "accessibility": "captured",
+        "url": "captured",
+        "history": "not_requested",
+        "storage": "not_requested"
+      }
+    },
+    {
+      "step_index": 1,
+      "step_id": "homepage-settle",
+      "action": "wait_for_timeout",
+      "elapsed_ms": 1524,
+      "before_url": {
+        "url": "https://www.vaniger.com/",
+        "origin": "https://www.vaniger.com",
+        "query_parameter_names": [],
+        "redacted": false
+      },
+      "after_url": {
+        "url": "https://www.vaniger.com/",
+        "origin": "https://www.vaniger.com",
+        "query_parameter_names": [],
+        "redacted": false
+      },
+      "event_sequence_start": 351,
+      "event_sequence_end": 379,
+      "completeness": {
+        "status": "complete",
+        "equality_eligible": true,
+        "missing_sections": [],
+        "truncated_sections": []
+      },
+      "status": "completed",
+      "error": null,
+      "artifact_states": {
+        "screenshot": "not_requested",
+        "dom": "captured",
+        "accessibility": "captured",
+        "url": "captured",
+        "history": "not_requested",
+        "storage": "not_requested"
+      }
+    },
+    {
+      "step_index": 2,
+      "step_id": "open-teleprompter-faq",
+      "action": "click",
+      "elapsed_ms": 10029,
+      "before_url": {
+        "url": "https://www.vaniger.com/",
+        "origin": "https://www.vaniger.com",
+        "query_parameter_names": [],
+        "redacted": false
+      },
+      "after_url": {
+        "url": "https://www.vaniger.com/",
+        "origin": "https://www.vaniger.com",
+        "query_parameter_names": [],
+        "redacted": false
+      },
+      "event_sequence_start": 380,
+      "event_sequence_end": 399,
+      "completeness": {
+        "status": "incomplete",
+        "equality_eligible": false,
+        "missing_sections": [
+          "action"
+        ],
+        "truncated_sections": []
+      },
+      "status": "failed",
+      "error": "Analysis operation timed out after 10000ms: capture_browser_scenario",
+      "artifact_states": {
+        "screenshot": "not_requested",
+        "dom": "captured",
+        "accessibility": "captured",
+        "url": "captured",
+        "history": "not_requested",
+        "storage": "not_requested"
+      }
+    },
+    {
+      "step_index": 3,
+      "step_id": "follow-login-link",
+      "action": "click",
+      "elapsed_ms": 0,
+      "before_url": {
+        "url": "https://www.vaniger.com/",
+        "origin": "https://www.vaniger.com",
+        "query_parameter_names": [],
+        "redacted": false
+      },
+      "after_url": {
+        "url": "https://www.vaniger.com/",
+        "origin": "https://www.vaniger.com",
+        "query_parameter_names": [],
+        "redacted": false
+      },
+      "event_sequence_start": 400,
+      "event_sequence_end": 399,
+      "completeness": {
+        "status": "incomplete",
+        "equality_eligible": false,
+        "missing_sections": [
+          "accessibility",
+          "action",
+          "dom",
+          "url"
+        ],
+        "truncated_sections": []
+      },
+      "status": "cancelled",
+      "error": "not executed after an earlier action failure",
+      "artifact_states": {
+        "screenshot": "not_requested",
+        "dom": "missing",
+        "accessibility": "missing",
+        "url": "missing",
+        "history": "not_requested",
+        "storage": "not_requested"
+      }
+    },
+    {
+      "step_index": 4,
+      "step_id": "login-settle",
+      "action": "wait_for_timeout",
+      "elapsed_ms": 0,
+      "before_url": {
+        "url": "https://www.vaniger.com/",
+        "origin": "https://www.vaniger.com",
+        "query_parameter_names": [],
+        "redacted": false
+      },
+      "after_url": {
+        "url": "https://www.vaniger.com/",
+        "origin": "https://www.vaniger.com",
+        "query_parameter_names": [],
+        "redacted": false
+      },
+      "event_sequence_start": 400,
+      "event_sequence_end": 399,
+      "completeness": {
+        "status": "incomplete",
+        "equality_eligible": false,
+        "missing_sections": [
+          "accessibility",
+          "action",
+          "dom",
+          "url"
+        ],
+        "truncated_sections": []
+      },
+      "status": "cancelled",
+      "error": "not executed after an earlier action failure",
+      "artifact_states": {
+        "screenshot": "not_requested",
+        "dom": "missing",
+        "accessibility": "missing",
+        "url": "missing",
+        "history": "not_requested",
+        "storage": "not_requested"
+      }
+    }
+  ],
+  "events_type": "dict",
+  "event_meta": {
+    "retained": 399,
+    "dropped": 0,
+    "omissions": {
+      "by_kind": [],
+      "network_transactions": [],
+      "network_transaction_range": null
+    }
+  }
+}

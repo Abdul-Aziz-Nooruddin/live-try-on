@@ -2,33 +2,28 @@
 
 Standing rules for any coding agent working in this repository. If your tool supports workspace or project rules, load this file there as well.
 
-## Scope and honesty
-1. Build only what `/docs` specifies. Out-of-scope items are listed in `MASTER_PROMPT.md` section 4.
-2. Never claim a test, benchmark, or device result you did not actually run. Report measured numbers.
-3. If a target cannot be met, stop and report: measured value, target, and 2-3 options with trade-offs. Record the decision in `docs/CHANGELOG_DECISIONS.md`.
-4. Never fabricate model names, API endpoints, or library features. If unsure, check the official documentation and cite the page in the decision log.
+## 1. Core Architecture & Scope
+1. **Real-Time Video-to-Video AI Engine**: LiveTry uses a low-latency WebRTC streaming architecture powered by Decart's `lucy-vton-latest` foundation model (`@decartai/sdk`), matching the commercial benchmark set by Anywhere (`tryanywear.ai`).
+2. **Generative Clothing Substitution**: Live try-on performs instruction-guided video inpainting using the `"Substitute the current top with [garment description]"` formula, completely replacing the shopper's current outfit, hugging the neck and collar accurately, and handling natural hand/finger occlusion.
+3. **Dual Operation**:
+   - **Live Video Streaming Mode**: WebRTC peer stream at 720p @ 15–30 FPS (<150ms latency) for fluid interactive posing.
+   - **Editorial 4K Snapshot Mode**: Generative high-resolution still capture on button press.
 
-## Privacy (hard rules)
-5. Ephemeral Generative Virtual Try-On: For generative try-on inference, high-resolution snapshots captured with explicit user consent are streamed over encrypted TLS to an ephemeral V-TON inference worker. Customer images are processed strictly in-memory/GPU RAM and immediately discarded. No customer photos are ever written to persistent storage, cached, or used for model training. Real-time camera viewfinder remains 100% on-device.
-6. Camera access only after a user click on Try On and an explicit in-page consent screen.
-7. Stop all camera tracks immediately when the modal closes or the tab is hidden for more than 10 seconds.
-8. Analytics events contain no images, no landmark coordinates, no persistent identifiers beyond an anonymous per-session id. See `docs/06_PRIVACY_AND_SAFETY.md`.
+## 2. Privacy & Ephemeral Data Handling
+4. **Zero Persistent Storage**: Real-time video frames streamed during WebRTC sessions exist strictly in GPU VRAM and are processed ephemerally. Zero camera frames, video clips, or shopper biometrics are ever written to disk, stored, or used for model training.
+5. **Ephemeral Client Tokens**: Master API keys remain on the server; the browser widget requests short-lived (10-minute TTL) ephemeral tokens via `/api/tryon/token`.
+6. **Explicit Consent**: The webcam is never accessed automatically. Camera access requires an explicit user click on the "Try On" button and consent screen.
+7. **Immediate Cut-Off**: Stop all camera media tracks immediately when the modal closes or if the browser tab becomes hidden.
 
-## Code quality
-9. TypeScript strict mode. No `any` without a comment explaining why.
-10. Every module that does math on landmarks or meshes has unit tests with fixed fixtures.
-11. Rendering and vision code must be deterministic when fed recorded fixture videos (seeded, no wall-clock dependence besides frame timestamps).
-12. Performance-critical loops allocate no per-frame objects where avoidable. Reuse buffers and typed arrays.
-13. Every PR/commit is small, builds, and passes lint and tests.
+## 3. Code Quality & Standards
+8. **TypeScript Strict Mode**: Zero TypeScript errors allowed. Run `pnpm -r exec tsc --noEmit` before concluding any task.
+9. **No Unused Code or Dead Overlays**: Do not mix obsolete 2D/3D mesh sticker deformation or manual canvas alpha-clipping with the neural video stream.
+10. **Clean Modular Surfaces**:
+    - `packages/widget`: Vanilla TypeScript, Shadow DOM isolation, zero bloated frameworks.
+    - `packages/tryon-core`: Core engine client, WebRTC peer connection manager, session lifecycle.
+    - `packages/local-vton-server`: FastAPI token minting proxy and configuration provider.
+    - `apps/demo-site`: Luxury apparel PDP embedding the widget.
 
-## Workflow
-14. Work milestone by milestone (`docs/07_ROADMAP_AND_TASKS.md`). Do not begin the next milestone until the current one's acceptance criteria are demonstrated with measurements.
-15. After each milestone, update `docs/CHANGELOG_DECISIONS.md` and list known issues.
-16. Ask the user a question only when blocked. Offer a recommended default with the question.
-
-## UX rules
-17. The UI always states "Shows how it looks, not how it fits." near the try-on view.
-18. Never show a Try On button for a product whose ingestion status is not `approved`.
-19. Degrade gracefully: no camera, denied permission, unsupported browser, low FPS. Each has a defined message and fallback (see PRD section 8).
-20. Before every designing or coding task, consult and strictly enforce `docs/09_UI_UX_STACK.md`. Never cross surface boundaries (e.g. no React, GSAP, or Lenis in the widget) and log all vetted dependencies in `docs/CHANGELOG_DECISIONS.md`.
-21. Strictly enforce `DESIGN.md`. All storefront, try-on modal, and widget UI must look like a quiet, editorial fashion retailer (warm off-white `--paper`, black text, large photography, hairline borders, Cormorant Garamond / Hanken Grotesk, radius 0, no gradients, no purple/indigo/blue, no glassmorphism, no SaaS styling, dev telemetry hidden unless `?debug=1`).
+## 4. Editorial Design System (`DESIGN.md`)
+11. **Quiet Luxury Aesthetics**: Strictly enforce `DESIGN.md`. Warm off-white (`--paper`), rich ink (`--ink`), hairline stone borders (`--stone`), Cormorant Garamond display font, Hanken Grotesk body font, zero border-radii (`border-radius: 0`), zero gradients, zero purple/blue SaaS styles.
+12. **Honest Copy**: The try-on interface always states: *"Shows how it looks, not how it fits."*

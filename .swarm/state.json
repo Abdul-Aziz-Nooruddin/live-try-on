@@ -1,0 +1,42 @@
+{
+  "id": "swarm-mvigctdn",
+  "swarmId": "swarm-mvigctdn",
+  "objective": "Full audit of LiveTry repository. FRONTEND (apps/demo-site, packages/widget): DESIGN.md compliance (flat colors, Cormorant Garamond + Hanken Grotesk, border-radius 0, no gradients, no glassmorphism, no purple/blue), VTON prompt safety (no face/body substitution, identity-preservation phrases required), correct product-to-garment routing. BACKEND (packages/local-vton-server): ephemeral tokens, no frame storage, session TTL. HARVEY (harvey/): mandatory email deliverability verification, rate limiting, 7-day dedup. Report all violations with file + line number.",
+  "strategy": "development",
+  "status": "initialized",
+  "agents": 8,
+  "agentPlan": [
+    {
+      "role": "Coordinator",
+      "type": "coordinator",
+      "count": 1,
+      "purpose": "Orchestrate workflow"
+    },
+    {
+      "role": "Architect",
+      "type": "architect",
+      "count": 1,
+      "purpose": "System design"
+    },
+    {
+      "role": "Coder",
+      "type": "coder",
+      "count": 3,
+      "purpose": "Implementation"
+    },
+    {
+      "role": "Tester",
+      "type": "tester",
+      "count": 2,
+      "purpose": "Quality assurance"
+    },
+    {
+      "role": "Reviewer",
+      "type": "reviewer",
+      "count": 1,
+      "purpose": "Code review"
+    }
+  ],
+  "startedAt": "2026-10-21T18:35:25.538Z",
+  "parallel": true
+}

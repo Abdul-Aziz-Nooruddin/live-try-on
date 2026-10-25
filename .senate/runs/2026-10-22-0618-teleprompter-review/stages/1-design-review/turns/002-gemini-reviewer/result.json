@@ -1,0 +1,142 @@
+{
+  "contract_ok": true,
+  "text": "Summary: Proposal for a dual-source live teleprompter addressing Gemini's 10-minute session limits and real-time coaching.\n\nStrengths: Robust epoch-based rollover, token cancellation for stale responses, and secure server-side key management.\n\nMajor concerns with concrete fixes: The design assumes stopping `getDisplayMedia` video preserves audio. *Fix:* Request audio-only streams directly via explicit constraints (`audio: true, video: false`) rather than dropping video post-capture.\n\nMinor concerns: Unverified runtime inference quotas under continuous dual-stream load.\n\nRecommendation: Minor revision.\n\n",
+  "parsed_output": {
+    "recommendation": "minor_revision",
+    "confidence": 0.9,
+    "blocking_concerns": [
+      "Unverified browser behavior for stopped getDisplayMedia video tracks; requires explicit audio-only stream constraints."
+    ]
+  },
+  "context_delta": null,
+  "private_delta": null,
+  "log_path": "stages/1-design-review/turns/002-gemini-reviewer/stdout.log",
+  "stderr_path": "stages/1-design-review/turns/002-gemini-reviewer/stderr.log",
+  "retry_log_path": null,
+  "retry_stderr_path": null,
+  "exit_code": 0,
+  "retry_count": 0,
+  "stderr_tail": null,
+  "duration_seconds": 7.868,
+  "error": null,
+  "stats": {
+    "models": {
+      "gemini-3.5-flash-lite": {
+        "api": {
+          "totalRequests": 1,
+          "totalErrors": 0,
+          "totalLatencyMs": 5597,
+          "errorsByType": {}
+        },
+        "tokens": {
+          "input": 1265,
+          "prompt": 1265,
+          "candidates": 189,
+          "total": 2445,
+          "cached": 0,
+          "thoughts": 991,
+          "tool": 0
+        },
+        "roles": {
+          "main": {
+            "totalRequests": 1,
+            "totalErrors": 0,
+            "totalLatencyMs": 5597,
+            "tokens": {
+              "input": 1265,
+              "prompt": 1265,
+              "candidates": 189,
+              "total": 2445,
+              "cached": 0,
+              "thoughts": 991,
+              "tool": 0
+            }
+          }
+        }
+      }
+    },
+    "tools": {
+      "totalCalls": 0,
+      "totalSuccess": 0,
+      "totalFail": 0,
+      "totalDurationMs": 0,
+      "totalDecisions": {
+        "accept": 0,
+        "reject": 0,
+        "modify": 0,
+        "auto_accept": 0
+      },
+      "byName": {}
+    },
+    "files": {
+      "totalLinesAdded": 0,
+      "totalLinesRemoved": 0
+    }
+  },
+  "stats_attempts": [
+    {
+      "models": {
+        "gemini-3.5-flash-lite": {
+          "api": {
+            "totalRequests": 1,
+            "totalErrors": 0,
+            "totalLatencyMs": 5597,
+            "errorsByType": {}
+          },
+          "tokens": {
+            "input": 1265,
+            "prompt": 1265,
+            "candidates": 189,
+            "total": 2445,
+            "cached": 0,
+            "thoughts": 991,
+            "tool": 0
+          },
+          "roles": {
+            "main": {
+              "totalRequests": 1,
+              "totalErrors": 0,
+              "totalLatencyMs": 5597,
+              "tokens": {
+                "input": 1265,
+                "prompt": 1265,
+                "candidates": 189,
+                "total": 2445,
+                "cached": 0,
+                "thoughts": 991,
+                "tool": 0
+              }
+            }
+          }
+        }
+      },
+      "tools": {
+        "totalCalls": 0,
+        "totalSuccess": 0,
+        "totalFail": 0,
+        "totalDurationMs": 0,
+        "totalDecisions": {
+          "accept": 0,
+          "reject": 0,
+          "modify": 0,
+          "auto_accept": 0
+        },
+        "byName": {}
+      },
+      "files": {
+        "totalLinesAdded": 0,
+        "totalLinesRemoved": 0
+      }
+    }
+  ],
+  "token_totals": {
+    "input": 1265,
+    "prompt": 1265,
+    "candidates": 189,
+    "total": 2445,
+    "cached": 0,
+    "thoughts": 991,
+    "tool": 0
+  },
+  "tokens_estimated": false
+}

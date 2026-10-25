@@ -140,7 +140,7 @@ function closeModal() {
 
 function setupDevPanel() {
   if (!devTweakpaneContainer) return;
-  const pane = new Pane({ container: devTweakpaneContainer, title: 'Dev Controls' });
+  const pane: any = new Pane({ container: devTweakpaneContainer, title: 'Dev Controls' });
 
   pane.addBinding(PARAMS, 'shoulderEase', { min: 0.0, max: 0.15, step: 0.01, label: 'Shoulder Ease' })
     .on('change', () => rebuildTracker());

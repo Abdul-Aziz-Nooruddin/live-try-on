@@ -1,0 +1,68 @@
+# Harvey Outreach Pipeline Workflow
+# Autonomous B2B lead generation and email outreach
+
+name: harvey-pipeline
+version: "1.0.0"
+description: |
+  Autonomous outreach pipeline. Runs on weekday mornings:
+  1. Scrape new fashion retailer leads
+  2. Verify email deliverability (mandatory gate)
+  3. Personalize and stage emails
+  4. Send batch (rate-limited)
+  5. Audit bounces at EOD
+
+triggers:
+  - manual
+  - cron: "0 8 * * 1-5"  # 8 AM Mon-Fri
+
+agents:
+  lead: backend-lead
+  worker: harvey-agent
+
+phases:
+  - name: scrape
+    steps:
+      - agent: harvey-agent
+        command: "cd harvey && python -m harvey scrape --limit 20 --output /tmp/new-leads.csv"
+        timeout: 300s
+
+  - name: verify
+    dependsOn: [scrape]
+    steps:
+      - agent: harvey-agent
+        command: "cd harvey && python -m harvey verify --input /tmp/new-leads.csv"
+        timeout: 120s
+        # This runs verify_email_deliverability() on all scraped leads
+        # Leads with invalid MX are dropped and logged to .claude-flow/logs/dropped-leads.csv
+
+  - name: stage
+    dependsOn: [verify]
+    steps:
+      - agent: harvey-agent
+        command: "cd harvey && python -m harvey stage --verified-only"
+        timeout: 60s
+
+  - name: send
+    dependsOn: [stage]
+    approval: auto  # Change to 'human' for manual approval before send
+    steps:
+      - agent: harvey-agent
+        command: "cd harvey && python -m harvey send --rate-limit 10/hour --daily-cap 50"
+        timeout: 3600s  # Up to 1 hour for full batch
+
+  - name: audit
+    trigger: cron "0 17 * * 1-5"
+    steps:
+      - agent: harvey-agent
+        command: "cd harvey && python -m harvey audit-bounces --update-blocklist"
+        timeout: 120s
+
+output:
+  logs: .claude-flow/logs/harvey-pipeline.log
+  metrics:
+    - leads_scraped
+    - leads_verified
+    - emails_staged
+    - emails_sent
+    - bounce_rate
+    - open_rate

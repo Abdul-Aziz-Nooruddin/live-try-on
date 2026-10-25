@@ -1,6 +1,3 @@
-import { createFocusTrap } from 'focus-trap';
-import type { GarmentAsset } from '@livetry/shared-types';
-
 export interface LiveTryInitOptions {
   shopId: string;
   productId?: string;
@@ -16,6 +13,14 @@ export class LiveTryWidget {
 
   constructor(options: LiveTryInitOptions) {
     this.options = options;
+  }
+
+  public getOptions(): LiveTryInitOptions {
+    return this.options;
+  }
+
+  public getShadowRoot(): ShadowRoot | null {
+    return this.shadowRoot;
   }
 
   public init(): void {

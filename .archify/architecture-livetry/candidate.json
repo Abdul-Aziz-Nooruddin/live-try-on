@@ -1,0 +1,228 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "LiveTry — Real-Time Video-to-Video Virtual Try-On Architecture",
+    "subtitle": "Decart Lucy VTON WebRTC Streaming & Storefront Architecture",
+    "output": "architecture.html",
+    "visual_preset": "editorial",
+    "quality_profile": "standard",
+    "animation": "trace"
+  },
+  "components": [
+    {
+      "id": "browser_user",
+      "type": "external",
+      "label": "Shopper",
+      "sublabel": "Browser WebCam 720p@30fps",
+      "pos": [40, 220],
+      "size": [140, 64],
+      "icon": "person"
+    },
+    {
+      "id": "pdp_client",
+      "type": "frontend",
+      "label": "Storefront PDP",
+      "sublabel": "apps/demo-site (Vite :3000)",
+      "pos": [260, 220],
+      "size": [160, 64],
+      "tag": "Vite + TS",
+      "icon": "frontend"
+    },
+    {
+      "id": "theme_engine",
+      "type": "frontend",
+      "label": "Theme Engine",
+      "sublabel": "tokens.css & theme.ts",
+      "pos": [260, 90],
+      "size": [160, 60],
+      "tag": "Animated Light/Dark",
+      "icon": "moon"
+    },
+    {
+      "id": "tryon_core",
+      "type": "frontend",
+      "label": "Try-On Core Engine",
+      "sublabel": "@livetry/tryon-core",
+      "pos": [500, 220],
+      "size": [170, 64],
+      "tag": "Multi-Model Fallback",
+      "icon": "active"
+    },
+    {
+      "id": "token_service",
+      "type": "backend",
+      "label": "Token Mint Service",
+      "sublabel": "FastAPI :8000",
+      "pos": [500, 370],
+      "size": [170, 64],
+      "tag": "Zero-Retention",
+      "icon": "security"
+    },
+    {
+      "id": "decart_auth",
+      "type": "security",
+      "label": "Decart Platform Auth",
+      "sublabel": "api.decart.ai/v1/tokens",
+      "pos": [750, 370],
+      "size": [170, 64],
+      "tag": "EdDSA Ephemeral Token",
+      "icon": "security"
+    },
+    {
+      "id": "decart_webrtc",
+      "type": "cloud",
+      "label": "Decart LiveKit SFU",
+      "sublabel": "WebRTC Media Gateway",
+      "pos": [750, 220],
+      "size": [170, 64],
+      "tag": "<150ms Latency",
+      "icon": "cloud"
+    },
+    {
+      "id": "lucy_vton",
+      "type": "cloud",
+      "label": "Lucy VTON GPU Cluster",
+      "sublabel": "lucy-vton-3.6 / lucy-2.5",
+      "pos": [1000, 220],
+      "size": [180, 64],
+      "tag": "Real-time Cloth Drape",
+      "icon": "start"
+    },
+    {
+      "id": "decart_storage",
+      "type": "database",
+      "label": "Garment Asset Cache",
+      "sublabel": "Decart Storage (file_...)",
+      "pos": [1000, 90],
+      "size": [180, 60],
+      "tag": "Pre-Cached Catalog",
+      "icon": "database"
+    },
+    {
+      "id": "comfyui_node",
+      "type": "backend",
+      "label": "ComfyUI Lucy Node",
+      "sublabel": "lucy-edit-comfyui/utils.py",
+      "pos": [500, 500],
+      "size": [170, 60],
+      "tag": "Offline Batch Studio",
+      "icon": "backend"
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Client Monorepo Surface",
+      "wraps": ["pdp_client", "theme_engine", "tryon_core"]
+    },
+    {
+      "kind": "region",
+      "label": "Decart AI Infrastructure",
+      "wraps": ["decart_auth", "decart_webrtc", "lucy_vton", "decart_storage"]
+    }
+  ],
+  "connections": [
+    {
+      "id": "user-to-pdp",
+      "from": "browser_user",
+      "to": "pdp_client",
+      "label": "WebCam stream",
+      "variant": "emphasis"
+    },
+    {
+      "id": "pdp-to-theme",
+      "from": "pdp_client",
+      "to": "theme_engine",
+      "label": "Editorial Tokens",
+      "fromSide": "top",
+      "toSide": "bottom"
+    },
+    {
+      "id": "pdp-to-core",
+      "from": "pdp_client",
+      "to": "tryon_core",
+      "label": "startStream()",
+      "variant": "emphasis"
+    },
+    {
+      "id": "core-to-tokens",
+      "from": "tryon_core",
+      "to": "token_service",
+      "label": "POST /api/tryon/token",
+      "variant": "security",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "labelDy": 24
+    },
+    {
+      "id": "tokens-to-decart-auth",
+      "from": "token_service",
+      "to": "decart_auth",
+      "label": "DECART_API_KEY",
+      "variant": "security"
+    },
+    {
+      "id": "core-to-webrtc",
+      "from": "tryon_core",
+      "to": "decart_webrtc",
+      "label": "LiveKit WebRTC",
+      "variant": "emphasis"
+    },
+    {
+      "id": "webrtc-to-lucy",
+      "from": "decart_webrtc",
+      "to": "lucy_vton",
+      "label": "RTP Video Stream",
+      "variant": "emphasis"
+    },
+    {
+      "id": "lucy-fetch-garment",
+      "from": "lucy_vton",
+      "to": "decart_storage",
+      "label": "file_... ref",
+      "variant": "dashed",
+      "fromSide": "top",
+      "toSide": "bottom"
+    },
+    {
+      "id": "token-to-comfyui",
+      "from": "token_service",
+      "to": "comfyui_node",
+      "label": "Local ComfyUI bridge",
+      "variant": "dashed",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "labelDy": 24
+    }
+  ],
+  "cards": [
+    {
+      "dot": "emerald",
+      "title": "Client Surface (apps/demo-site)",
+      "items": [
+        "Editorial PDP featuring Cormorant Garamond & Hanken Grotesk typography",
+        "Instant animated Light / Dark mode toggle with persistent localStorage",
+        "Interactive try-on modal with dynamic garment swatches and live camera binding"
+      ]
+    },
+    {
+      "dot": "cyan",
+      "title": "Real-Time AI Video Engine (packages/tryon-core)",
+      "items": [
+        "WebRTC streaming directly to Decart Lucy VTON (<150ms glass-to-glass latency)",
+        "Active stream verification with 7-second automatic multi-model failover",
+        "Zero camera retention: Frames stream dynamically in memory with no disk persistence"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Cloud Infrastructure (Decart Platform)",
+      "items": [
+        "FastAPI token gateway minting ephemeral EdDSA client tokens with 60s TTL",
+        "Decart LiveKit SFU delivering standard H.264/VP8 video at 30 FPS",
+        "Pre-cached cloud garment references for Charcoal, Oatmeal, and Olive colorways"
+      ]
+    }
+  ]
+}

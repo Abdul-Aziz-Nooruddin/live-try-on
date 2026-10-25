@@ -1,0 +1,11 @@
+{
+  "venvPath": ".",
+  "venv": "ComfyUI/.venv",
+  "extraPaths": [
+    "ComfyUI",
+    "ComfyUI/.venv/lib/python3.11/site-packages",
+    "packages/local-vton-server",
+    "packages/local-vton-server/.venv/lib/python3.11/site-packages",
+    "lucy-edit-comfyui"
+  ]
+}

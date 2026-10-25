@@ -3,16 +3,50 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Studio Aelia — Quiet Apparel & Tailoring</title>
-  <link rel="stylesheet" href="/src/tokens.css" />
+  <title>Studio Aelia — Quiet Apparel & Real-Time Virtual Fitting</title>
+  <link rel="stylesheet" href="./src/tokens.css" />
   <style>
-    /* 4.1 Header */
+    @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Hanken+Grotesk:wght@400;500;600&display=swap');
+
+    :root {
+      --paper: #F7F4EF;
+      --white: #FFFFFF;
+      --sand: #ECE7DF;
+      --stone: #D9D2C7;
+      --taupe: #6B655C;
+      --ink: #141311;
+      --charcoal: #2B2926;
+      --clay: #A24A33;
+      --moss: #3E5B45;
+      --font-display: 'Cormorant Garamond', Georgia, serif;
+      --font-body: 'Hanken Grotesk', -apple-system, sans-serif;
+      --duration-fast: 150ms;
+      --ease-editorial: cubic-bezier(0.2, 0, 0, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      border-radius: 0;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      background-color: var(--paper);
+      color: var(--ink);
+      font-family: var(--font-body);
+      min-height: 100vh;
+      line-height: 24px;
+    }
+
+    /* Announcement */
     .announcement-bar {
       background-color: var(--ink);
       color: var(--paper);
-      font-size: 12px;
+      font-size: 11px;
       line-height: 16px;
-      letter-spacing: 0.12em;
+      letter-spacing: 0.14em;
       text-transform: uppercase;
       font-weight: 500;
       height: 36px;
@@ -22,6 +56,7 @@
       padding: 0 16px;
     }
 
+    /* Main Nav */
     .main-nav {
       height: 72px;
       display: flex;
@@ -39,6 +74,8 @@
       display: flex;
       gap: 28px;
       list-style: none;
+      margin: 0;
+      padding: 0;
     }
 
     .nav-link {
@@ -48,6 +85,7 @@
       text-transform: uppercase;
       color: var(--ink);
       text-decoration: none;
+      transition: color var(--duration-fast) var(--ease-editorial);
     }
 
     .nav-link:hover {
@@ -83,98 +121,175 @@
     }
 
     .bag-count {
-      width: 16px;
-      height: 16px;
+      width: 18px;
+      height: 18px;
+      min-width: 18px;
+      box-sizing: border-box;
       background-color: var(--ink);
       color: var(--paper);
       border-radius: 50%;
       font-size: 10px;
       font-weight: 600;
+      letter-spacing: 0;
       display: inline-flex;
       align-items: center;
       justify-content: center;
+      line-height: 1;
+      text-align: center;
+      margin-left: 2px;
     }
 
-    /* 6.1 Hero */
+    /* Hero */
     .hero-section {
-      height: 80vh;
-      min-height: 540px;
-      background-color: var(--sand);
+      min-height: 78vh;
+      background-color: #1a1918;
       position: relative;
       overflow: hidden;
       display: flex;
-      align-items: flex-end;
-      padding: 64px 40px;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 80px 60px;
+    }
+
+    .hero-bg-media {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0.42;
+      filter: grayscale(20%);
     }
 
     .hero-scrim {
       position: absolute;
       inset: 0;
-      background-color: rgba(20, 19, 17, 0.25);
+      background: linear-gradient(to right, rgba(20, 19, 17, 0.85) 0%, rgba(20, 19, 17, 0.4) 60%, rgba(20, 19, 17, 0.1) 100%);
       z-index: 1;
     }
 
     .hero-content {
       position: relative;
       z-index: 2;
-      max-width: 640px;
+      max-width: 680px;
+    }
+
+    .hero-tag {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--stone);
+      margin-bottom: 16px;
+      display: block;
     }
 
     .hero-headline {
       font-family: var(--font-display);
-      font-size: 56px;
-      line-height: 62px;
-      font-weight: 500;
-      color: var(--white);
-      margin-bottom: 24px;
+      font-size: 58px;
+      line-height: 64px;
+      font-weight: 400;
+      color: var(--paper);
+      margin-bottom: 20px;
+      letter-spacing: 0.01em;
     }
 
-    .btn-text-hero {
-      font-size: 13px;
+    .hero-subhead {
+      font-size: 15px;
+      line-height: 24px;
+      color: var(--stone);
+      margin-bottom: 36px;
+      max-width: 540px;
+    }
+
+    .hero-cta-row {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .btn-hero-primary {
+      height: 48px;
+      padding: 0 28px;
+      background-color: var(--paper);
+      color: var(--ink);
+      border: 1px solid var(--paper);
+      font-size: 11px;
       font-weight: 600;
-      letter-spacing: 0.12em;
+      letter-spacing: 0.14em;
       text-transform: uppercase;
-      color: var(--white);
-      text-decoration: underline;
-      text-underline-offset: 6px;
-      background: none;
-      border: none;
-      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: all var(--duration-fast) var(--ease-editorial);
     }
 
-    /* Sections */
+    .btn-hero-primary:hover {
+      background-color: var(--white);
+      border-color: var(--white);
+    }
+
+    .btn-hero-secondary {
+      height: 48px;
+      padding: 0 28px;
+      background-color: transparent;
+      color: var(--paper);
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      justify-content: center;
+      transition: all var(--duration-fast) var(--ease-editorial);
+    }
+
+    .btn-hero-secondary:hover {
+      border-color: var(--paper);
+      background-color: rgba(255, 255, 255, 0.08);
+    }
+
+    /* Section Wrapper */
     .section-wrap {
       max-width: 1440px;
       margin: 0 auto;
-      padding: 96px 40px;
+      padding: 80px 40px;
     }
 
     .section-header {
       display: flex;
       justify-content: space-between;
-      align-items: baseline;
+      align-items: flex-end;
       margin-bottom: 36px;
+      border-bottom: 1px solid var(--stone);
+      padding-bottom: 16px;
     }
 
     .section-title {
       font-family: var(--font-display);
-      font-size: 36px;
-      line-height: 42px;
-      font-weight: 500;
+      font-size: 34px;
+      line-height: 40px;
+      font-weight: 400;
       color: var(--ink);
+      margin: 0;
     }
 
     .section-link {
-      font-size: 12px;
-      font-weight: 500;
+      font-size: 11px;
+      font-weight: 600;
       letter-spacing: 0.12em;
       text-transform: uppercase;
       color: var(--ink);
-      text-decoration: underline;
-      text-underline-offset: 4px;
+      text-decoration: none;
+      border-bottom: 1px solid var(--ink);
+      padding-bottom: 2px;
     }
 
-    /* Category Entry */
+    /* Category Portals */
     .category-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -184,142 +299,274 @@
     .category-card {
       text-decoration: none;
       color: var(--ink);
+      display: flex;
+      flex-direction: column;
     }
 
-    .category-image {
+    .category-image-wrap {
       width: 100%;
       aspect-ratio: 4 / 5;
       background-color: var(--sand);
-      border: 1px solid var(--stone);
-      margin-bottom: 16px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
       overflow: hidden;
+      margin-bottom: 16px;
+      border: 1px solid rgba(0, 0, 0, 0.06);
     }
 
-    .category-name {
+    .category-image-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transform: scale(1);
+      transition: transform 0.5s cubic-bezier(0.2, 0, 0, 1);
+    }
+
+    .category-card:hover .category-image-wrap img {
+      transform: scale(1.05);
+    }
+
+    .category-title {
       font-family: var(--font-display);
-      font-size: 28px;
-      line-height: 34px;
+      font-size: 26px;
+      line-height: 32px;
       font-weight: 500;
-      margin-bottom: 6px;
+      color: var(--ink);
+      margin-bottom: 4px;
+    }
+
+    .category-desc {
+      font-size: 13px;
+      color: var(--taupe);
+      margin-bottom: 8px;
     }
 
     /* Product Grid */
     .product-grid {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 24px;
-      row-gap: 48px;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 28px;
+      row-gap: 52px;
     }
 
     @media (max-width: 1024px) {
-      .product-grid {
-        grid-template-columns: repeat(2, 1fr);
+      .hero-section {
+        padding: 60px 24px;
+      }
+      .hero-headline {
+        font-size: 42px;
+        line-height: 48px;
+      }
+      .section-wrap {
+        padding: 56px 20px;
       }
       .category-grid {
         grid-template-columns: 1fr;
       }
-      .section-wrap {
-        padding: 56px 16px;
+      .product-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .main-nav {
+        padding: 0 20px;
+      }
+    }
+
+    @media (max-width: 580px) {
+      .product-grid {
+        grid-template-columns: 1fr;
       }
     }
 
     .product-card {
       text-decoration: none;
       color: var(--ink);
+      display: flex;
+      flex-direction: column;
     }
 
-    .product-card-img-box {
+    .product-photo-box {
       width: 100%;
       aspect-ratio: 3 / 4;
       background-color: var(--sand);
       position: relative;
+      margin-bottom: 14px;
       overflow: hidden;
-      margin-bottom: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      border: 1px solid rgba(0, 0, 0, 0.04);
     }
 
-    .product-card-badge {
+    .product-photo-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transform: scale(1);
+      transition: transform 0.45s cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
+    .product-card:hover .product-photo-box img {
+      transform: scale(1.04);
+    }
+
+    .badge-tag {
       position: absolute;
       top: 12px;
       left: 12px;
       background-color: var(--white);
-      font-size: 11px;
-      font-weight: 500;
-      letter-spacing: 0.12em;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.14em;
       text-transform: uppercase;
-      padding: 4px 10px;
+      padding: 4px 8px;
+      z-index: 2;
     }
 
-    .product-card-tryon {
-      font-size: 11px;
+    .badge-tag.sale {
+      color: var(--clay);
+    }
+
+    .card-title {
+      font-family: var(--font-body);
+      font-size: 14px;
       font-weight: 500;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
+      color: var(--ink);
+      line-height: 20px;
+      margin-bottom: 2px;
+    }
+
+    .card-sub {
+      font-size: 12px;
       color: var(--taupe);
+      margin-bottom: 6px;
+    }
+
+    .card-price-row {
       display: flex;
+      align-items: baseline;
+      gap: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--ink);
+    }
+
+    .card-price-row .original {
+      text-decoration: line-through;
+      color: var(--taupe);
+      font-size: 13px;
+    }
+
+    .card-price-row .sale {
+      color: var(--clay);
+    }
+
+    .camera-badge {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--ink);
+      display: inline-flex;
       align-items: center;
       gap: 6px;
-      margin-top: 6px;
+      margin-top: 8px;
+      padding-top: 4px;
     }
 
-    /* 6.1 Section 7: Try-On Explainer Strip */
-    .tryon-explainer-strip {
+    /* Try-On Feature Strip */
+    .tryon-strip {
       background-color: var(--sand);
       border-top: 1px solid var(--stone);
       border-bottom: 1px solid var(--stone);
-      padding: 64px 40px;
+      padding: 72px 40px;
     }
 
-    .explainer-container {
-      max-width: 1200px;
+    .tryon-strip-inner {
+      max-width: 1100px;
       margin: 0 auto;
       text-align: center;
     }
 
-    .explainer-steps {
+    .tryon-strip-tag {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--taupe);
+      margin-bottom: 12px;
+      display: block;
+    }
+
+    .tryon-strip-title {
+      font-family: var(--font-display);
+      font-size: 40px;
+      line-height: 48px;
+      font-weight: 400;
+      color: var(--ink);
+      margin-bottom: 40px;
+    }
+
+    .steps-row {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 32px;
-      margin-bottom: 32px;
+      gap: 36px;
+      margin-bottom: 40px;
+      text-align: left;
     }
 
     @media (max-width: 768px) {
-      .explainer-steps {
+      .steps-row {
         grid-template-columns: 1fr;
         gap: 24px;
       }
     }
 
-    .step-box {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 12px;
+    .step-card {
+      background-color: var(--paper);
+      border: 1px solid var(--stone);
+      padding: 28px 24px;
     }
 
-    .step-icon {
-      color: var(--ink);
-    }
-
-    .step-text {
+    .step-num {
       font-family: var(--font-display);
       font-size: 24px;
       font-weight: 500;
-      color: var(--ink);
-    }
-
-    .explainer-disclaimer {
-      font-size: 13px;
       color: var(--taupe);
       margin-bottom: 12px;
     }
 
-    /* 4.2 Footer */
+    .step-heading {
+      font-family: var(--font-body);
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--ink);
+      margin-bottom: 8px;
+    }
+
+    .step-desc {
+      font-size: 13px;
+      line-height: 20px;
+      color: var(--taupe);
+    }
+
+    .tryon-strip-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      height: 48px;
+      padding: 0 32px;
+      background-color: var(--ink);
+      color: var(--paper);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      text-decoration: none;
+      transition: background-color var(--duration-fast);
+    }
+
+    .tryon-strip-cta:hover {
+      background-color: var(--charcoal);
+    }
+
+    /* Footer */
     footer {
       background-color: var(--charcoal);
       color: var(--paper);
@@ -336,33 +583,40 @@
       border-bottom: 1px solid rgba(255, 255, 255, 0.12);
     }
 
-    @media (max-width: 768px) {
+    @media (max-width: 800px) {
       .footer-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr 1fr;
         gap: 32px;
       }
     }
 
+    @media (max-width: 500px) {
+      .footer-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
     .footer-heading {
-      font-size: 12px;
+      font-size: 11px;
       font-weight: 600;
-      letter-spacing: 0.12em;
+      letter-spacing: 0.14em;
       text-transform: uppercase;
       color: var(--paper);
-      margin-bottom: 16px;
+      margin-bottom: 20px;
     }
 
     .footer-links {
       list-style: none;
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 12px;
     }
 
     .footer-link {
-      font-size: 14px;
-      color: #a8a29e;
+      font-size: 13px;
+      color: #b0aba4;
       text-decoration: none;
+      transition: color var(--duration-fast);
     }
 
     .footer-link:hover {
@@ -371,203 +625,301 @@
 
     .footer-bottom {
       max-width: 1440px;
-      margin: 0 auto;
-      padding-top: 32px;
+      margin: 24px auto 0 auto;
       display: flex;
       justify-content: space-between;
-      align-items: center;
       font-size: 12px;
-      color: #78716c;
+      color: #8c867e;
+      flex-wrap: wrap;
+      gap: 12px;
     }
   </style>
 </head>
 <body>
-  <!-- Announcement -->
+  <!-- Announcement Bar -->
   <div class="announcement-bar">
-    Free shipping over ₹1,999. Easy 7-day returns.
+    Free express shipping over ₹1,999 • Real-Time Live AI Virtual Fitting Available
   </div>
 
   <!-- Header -->
   <header class="main-nav">
     <nav>
       <ul class="nav-links">
-        <li><a href="/collection/" class="nav-link">Women</a></li>
-        <li><a href="/collection/" class="nav-link">Men</a></li>
-        <li><a href="/collection/" class="nav-link">New</a></li>
-        <li><a href="/collection/" class="nav-link">Sale</a></li>
-        <li><a href="/styleguide/" class="nav-link" style="color: var(--clay);">Styleguide</a></li>
+        <li><a href="collection/index.html?category=women" class="nav-link">Women</a></li>
+        <li><a href="collection/index.html?category=men" class="nav-link">Men</a></li>
+        <li><a href="collection/index.html?category=new" class="nav-link">New</a></li>
+        <li><a href="collection/index.html?category=sale" class="nav-link">Sale</a></li>
+        <li><a href="collection/index.html?category=all" class="nav-link">All Tops</a></li>
+        <li><a href="pdp/index.html" class="nav-link" style="color: var(--clay);">Try-On Studio</a></li>
       </ul>
     </nav>
-    <a href="/" class="brand-wordmark">AELIA</a>
+    <a href="index.html" class="brand-wordmark">AELIA</a>
     <div class="nav-actions">
-      <a href="#" class="nav-action-link">Search</a>
+      <a href="collection/index.html" class="nav-action-link">Search</a>
       <a href="#" class="nav-action-link">Account</a>
-      <a href="#" class="nav-action-link">
+      <a href="pdp/index.html" class="nav-action-link">
         Bag <span class="bag-count">0</span>
       </a>
     </div>
   </header>
 
-  <!-- 6.1 Hero -->
+  <!-- Hero Section -->
   <section class="hero-section">
+    <img src="fixtures/charcoal-front.jpg" alt="Aelia Studio Apparel" class="hero-bg-media" />
     <div class="hero-scrim"></div>
     <div class="hero-content">
-      <h1 class="hero-headline">Structured Cotton & Quiet Tailoring</h1>
-      <a href="/collection/" class="btn-text-hero">Shop the new season</a>
+      <span class="hero-tag">Spring / Summer 2026 Collection</span>
+      <h1 class="hero-headline">Quiet Luxury &amp; Live Virtual Fitting</h1>
+      <p class="hero-subhead">
+        Artisanal French studio flax, heavyweight Japanese cottons, and fluid mulberry silk. Test live cloth drape and styling on your own camera stream before purchase.
+      </p>
+      <div class="hero-cta-row">
+        <a href="collection/index.html?category=new" class="btn-hero-primary">Explore New In</a>
+        <a href="pdp/index.html?color=charcoal" class="btn-hero-secondary">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"></path>
+            <circle cx="12" cy="13" r="3"></circle>
+          </svg>
+          Try-On Studio
+        </a>
+      </div>
     </div>
   </section>
 
-  <!-- Category Entry -->
+  <!-- Category Portals -->
   <section class="section-wrap">
+    <div class="section-header">
+      <h2 class="section-title">The Seasonal Edits</h2>
+      <a href="collection/index.html?category=all" class="section-link">View All Tops</a>
+    </div>
     <div class="category-grid">
-      <a href="/collection/" class="category-card">
-        <div class="category-image">
-          <span style="font-size: 12px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--taupe);">Women's Edit 4:5</span>
+      <a href="collection/index.html?category=women" class="category-card">
+        <div class="category-image-wrap">
+          <img src="fixtures/women-silk-blouse.jpg" alt="Women's Collection" loading="lazy" />
         </div>
-        <h2 class="category-name">Women</h2>
-        <span class="section-link">Shop Collection</span>
+        <div class="category-title">Women’s Collection</div>
+        <div class="category-desc">Mulberry silk blouses, camp collar studio linen, and fine merino knits.</div>
+        <span class="section-link">Explore Women</span>
       </a>
-      <a href="/collection/" class="category-card">
-        <div class="category-image">
-          <span style="font-size: 12px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--taupe);">Men's Edit 4:5</span>
+
+      <a href="collection/index.html?category=men" class="category-card">
+        <div class="category-image-wrap">
+          <img src="fixtures/men-poplin-shirt.jpg" alt="Men's Collection" loading="lazy" />
         </div>
-        <h2 class="category-name">Men</h2>
-        <span class="section-link">Shop Collection</span>
+        <div class="category-title">Men’s Collection</div>
+        <div class="category-desc">Heavyweight 280gsm boxy tees, Egyptian Giza cotton, and Japanese twill overshirts.</div>
+        <span class="section-link">Explore Men</span>
       </a>
-      <a href="/collection/" class="category-card">
-        <div class="category-image">
-          <span style="font-size: 12px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--taupe);">Objects & Goods 4:5</span>
+
+      <a href="collection/index.html?category=sale" class="category-card">
+        <div class="category-image-wrap">
+          <img src="fixtures/linen-studio-kurta.jpg" alt="Archive & Sale" loading="lazy" />
         </div>
-        <h2 class="category-name">Objects</h2>
-        <span class="section-link">Explore</span>
+        <div class="category-title">Archive &amp; Sale</div>
+        <div class="category-desc">Curated archive editions and limited-run pieces offered with consideration.</div>
+        <span class="section-link">Shop Archive</span>
       </a>
     </div>
   </section>
 
-  <!-- New Arrivals -->
+  <!-- Curated Collection with Direct Try-On Links -->
   <section class="section-wrap" style="padding-top: 0;">
     <div class="section-header">
-      <h2 class="section-title">New Arrivals</h2>
-      <a href="/collection/" class="section-link">View All</a>
+      <h2 class="section-title">Featured Garments</h2>
+      <a href="collection/index.html?category=new" class="section-link">Browse Full Catalog (9 Items)</a>
     </div>
     <div class="product-grid">
-      <a href="/pdp/" class="product-card">
-        <div class="product-card-img-box">
-          <span class="product-card-badge">New</span>
-          <img src="/fixtures/sample-tshirt.png" alt="Classic Boxy Tee" style="width: 100%; height: 100%; object-fit: cover;" />
+      <!-- 1: Silk Blouse -->
+      <a href="pdp/index.html?item=silk-blouse" class="product-card">
+        <div class="product-photo-box">
+          <span class="badge-tag">New</span>
+          <img src="fixtures/women-silk-blouse.jpg" alt="Relaxed Silk Crepe Blouse" loading="lazy" />
         </div>
-        <div style="font-size: 14px; font-weight: 500;">Classic Heavyweight Boxy Tee</div>
-        <div style="font-size: 15px; font-weight: 500; margin-top: 4px;">₹1,990</div>
-        <div class="product-card-tryon">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <div class="card-title">Relaxed Silk Crepe Blouse</div>
+        <div class="card-sub">100% Mulberry Silk Crepe • Ivory Bone</div>
+        <div class="card-price-row"><span>₹3,490</span></div>
+        <div class="camera-badge">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"></path>
             <circle cx="12" cy="13" r="3"></circle>
           </svg>
-          <span>Try On Available</span>
+          <span>Try On Live</span>
         </div>
       </a>
 
-      <div class="product-card">
-        <div class="product-card-img-box">
-          <span style="font-size: 12px; color: var(--taupe); text-transform: uppercase;">Product Image 3:4</span>
+      <!-- 2: Linen Shirt -->
+      <a href="pdp/index.html?item=linen-shirt" class="product-card">
+        <div class="product-photo-box">
+          <span class="badge-tag sale">Sale</span>
+          <img src="fixtures/women-linen-shirt.jpg" alt="Studio Oversized Linen Shirt" loading="lazy" />
         </div>
-        <div style="font-size: 14px; font-weight: 500;">Relaxed Poplin Shirt</div>
-        <div style="font-size: 15px; font-weight: 500; margin-top: 4px;">₹2,490</div>
-      </div>
-
-      <div class="product-card">
-        <div class="product-card-img-box">
-          <span style="font-size: 12px; color: var(--taupe); text-transform: uppercase;">Product Image 3:4</span>
+        <div class="card-title">Studio Oversized Linen Shirt</div>
+        <div class="card-sub">Artisanal French Flax • Terracotta Blush</div>
+        <div class="card-price-row">
+          <span class="sale">₹2,890</span>
+          <span class="original">₹3,490</span>
         </div>
-        <div style="font-size: 14px; font-weight: 500;">Linen Studio Kurta</div>
-        <div style="font-size: 15px; font-weight: 500; margin-top: 4px;">₹3,200</div>
-      </div>
-
-      <div class="product-card">
-        <div class="product-card-img-box">
-          <span style="font-size: 12px; color: var(--taupe); text-transform: uppercase;">Product Image 3:4</span>
-        </div>
-        <div style="font-size: 14px; font-weight: 500;">Structured Twill Overshirt</div>
-        <div style="font-size: 15px; font-weight: 500; margin-top: 4px;">₹3,800</div>
-      </div>
-    </div>
-  </section>
-
-  <!-- 6.1 Section 7: Try-On Explainer Strip -->
-  <section class="tryon-explainer-strip">
-    <div class="explainer-container">
-      <div class="explainer-steps">
-        <div class="step-box">
-          <svg class="step-icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <div class="camera-badge">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"></path>
             <circle cx="12" cy="13" r="3"></circle>
           </svg>
-          <div class="step-text">Open your camera</div>
+          <span>Try On Live</span>
         </div>
-        <div class="step-box">
-          <svg class="step-icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-            <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"></path>
-            <path d="M3 6h18"></path>
-            <path d="M16 10a4 4 0 0 1-8 0"></path>
+      </a>
+
+      <!-- 3: Merino Knit -->
+      <a href="pdp/index.html?item=merino-knit" class="product-card">
+        <div class="product-photo-box">
+          <span class="badge-tag">New</span>
+          <img src="fixtures/women-merino-knit.jpg" alt="Ribbed Merino Wool Knit Top" loading="lazy" />
+        </div>
+        <div class="card-title">Ribbed Merino Wool Knit Top</div>
+        <div class="card-sub">19.5µ Extrafine Merino • Soft Camel</div>
+        <div class="card-price-row"><span>₹3,890</span></div>
+        <div class="camera-badge">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"></path>
+            <circle cx="12" cy="13" r="3"></circle>
           </svg>
-          <div class="step-text">Pick an item</div>
+          <span>Try On Live</span>
         </div>
-        <div class="step-box">
-          <svg class="step-icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-            <circle cx="12" cy="12" r="10"></circle>
-            <circle cx="12" cy="12" r="4"></circle>
+      </a>
+
+      <!-- 4: Heavyweight Boxy Tee -->
+      <a href="pdp/index.html?color=charcoal" class="product-card">
+        <div class="product-photo-box">
+          <span class="badge-tag">Essential</span>
+          <img src="fixtures/charcoal-front.jpg" alt="Classic Heavyweight Boxy Tee" loading="lazy" />
+        </div>
+        <div class="card-title">Classic Heavyweight Boxy Tee</div>
+        <div class="card-sub">280gsm Organic Combed Cotton • Washed Charcoal</div>
+        <div class="card-price-row"><span>₹1,990</span></div>
+        <div class="camera-badge">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"></path>
+            <circle cx="12" cy="13" r="3"></circle>
           </svg>
-          <div class="step-text">See it on you</div>
+          <span>Try On Live</span>
         </div>
-      </div>
-      <div class="explainer-disclaimer">Shows how it looks, not how it fits.</div>
-      <div>
-        <a href="/pdp/" class="section-link">Try it on any product marked with the camera icon</a>
-      </div>
+      </a>
+
+      <!-- 5: Giza Poplin Shirt -->
+      <a href="pdp/index.html?item=poplin-shirt" class="product-card">
+        <div class="product-photo-box">
+          <span class="badge-tag">New</span>
+          <img src="fixtures/men-poplin-shirt.jpg" alt="Relaxed Giza Poplin Shirt" loading="lazy" />
+        </div>
+        <div class="card-title">Relaxed Giza Poplin Shirt</div>
+        <div class="card-sub">120s Two-Ply Egyptian Cotton • Chalk White</div>
+        <div class="card-price-row"><span>₹2,690</span></div>
+        <div class="camera-badge">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"></path>
+            <circle cx="12" cy="13" r="3"></circle>
+          </svg>
+          <span>Try On Live</span>
+        </div>
+      </a>
+
+      <!-- 6: Twill Overshirt -->
+      <a href="pdp/index.html?item=overshirt" class="product-card">
+        <div class="product-photo-box">
+          <span class="badge-tag">New</span>
+          <img src="fixtures/men-overshirt.jpg" alt="Structured Twill Overshirt" loading="lazy" />
+        </div>
+        <div class="card-title">Structured Twill Overshirt</div>
+        <div class="card-sub">340gsm Japanese Twill • Slate Indigo</div>
+        <div class="card-price-row"><span>₹4,290</span></div>
+        <div class="camera-badge">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"></path>
+            <circle cx="12" cy="13" r="3"></circle>
+          </svg>
+          <span>Try On Live</span>
+        </div>
+      </a>
     </div>
   </section>
 
-  <!-- 4.2 Footer -->
+  <!-- Try-On Technology Explainer -->
+  <section class="tryon-strip">
+    <div class="tryon-strip-inner">
+      <span class="tryon-strip-tag">Real-Time WebRTC Architecture</span>
+      <h2 class="tryon-strip-title">How Live Virtual Try-On Works</h2>
+      <div class="steps-row">
+        <div class="step-card">
+          <div class="step-num">01</div>
+          <div class="step-heading">Allow Camera Stream</div>
+          <div class="step-desc">Your camera video stays private in memory. Zero frames are saved to disk or used for neural training.</div>
+        </div>
+        <div class="step-card">
+          <div class="step-num">02</div>
+          <div class="step-heading">Select Any Garment</div>
+          <div class="step-desc">Decart Lucy VTON conditions the authentic fabric texture, weave weight, and natural color tone in milliseconds.</div>
+        </div>
+        <div class="step-card">
+          <div class="step-num">03</div>
+          <div class="step-heading">Real-Time Video Drape</div>
+          <div class="step-desc">WebRTC video streams back at 30 FPS (&lt;150ms latency), showing dynamic cloth drape, collar hug, and natural sleeve motion.</div>
+        </div>
+      </div>
+      <a href="pdp/index.html?item=silk-blouse" class="tryon-strip-cta">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"></path>
+          <circle cx="12" cy="13" r="3"></circle>
+        </svg>
+        Enter Fitting Studio
+      </a>
+    </div>
+  </section>
+
+  <!-- Footer -->
   <footer>
     <div class="footer-grid">
       <div>
         <div class="footer-heading">Shop</div>
         <ul class="footer-links">
-          <li><a href="/collection/" class="footer-link">New Arrivals</a></li>
-          <li><a href="/collection/" class="footer-link">Tops & T-Shirts</a></li>
-          <li><a href="/collection/" class="footer-link">Shirts & Kurtas</a></li>
-          <li><a href="/collection/" class="footer-link">Sale</a></li>
+          <li><a href="collection/index.html?category=women" class="footer-link">Women’s Collection</a></li>
+          <li><a href="collection/index.html?category=men" class="footer-link">Men’s Collection</a></li>
+          <li><a href="collection/index.html?category=new" class="footer-link">New Season In</a></li>
+          <li><a href="collection/index.html?category=sale" class="footer-link">Archive &amp; Sale</a></li>
+          <li><a href="collection/index.html?category=all" class="footer-link">All Tops</a></li>
         </ul>
       </div>
       <div>
-        <div class="footer-heading">Help</div>
+        <div class="footer-heading">Try-On Studio</div>
         <ul class="footer-links">
-          <li><a href="#" class="footer-link">Shipping & Returns</a></li>
-          <li><a href="#" class="footer-link">Size Guide</a></li>
+          <li><a href="pdp/index.html?item=silk-blouse" class="footer-link">Try Silk Crepe Blouse</a></li>
+          <li><a href="pdp/index.html?color=charcoal" class="footer-link">Try Boxy T-Shirt</a></li>
+          <li><a href="pdp/index.html?item=linen-shirt" class="footer-link">Try Studio Linen Shirt</a></li>
+          <li><a href="pdp/index.html?item=poplin-shirt" class="footer-link">Try Giza Poplin Shirt</a></li>
+          <li><a href="pdp/index.html?item=overshirt" class="footer-link">Try Twill Overshirt</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-heading">Studio Aelia</div>
+        <ul class="footer-links">
+          <li><a href="index.html" class="footer-link">About the Brand</a></li>
+          <li><a href="collection/index.html" class="footer-link">Lookbook SS26</a></li>
+          <li><a href="#" class="footer-link">Privacy &amp; Ephemeral Sessions</a></li>
           <li><a href="#" class="footer-link">Care Instructions</a></li>
-          <li><a href="#" class="footer-link">Contact</a></li>
         </ul>
       </div>
       <div>
-        <div class="footer-heading">Company</div>
-        <ul class="footer-links">
-          <li><a href="#" class="footer-link">About Studio Aelia</a></li>
-          <li><a href="#" class="footer-link">Lookbook</a></li>
-          <li><a href="#" class="footer-link">Privacy Policy</a></li>
-        </ul>
-      </div>
-      <div>
-        <div class="footer-heading">Newsletter</div>
-        <p style="font-size: 14px; color: #a8a29e; margin-bottom: 16px;">Sign up for quiet releases and private previews.</p>
+        <div class="footer-heading">Private Dispatch</div>
+        <p style="font-size: 13px; color: #a8a29e; margin-bottom: 16px; line-height: 20px;">
+          Receive private previews of limited seasonal fabric drops.
+        </p>
         <div style="display: flex;">
-          <input type="email" placeholder="email@domain.com" style="height: 48px; background-color: #1e1d1a; border: 1px solid #44403c; color: #fff; padding: 0 12px; font-size: 14px; flex: 1; outline: none; border-radius: 2px;" />
-          <button style="height: 48px; background-color: var(--paper); color: var(--ink); border: none; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; padding: 0 16px; cursor: pointer;">Join</button>
+          <input type="email" placeholder="client@domain.com" style="height: 44px; background-color: #1e1d1a; border: 1px solid #44403c; color: #fff; padding: 0 12px; font-size: 13px; flex: 1; outline: none;" />
+          <button style="height: 44px; background-color: var(--paper); color: var(--ink); border: none; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; padding: 0 16px; cursor: pointer;">Join</button>
         </div>
       </div>
     </div>
     <div class="footer-bottom">
-      <div>© 2026 Studio Aelia. All rights reserved.</div>
-      <div>Zero camera data retained. Runs locally.</div>
+      <div>&copy; 2026 Studio Aelia. All rights reserved.</div>
+      <div>Real-Time WebRTC Lucy VTON &bull; Ephemeral Client Tokens &bull; Zero Camera Retention</div>
     </div>
   </footer>
 </body>

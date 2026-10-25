@@ -1,0 +1,14 @@
+{
+  "telemetry": { "enabled": false, "logPrompts": false, "traces": false },
+  "privacy": { "usageStatisticsEnabled": false },
+  "general": { "enableAutoUpdate": false, "maxAttempts": 1, "retryFetchErrors": false, "plan": { "modelRouting": false } },
+  "security": { "auth": { "selectedType": "gemini-api-key" }, "environmentVariableRedaction": { "enabled": true } },
+  "advanced": { "ignoreLocalEnv": true },
+  "hooksConfig": { "enabled": false },
+  "skills": { "enabled": false },
+  "tools": { "core": [] },
+  "mcpServers": {},
+  "billing": { "overageStrategy": "never" },
+  "model": { "maxSessionTurns": 1 },
+  "context": { "fileName": "NO_CONTEXT_FOR_REVIEW.md", "discoveryMaxDirs": 0 }
+}

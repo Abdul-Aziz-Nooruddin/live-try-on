@@ -1,0 +1,58 @@
+{
+  "session_id": "07f188c6-7b84-43c6-9382-5a2f816b7f5f",
+  "response": "Summary: Proposal for a dual-source live teleprompter addressing Gemini's 10-minute session limits and real-time coaching.\n\nStrengths: Robust epoch-based rollover, token cancellation for stale responses, and secure server-side key management.\n\nMajor concerns with concrete fixes: The design assumes stopping `getDisplayMedia` video preserves audio. *Fix:* Request audio-only streams directly via explicit constraints (`audio: true, video: false`) rather than dropping video post-capture.\n\nMinor concerns: Unverified runtime inference quotas under continuous dual-stream load.\n\nRecommendation: Minor revision.\n\n```json\n{\n  \"recommendation\": \"minor_revision\",\n  \"confidence\": 0.9,\n  \"blocking_concerns\": [\n    \"Unverified browser behavior for stopped getDisplayMedia video tracks; requires explicit audio-only stream constraints.\"\n  ]\n}\n```",
+  "stats": {
+    "models": {
+      "gemini-3.5-flash-lite": {
+        "api": {
+          "totalRequests": 1,
+          "totalErrors": 0,
+          "totalLatencyMs": 5597,
+          "errorsByType": {}
+        },
+        "tokens": {
+          "input": 1265,
+          "prompt": 1265,
+          "candidates": 189,
+          "total": 2445,
+          "cached": 0,
+          "thoughts": 991,
+          "tool": 0
+        },
+        "roles": {
+          "main": {
+            "totalRequests": 1,
+            "totalErrors": 0,
+            "totalLatencyMs": 5597,
+            "tokens": {
+              "input": 1265,
+              "prompt": 1265,
+              "candidates": 189,
+              "total": 2445,
+              "cached": 0,
+              "thoughts": 991,
+              "tool": 0
+            }
+          }
+        }
+      }
+    },
+    "tools": {
+      "totalCalls": 0,
+      "totalSuccess": 0,
+      "totalFail": 0,
+      "totalDurationMs": 0,
+      "totalDecisions": {
+        "accept": 0,
+        "reject": 0,
+        "modify": 0,
+        "auto_accept": 0
+      },
+      "byName": {}
+    },
+    "files": {
+      "totalLinesAdded": 0,
+      "totalLinesRemoved": 0
+    }
+  }
+}

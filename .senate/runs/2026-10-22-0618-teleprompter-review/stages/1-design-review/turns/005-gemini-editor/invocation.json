@@ -1,0 +1,7 @@
+{
+  "exit_code": 1,
+  "duration_seconds": 2.815,
+  "model": "gemini-2.5-flash-lite",
+  "timeout_seconds": 120,
+  "prompt_sha256": "4ffec6c24e75b050f97e3ff7e1d5083870eb6111877edcb73fd4283bd59533f7"
+}

@@ -1,0 +1,73 @@
+# LiveTry Full-Stack Development Workflow
+# Orchestrates frontend + backend agents for feature development
+
+name: livetry-dev
+version: "1.0.0"
+description: |
+  Full-stack development workflow for LiveTry.
+  Runs frontend and backend agents in parallel, then syncs on shared types.
+
+triggers:
+  - manual
+  - on_branch_push: ["feature/*", "fix/*"]
+
+agents:
+  lead: frontend-lead
+  backend: backend-lead
+
+phases:
+  - name: preflight
+    parallel: false
+    steps:
+      - agent: backend-lead
+        task: health_check_vton_server
+        timeout: 30s
+        onFail: warn  # non-blocking, dev can proceed without server
+      - agent: frontend-lead
+        task: audit_design_compliance
+        timeout: 60s
+        onFail: block  # design violations are blocking
+
+  - name: development
+    parallel: true
+    steps:
+      - agent: frontend-lead
+        task: develop_feature
+        watch:
+          - apps/demo-site/src
+          - packages/widget/src
+      - agent: backend-lead
+        task: develop_feature
+        watch:
+          - packages/local-vton-server
+          - harvey/harvey
+
+  - name: sync_shared_types
+    parallel: false
+    dependsOn: [development]
+    steps:
+      - agent: frontend-lead
+        task: check_shared_types_parity
+      - agent: backend-lead
+        task: check_shared_types_parity
+
+  - name: quality_gates
+    parallel: true
+    dependsOn: [sync_shared_types]
+    steps:
+      - agent: demo-site-agent
+        task: run_quality_gates
+      - agent: widget-agent
+        task: run_quality_gates
+      - agent: vton-server-agent
+        task: run_quality_gates
+      - agent: harvey-agent
+        task: run_quality_gates
+
+  - name: report
+    parallel: false
+    dependsOn: [quality_gates]
+    steps:
+      - agent: frontend-lead
+        task: generate_report
+        output: .claude-flow/logs/dev-report.md

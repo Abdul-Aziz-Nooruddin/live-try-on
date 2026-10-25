@@ -1,29 +1,6 @@
 import type { GarmentMeshData } from '@livetry/tryon-core';
 import type { TorsoRigState } from '@livetry/tryon-core';
 
-// 1. Mirrored Camera Video Pass
-const VIDEO_VS = `#version 300 es
-in vec2 a_position;
-in vec2 a_texCoord;
-out vec2 v_texCoord;
-
-void main() {
-  // Mirror horizontally so front camera acts like a real mirror
-  v_texCoord = vec2(1.0 - a_texCoord.x, a_texCoord.y);
-  gl_Position = vec4(a_position, 0.0, 1.0);
-}
-`;
-
-const VIDEO_FS = `#version 300 es
-precision highp float;
-uniform sampler2D u_videoTexture;
-in vec2 v_texCoord;
-out vec4 fragColor;
-
-void main() {
-  fragColor = texture(u_videoTexture, v_texCoord);
-}
-`;
 
 // 2. Old Clothes Mask & Inpaint Pass
 // Replaces real collar / old clothes sticking out around neck with sampled skin

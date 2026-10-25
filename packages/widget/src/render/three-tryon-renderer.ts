@@ -118,6 +118,12 @@ export class ThreeTryonRenderer {
   }
 
   private load3DGarmentModel(): void {
+    const texLoader = new THREE.TextureLoader();
+    const cottonTex = texLoader.load('/fixtures/cotton_texture.jpg');
+    cottonTex.wrapS = THREE.RepeatWrapping;
+    cottonTex.wrapT = THREE.RepeatWrapping;
+    cottonTex.repeat.set(2.5, 2.5);
+
     const loader = new GLTFLoader();
     loader.load(
       '/fixtures/shirt_baked.glb',
@@ -128,20 +134,18 @@ export class ThreeTryonRenderer {
           if ((child as THREE.Mesh).isMesh) {
             const mesh = child as THREE.Mesh;
             this.garmentMesh = mesh;
-            const origMat = mesh.material as THREE.MeshStandardMaterial;
 
             // Cache original vertex positions for dynamic skeletal sleeve deformation
-            const posAttr = mesh.geometry.attributes.position;
-            this.origVertices = new Float32Array(posAttr.array);
+            const posAttr = mesh.geometry.attributes.position as THREE.BufferAttribute | undefined;
+            if (posAttr) {
+              this.origVertices = new Float32Array(posAttr.array);
+            }
 
             mesh.material = new THREE.MeshStandardMaterial({
-              color: 0x222326, // Editorial Charcoal Cotton
-              roughness: 0.85,
-              metalness: 0.02,
-              normalMap: origMat?.normalMap ?? null,
-              normalScale: new THREE.Vector2(2.2, 2.2),
-              aoMap: origMat?.aoMap ?? null,
-              aoMapIntensity: 1.2,
+              color: 0x2b2926, // Editorial Charcoal Cotton
+              map: cottonTex,
+              roughness: 0.80,
+              metalness: 0.04,
               side: THREE.DoubleSide
             });
           }
@@ -155,6 +159,15 @@ export class ThreeTryonRenderer {
         console.error('[LiveTry] Failed to load 3D garment model:', err);
       }
     );
+  }
+
+  public setColor(hex: string | number): void {
+    if (!this.garmentMesh) return;
+    const mat = this.garmentMesh.material as THREE.MeshStandardMaterial;
+    if (mat) {
+      mat.color.set(hex);
+      mat.needsUpdate = true;
+    }
   }
 
   public resize(width: number, height: number): void {
@@ -197,12 +210,15 @@ export class ThreeTryonRenderer {
 
       let r = 0, g = 0, b = 0, count = 0;
       for (let i = 0; i < imgData.length; i += 4) {
+        const rVal = imgData[i] ?? 0;
+        const gVal = imgData[i + 1] ?? 0;
+        const bVal = imgData[i + 2] ?? 0;
         // Exclude extreme highlights or dark shadows
-        const brightness = (imgData[i] + imgData[i + 1] + imgData[i + 2]) / 3;
+        const brightness = (rVal + gVal + bVal) / 3;
         if (brightness > 40 && brightness < 235) {
-          r += imgData[i];
-          g += imgData[i + 1];
-          b += imgData[i + 2];
+          r += rVal;
+          g += gVal;
+          b += bVal;
           count++;
         }
       }
@@ -239,19 +255,19 @@ export class ThreeTryonRenderer {
     const sinR = Math.sin(rightArmAngle);
 
     // Sleeve shoulder pivots in model space (meters)
-    const pivotLX = -0.18;
-    const pivotRX = 0.18;
-    const pivotY = 0.15;
+    const pivotLX = -0.22;
+    const pivotRX = 0.22;
+    const pivotY = 0.14;
 
     for (let i = 0; i < vertexCount; i++) {
       const idx = i * 3;
-      const ox = orig[idx];
-      const oy = orig[idx + 1];
-      const oz = orig[idx + 2];
+      const ox = orig[idx] ?? 0;
+      const oy = orig[idx + 1] ?? 0;
+      const oz = orig[idx + 2] ?? 0;
 
-      if (ox < -0.16) {
+      if (ox < -0.19) {
         // Left Sleeve (model -X): calculate blend weight from armpit seam out to cuff
-        const weight = Math.min(1.0, Math.max(0.0, (-ox - 0.16) / 0.05));
+        const weight = Math.min(1.0, Math.max(0.0, (-ox - 0.19) / 0.05));
         const dx = ox - pivotLX;
         const dy = oy - pivotY;
 
@@ -261,9 +277,9 @@ export class ThreeTryonRenderer {
         pos[idx] = ox + (rotX - ox) * weight;
         pos[idx + 1] = oy + (rotY - oy) * weight;
         pos[idx + 2] = oz;
-      } else if (ox > 0.16) {
+      } else if (ox > 0.19) {
         // Right Sleeve (model +X): calculate blend weight from armpit seam out to cuff
-        const weight = Math.min(1.0, Math.max(0.0, (ox - 0.16) / 0.05));
+        const weight = Math.min(1.0, Math.max(0.0, (ox - 0.19) / 0.05));
         const dx = ox - pivotRX;
         const dy = oy - pivotY;
 
@@ -302,12 +318,6 @@ export class ThreeTryonRenderer {
     const shR_x = this.toPixelX(rig.shoulderRight[0]);
     const shR_y = this.toPixelY(rig.shoulderRight[1]);
 
-    const neck_x = this.toPixelX(rig.neckBase[0]);
-    const neck_y = this.toPixelY(rig.neckBase[1]);
-
-    const chin_x = this.toPixelX(rig.chin[0]);
-    const chin_y = this.toPixelY(rig.chin[1]);
-
     const shDx = shR_x - shL_x;
     const shDy = shR_y - shL_y;
     const shWidth = Math.hypot(shDx, shDy);
@@ -320,18 +330,15 @@ export class ThreeTryonRenderer {
 
     // --- 1. Precision Tailored 3D Scale Calibration ---
     // In shirt_baked.glb:
-    // Distance between shoulder seam tips = 0.470m
-    // Total model torso height (shoulder to hem) = 0.503m
-    // Lowest front collar dip = y: +0.102m
-    // Highest collar back/sides = y: +0.257m
-    const scaleX = shWidth / 0.470;
-
-    // Torso length scaling: drape down naturally along the spine
-    const torsoHeightPx = rig.torsoLength * this.height;
-    const targetScaleY = torsoHeightPx / 0.503;
-    // Clamp vertical scaling to maintain elegant drape
-    const scaleY = Math.min(Math.max(targetScaleY, scaleX * 0.95), scaleX * 1.25);
-    const scaleZ = scaleX * 0.70;
+    // Distance between shoulder seam tips = 0.477m
+    // Total model torso height (shoulder to hem) = 0.493m
+    // Shoulder seam line Y = +0.141m
+    // Front collar dip Y = +0.051m
+    // Back collar top Y = +0.256m
+    const tailoredShWidth = shWidth * 1.05;
+    const scaleX = tailoredShWidth / 0.477;
+    const scaleY = scaleX; // Uniform proportional scaling prevents unnatural elongation
+    const scaleZ = scaleX * 0.72;
 
     this.garment3D.scale.set(scaleX, scaleY, scaleZ);
 
@@ -339,22 +346,20 @@ export class ThreeTryonRenderer {
     // Center horizontally between the shoulders
     const posX = (shL_x + shR_x) * 0.5;
 
-    // Front collar dip sits right at neckBase (suprasternal notch)
-    const collarDipY = 0.102 * scaleY;
-    const posY = neck_y - collarDipY;
-    const posZ = 10; // Aligned with upper body plane
+    // The shoulder seam line (y = +0.141 in model space) aligns directly with the user's physical shoulder line
+    const shoulderMidY = (shL_y + shR_y) * 0.5;
+    const posY = shoulderMidY - (0.141 * scaleY);
+    const posZ = 10; // Upper body plane
 
     this.garment3D.position.set(posX, posY, posZ);
     this.garment3D.rotation.set(0, yawRad, rollAngle);
 
     // --- 3. Dynamic Skeletal Sleeve Deformation ---
-    // Calculate 2D arm angles relative to shoulder tilt
     const elbL_x = this.toPixelX(rig.elbowLeft[0]);
     const elbL_y = this.toPixelY(rig.elbowLeft[1]);
     const elbR_x = this.toPixelX(rig.elbowRight[0]);
     const elbR_y = this.toPixelY(rig.elbowRight[1]);
 
-    // In Three.js space, down is -Y
     const dL_x = elbL_x - shL_x;
     const dL_y = elbL_y - shL_y;
     const rawLeftArmAngle = Math.atan2(dL_y, dL_x) + Math.PI / 2 - rollAngle;
@@ -363,37 +368,14 @@ export class ThreeTryonRenderer {
     const dR_y = elbR_y - shR_y;
     const rawRightArmAngle = Math.atan2(dR_y, dR_x) - Math.PI / 2 - rollAngle;
 
-    // Damped sleeve angles for natural textile resistance
-    const leftArmAngle = Math.max(-0.6, Math.min(0.6, rawLeftArmAngle * 0.55));
-    const rightArmAngle = Math.max(-0.6, Math.min(0.6, rawRightArmAngle * 0.55));
+    const leftArmAngle = Math.max(-0.65, Math.min(0.65, rawLeftArmAngle * 0.55));
+    const rightArmAngle = Math.max(-0.65, Math.min(0.65, rawRightArmAngle * 0.55));
 
     this.applySleeveDeformation(leftArmAngle, rightArmAngle);
 
-    // --- 4. Anatomical Neck Depth Occluder ---
-    // Positioned at the neck base pointing up towards the chin
-    this.neckOccluder.visible = true;
-    const neckRadius = shWidth * 0.15;
-    const neckHeight = Math.max(50, (chin_y - neck_y) * 1.2);
-    this.neckOccluder.scale.set(neckRadius / 40, neckHeight / 120, neckRadius / 40);
-    this.neckOccluder.position.set(
-      (neck_x + chin_x) * 0.5,
-      (neck_y + chin_y) * 0.5,
-      posZ - 5 // Slightly recessed so collar front wraps over it
-    );
-    this.neckOccluder.rotation.set(0, yawRad, rollAngle);
-
-    // --- 5. Collar-Erasing Skin Tone Patch ---
-    // Masks any white polo collar or shirt peeking between crewneck and chin
-    this.skinPatchMesh.visible = true;
-    const patchWidth = shWidth * 0.32;
-    const patchHeight = Math.max(30, (chin_y - (posY + 0.08 * scaleY)) * 1.1);
-    this.skinPatchMesh.scale.set(patchWidth / 80, patchHeight / 80, 1);
-    this.skinPatchMesh.position.set(
-      (neck_x + chin_x) * 0.5,
-      (chin_y + (posY + 0.08 * scaleY)) * 0.5,
-      posZ - 2 // Behind front collar rim, in front of camera
-    );
-    this.skinPatchMesh.rotation.set(0, 0, rollAngle);
+    // Collar and neck remain cleanly rendered by the 3D model geometry without intrusive cutouts
+    this.neckOccluder.visible = false;
+    this.skinPatchMesh.visible = false;
 
     // Material opacity
     this.garment3D.traverse((child) => {

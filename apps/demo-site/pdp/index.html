@@ -79,16 +79,25 @@
     }
 
     .bag-count {
-      width: 16px;
-      height: 16px;
+      width: 18px;
+      height: 18px;
+      min-width: 18px;
+      box-sizing: border-box;
       background-color: var(--ink);
       color: var(--paper);
       border-radius: 50%;
       font-size: 10px;
       font-weight: 600;
+      letter-spacing: 0;
+      text-indent: 0;
       display: inline-flex;
       align-items: center;
       justify-content: center;
+      line-height: 1;
+      text-align: center;
+      padding-top: 1px;
+      transform-origin: center center;
+      margin-left: 2px;
     }
 
     /* PDP Grid */
@@ -136,10 +145,17 @@
       border: 1px solid var(--stone);
       cursor: pointer;
       overflow: hidden;
+      padding: 0;
+      transition: border-color 0.15s ease, transform 0.15s ease;
+    }
+
+    .thumb-btn:hover {
+      border-color: var(--ink);
+      transform: scale(1.02);
     }
 
     .thumb-btn.active {
-      border: 1px solid var(--ink);
+      border: 2px solid var(--ink);
     }
 
     .thumb-btn img {
@@ -150,8 +166,9 @@
 
     .main-image-viewport {
       width: 100%;
-      aspect-ratio: 3 / 4;
-      background-color: var(--sand);
+      max-height: 520px;
+      aspect-ratio: 4 / 5;
+      background-color: #faf9f6;
       border: 1px solid var(--stone);
       position: relative;
       display: flex;
@@ -163,7 +180,9 @@
     .main-image-viewport img {
       width: 100%;
       height: 100%;
-      object-fit: cover;
+      object-fit: contain;
+      padding: 12px;
+      transition: opacity 0.2s ease;
     }
 
     .product-panel {
@@ -308,11 +327,20 @@
       margin-bottom: 24px;
     }
 
+    .pdp-bag-cta-wrap {
+      position: relative;
+      width: 100%;
+      height: 52px;
+      overflow: hidden;
+    }
+
     .btn-add-to-bag {
+      width: 100%;
       height: 52px;
       background-color: var(--ink);
       color: var(--paper);
       border: none;
+      border-radius: 0;
       font-family: var(--font-body);
       font-size: 13px;
       font-weight: 600;
@@ -322,12 +350,101 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      position: absolute;
+      inset: 0;
+      z-index: 2;
       transition: background-color var(--duration-fast) var(--ease-editorial);
     }
 
     .btn-add-to-bag:hover {
       background-color: var(--charcoal);
     }
+
+    .pdp-stepper {
+      width: 100%;
+      height: 52px;
+      background-color: var(--ink);
+      color: var(--paper);
+      border: none;
+      border-radius: 0;
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      box-sizing: border-box;
+      user-select: none;
+    }
+
+    .stepper-btn {
+      width: 60px;
+      height: 100%;
+      background: transparent;
+      border: none;
+      color: var(--paper);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background-color var(--duration-fast) var(--ease-editorial);
+      touch-action: manipulation;
+    }
+
+    .stepper-btn:hover {
+      background-color: var(--charcoal);
+    }
+
+    .stepper-btn:active {
+      background-color: #201e1c;
+    }
+
+    .stepper-btn-minus {
+      border-right: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    .stepper-btn-plus {
+      border-left: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    .stepper-center {
+      flex: 1;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-family: var(--font-body);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    .stepper-status-label {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--taupe);
+      letter-spacing: 0.12em;
+    }
+
+    .stepper-num-box {
+      position: relative;
+      min-width: 20px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .stepper-num {
+      position: relative;
+      display: inline-block;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--paper);
+      font-variant-numeric: tabular-nums;
+    }
+
 
     .btn-try-on {
       height: 52px;
@@ -347,9 +464,18 @@
       transition: background-color var(--duration-fast) var(--ease-editorial), color var(--duration-fast) var(--ease-editorial);
     }
 
-    .btn-try-on:hover {
+    .btn-try-on:hover:not(:disabled) {
       background-color: var(--ink);
       color: var(--paper);
+    }
+
+    .btn-try-on:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      border-color: var(--stone);
+      color: var(--taupe);
+      background-color: transparent;
+      pointer-events: none;
     }
 
     .delivery-bar {
@@ -378,533 +504,597 @@
       cursor: pointer;
     }
 
-    /* Modal Backdrop & Cards */
-    .tryon-scrim {
+    /* Zoomable Viewport */
+    .main-image-viewport {
+      cursor: zoom-in;
+    }
+
+    .zoom-hint-badge {
+      position: absolute;
+      bottom: 14px;
+      right: 14px;
+      background-color: var(--paper);
+      border: 1px solid var(--stone);
+      padding: 6px 12px;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--taupe);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      pointer-events: none;
+      transition: opacity var(--duration-fast) var(--ease-editorial), color var(--duration-fast) var(--ease-editorial), border-color var(--duration-fast) var(--ease-editorial);
+    }
+
+    .main-image-viewport:hover .zoom-hint-badge {
+      color: var(--ink);
+      border-color: var(--ink);
+    }
+
+    /* Lightbox Full-Screen Modal */
+    .lightbox-modal {
       position: fixed;
       inset: 0;
-      background-color: var(--scrim);
+      z-index: 9999;
       display: none;
       align-items: center;
       justify-content: center;
-      z-index: 1000;
+      opacity: 0;
+      transition: opacity var(--duration-fast) var(--ease-editorial);
     }
 
-    .tryon-scrim.visible {
+    .lightbox-modal.active {
       display: flex;
+      opacity: 1;
     }
 
-    /* Consent Modal */
-    .consent-dialog {
-      background-color: var(--white);
-      width: 100%;
-      max-width: 480px;
-      padding: 40px;
-      border: 1px solid var(--stone);
-      display: flex;
-      flex-direction: column;
+    .lightbox-backdrop {
+      position: absolute;
+      inset: 0;
+      background-color: rgba(18, 17, 16, 0.94);
     }
 
-    .consent-title {
-      font-family: var(--font-display);
-      font-size: 28px;
-      line-height: 34px;
-      font-weight: 500;
-      color: var(--ink);
-      margin-bottom: 16px;
-    }
-
-    .consent-text {
-      font-size: 15px;
-      line-height: 24px;
-      color: var(--ink);
-      margin-bottom: 12px;
-    }
-
-    .consent-disclaimer {
-      font-size: 13px;
-      color: var(--taupe);
-      margin-bottom: 32px;
-    }
-
-    .consent-btn-group {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      align-items: center;
-    }
-
-    .btn-dismiss {
-      background: none;
-      border: none;
-      font-family: var(--font-body);
-      font-size: 12px;
-      font-weight: 500;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--taupe);
-      cursor: pointer;
-      text-decoration: underline;
-      text-underline-offset: 4px;
-    }
-
-    .btn-dismiss:hover {
-      color: var(--ink);
-    }
-
-    /* Live Try On Modal */
-    .live-tryon-modal {
-      background-color: var(--white);
-      width: 100%;
-      max-width: 1040px;
-      height: 680px;
-      border: 1px solid var(--stone);
-      display: none;
-      grid-template-columns: 580px 1fr;
-    }
-
-    .live-tryon-modal.visible {
-      display: grid;
-    }
-
-    @media (max-width: 1024px) {
-      .live-tryon-modal {
-        grid-template-columns: 1fr;
-        height: 100vh;
-        max-width: 100vw;
-      }
-    }
-
-    .camera-viewport {
-      background-color: #000000;
+    .lightbox-content {
       position: relative;
-      overflow: hidden;
+      z-index: 10;
       width: 100%;
       height: 100%;
+      display: flex;
+      flex-direction: column;
     }
 
-    #webcam-video {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      transform: scaleX(-1);
-      z-index: 1;
-      display: block;
+    .lightbox-header {
+      height: 64px;
+      padding: 0 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+      color: var(--paper);
     }
 
-    #webgl-canvas {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      transform: scaleX(-1);
-      z-index: 2;
-      pointer-events: none;
-      display: block;
+    .lightbox-product-title {
+      font-family: var(--font-display);
+      font-size: 20px;
+      letter-spacing: 0.04em;
     }
 
-    .chip-status {
-      position: absolute;
-      top: 16px;
-      left: 16px;
-      background-color: var(--chip);
-      color: var(--white);
-      font-size: 11px;
-      font-weight: 500;
+    .lightbox-counter {
+      font-size: 12px;
       letter-spacing: 0.1em;
-      text-transform: uppercase;
-      padding: 6px 12px;
+      color: var(--taupe);
+      margin-left: 16px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .lightbox-toolbar {
       display: flex;
       align-items: center;
       gap: 8px;
-      z-index: 10;
     }
 
-    .dot-moss {
-      width: 6px;
-      height: 6px;
-      background-color: var(--moss);
-      border-radius: 50%;
-    }
-
-    .chip-close {
-      position: absolute;
-      top: 16px;
-      right: 16px;
-      width: 44px;
-      height: 44px;
-      background-color: var(--chip);
-      color: var(--white);
-      border: none;
+    .lightbox-tool-btn {
+      height: 38px;
+      min-width: 38px;
+      padding: 0 10px;
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: var(--paper);
+      font-family: var(--font-body);
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.06em;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      z-index: 10;
+      transition: background-color var(--duration-fast) var(--ease-editorial), border-color var(--duration-fast) var(--ease-editorial);
     }
 
-    .modal-side-panel {
-      padding: 40px;
-      background-color: var(--white);
+    .lightbox-tool-btn:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.6);
+    }
+
+    .lightbox-stage {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
       display: flex;
-      flex-direction: column;
-      justify-content: space-between;
+      align-items: center;
+      justify-content: center;
+      user-select: none;
+      touch-action: none;
     }
 
-    .modal-p-title {
+    .lightbox-stage img {
+      max-width: 85%;
+      max-height: 80vh;
+      object-fit: contain;
+      cursor: grab;
+      transform-origin: center center;
+      transition: transform 0.06s ease-out;
+      will-change: transform;
+    }
+
+    .lightbox-stage img.grabbing {
+      cursor: grabbing;
+      transition: none;
+    }
+
+    .lightbox-footer {
+      height: 96px;
+      border-top: 1px solid rgba(255, 255, 255, 0.12);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 32px;
+    }
+
+    .lightbox-nav-thumbs {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .lightbox-thumb-btn {
+      width: 52px;
+      height: 64px;
+      background-color: #2b2926;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 2px;
+      cursor: pointer;
+      opacity: 0.5;
+      transition: opacity var(--duration-fast) var(--ease-editorial), border-color var(--duration-fast) var(--ease-editorial);
+    }
+
+    .lightbox-thumb-btn:hover {
+      opacity: 0.85;
+    }
+
+    .lightbox-thumb-btn.active {
+      opacity: 1;
+      border-color: var(--paper);
+    }
+
+    .lightbox-thumb-btn img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .lightbox-hint {
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.4);
+    }
+
+    /* UGC Community Section */
+    .ugc-section {
+      max-width: 1440px;
+      margin: 40px auto 80px;
+      padding: 48px 40px 0;
+      border-top: 1px solid var(--stone);
+    }
+
+    .ugc-header {
+      margin-bottom: 36px;
+    }
+
+    .ugc-kicker {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--clay);
+      margin-bottom: 8px;
+    }
+
+    .ugc-title {
       font-family: var(--font-display);
-      font-size: 28px;
-      line-height: 34px;
-      font-weight: 500;
+      font-size: 34px;
+      font-weight: 400;
+      letter-spacing: 0.02em;
       color: var(--ink);
       margin-bottom: 8px;
     }
 
-    .modal-p-price {
-      font-size: 16px;
-      font-weight: 500;
-      color: var(--ink);
-      font-variant-numeric: tabular-nums;
-      margin-bottom: 24px;
-    }
-
-    .modal-disclaimer-note {
-      font-size: 12px;
+    .ugc-subtitle {
+      font-size: 14px;
       color: var(--taupe);
-      line-height: 18px;
-      padding-top: 16px;
-      border-top: 1px solid var(--stone);
+      letter-spacing: 0.02em;
     }
 
-    /* Generative V-TON Viewfinder & Controls */
-    .pose-guide-svg {
-      position: absolute;
-      inset: 0;
+    .ugc-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 24px;
+    }
+
+    @media (max-width: 900px) {
+      .ugc-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 540px) {
+      .ugc-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .ugc-card {
+      display: flex;
+      flex-direction: column;
+      border: 1px solid var(--stone);
+      background-color: var(--paper);
+      transition: border-color var(--duration-fast) var(--ease-editorial);
+    }
+
+    .ugc-card:hover {
+      border-color: var(--ink);
+    }
+
+    .ugc-img-wrap {
+      position: relative;
+      aspect-ratio: 3 / 4;
+      overflow: hidden;
+      background-color: var(--stone);
+      cursor: zoom-in;
+    }
+
+    .ugc-img-wrap img {
       width: 100%;
       height: 100%;
-      pointer-events: none;
-      z-index: 3;
-      opacity: 0.55;
+      object-fit: cover;
+      transition: transform var(--duration-base) var(--ease-editorial);
     }
 
-    .shutter-bar {
-      position: absolute;
-      bottom: 24px;
-      left: 0;
-      width: 100%;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 12px;
-      z-index: 15;
+    .ugc-card:hover .ugc-img-wrap img {
+      transform: scale(1.03);
     }
 
-    .live-garment-bar {
+    .ugc-color-tag {
       position: absolute;
-      bottom: 24px;
-      left: 0;
-      width: 100%;
+      top: 12px;
+      left: 12px;
+      background-color: rgba(18, 17, 16, 0.85);
+      color: var(--paper);
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 4px 8px;
+    }
+
+    .ugc-meta {
+      padding: 14px 16px;
       display: flex;
       flex-direction: column;
-      align-items: center;
       gap: 8px;
-      z-index: 15;
     }
 
-    .live-garment-title {
+    .ugc-author {
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      color: var(--ink);
+    }
+
+    .ugc-shop-btn {
+      align-self: flex-start;
+      background: none;
+      border: none;
+      padding: 0;
+      font-family: var(--font-body);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--clay);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      transition: color var(--duration-fast) var(--ease-editorial);
+    }
+
+    /* Live Try-On Modal */
+    .tryon-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 9998;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity var(--duration-fast) var(--ease-editorial);
+    }
+
+    .tryon-modal.active {
+      display: flex;
+      opacity: 1;
+    }
+
+    .tryon-backdrop {
+      position: absolute;
+      inset: 0;
+      background-color: rgba(18, 17, 16, 0.88);
+    }
+
+    .tryon-dialog {
+      position: relative;
+      z-index: 10;
+      width: 90%;
+      max-width: 820px;
+      background-color: var(--paper);
+      border: 1px solid var(--stone);
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.25);
+    }
+
+    .tryon-header {
+      height: 60px;
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--stone);
+      background-color: var(--paper);
+    }
+
+    .tryon-brand-tag {
       font-size: 10px;
       font-weight: 600;
       letter-spacing: 0.16em;
       text-transform: uppercase;
-      color: rgba(255, 255, 255, 0.7);
+      color: var(--clay);
+      display: block;
+      margin-bottom: 2px;
     }
 
-    .color-pills-row {
-      display: flex;
-      gap: 8px;
-      background: rgba(26, 26, 26, 0.85);
-      padding: 6px 12px;
-      border: 1px solid rgba(255, 255, 255, 0.15);
+    .tryon-title {
+      font-family: var(--font-display);
+      font-size: 20px;
+      font-weight: 400;
+      letter-spacing: 0.02em;
+      color: var(--ink);
+      margin: 0;
     }
 
-    .color-pill {
-      background: transparent;
-      border: 1px solid transparent;
-      color: var(--paper);
-      font-family: var(--font-body);
-      font-size: 11px;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      padding: 6px 12px;
-      cursor: pointer;
+    .tryon-header-actions {
       display: flex;
       align-items: center;
-      gap: 6px;
-      transition: background-color var(--duration-fast), border-color var(--duration-fast);
+      gap: 16px;
     }
 
-    .color-pill.active {
-      border-color: var(--paper);
-      background: rgba(255, 255, 255, 0.18);
-      font-weight: 600;
+    .tryon-status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 4px 10px;
+      background-color: #faf9f6;
+      border: 1px solid var(--stone);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      color: var(--ink);
     }
 
-    .color-pill-dot {
+    .status-dot {
       width: 8px;
       height: 8px;
+      background-color: var(--clay);
       border-radius: 50%;
-    }
-
-    .btn-shutter {
-      background-color: var(--paper);
-      color: var(--ink);
-      border: 1px solid var(--ink);
-      padding: 14px 32px;
-      font-family: var(--font-body);
-      font-size: 12px;
-      font-weight: 600;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
-      transition: background-color var(--duration-fast), transform var(--duration-fast);
-    }
-
-    .btn-shutter:hover {
-      background-color: var(--white);
-      transform: translateY(-1px);
-    }
-
-    .btn-shutter:active {
-      transform: translateY(0);
-    }
-
-    /* Generative Loading Overlay */
-    .generating-overlay {
-      position: absolute;
-      inset: 0;
-      background-color: rgba(26, 26, 26, 0.94);
-      z-index: 30;
-      display: none;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 40px;
-      color: var(--paper);
-      text-align: center;
-    }
-
-    .generating-overlay.visible {
-      display: flex;
-    }
-
-    .generating-scanline {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 2px;
-      background: var(--paper);
-      box-shadow: 0 0 16px rgba(255, 255, 255, 0.9);
-      animation: scanBeam 2s ease-in-out infinite alternate;
-    }
-
-    @keyframes scanBeam {
-      0% { top: 10%; opacity: 0.2; }
-      50% { opacity: 0.9; }
-      100% { top: 90%; opacity: 0.2; }
-    }
-
-    .generating-title {
-      font-family: var(--font-display);
-      font-size: 32px;
-      line-height: 38px;
-      font-weight: 400;
-      letter-spacing: 0.08em;
-      margin-bottom: 12px;
-      text-transform: uppercase;
-    }
-
-    .generating-step {
-      font-family: var(--font-body);
-      font-size: 13px;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--sand);
-      margin-bottom: 28px;
-    }
-
-    .progress-track {
-      width: 240px;
-      height: 2px;
-      background-color: rgba(255, 255, 255, 0.15);
-      overflow: hidden;
-      position: relative;
-    }
-
-    .progress-fill {
-      position: absolute;
-      top: 0;
-      left: 0;
-      bottom: 0;
-      width: 0%;
-      background-color: var(--paper);
-      transition: width 0.3s ease;
-    }
-
-    /* Result Viewport: Interactive Before/After Split Slider */
-    .result-viewport {
-      position: absolute;
-      inset: 0;
-      z-index: 25;
-      display: none;
-      background: #000;
-      overflow: hidden;
-    }
-
-    .result-viewport.visible {
-      display: block;
-    }
-
-    .split-slider-container {
-      position: relative;
-      width: 100%;
-      height: 100%;
-      user-select: none;
-      touch-action: none;
-      cursor: ew-resize;
-    }
-
-    .split-layer {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-    }
-
-    .split-layer img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-    }
-
-    .before-layer {
-      z-index: 2;
-      overflow: hidden;
-      width: 50%;
-      border-right: 1px solid var(--paper);
-    }
-
-    .before-layer img {
-      width: 580px; /* match viewport width */
-      max-width: none;
-    }
-
-    .after-layer {
-      z-index: 1;
-    }
-
-    .split-divider-handle {
-      position: absolute;
-      top: 0;
-      bottom: 0;
-      left: 50%;
-      width: 40px;
-      margin-left: -20px;
-      z-index: 5;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      pointer-events: none;
-    }
-
-    .handle-circle {
-      width: 32px;
-      height: 32px;
-      background-color: var(--paper);
-      color: var(--ink);
-      border: 1px solid var(--ink);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-    }
-
-    .badge-tag {
-      position: absolute;
-      top: 16px;
-      font-size: 10px;
-      font-weight: 600;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      padding: 6px 12px;
-      z-index: 6;
-      background: rgba(26, 26, 26, 0.85);
-      color: var(--paper);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-    }
-
-    .badge-tag.before {
-      left: 16px;
-    }
-
-    .badge-tag.after {
-      right: 16px;
-    }
-
-    .result-action-bar {
-      position: absolute;
-      bottom: 20px;
-      left: 0;
-      width: 100%;
-      display: flex;
-      justify-content: center;
-      gap: 12px;
-      z-index: 10;
-    }
-
-    .btn-result-action {
-      background-color: var(--paper);
-      color: var(--ink);
-      border: 1px solid var(--ink);
-      padding: 10px 18px;
-      font-family: var(--font-body);
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 6px;
+      display: inline-block;
       transition: background-color var(--duration-fast);
     }
 
-    .btn-result-action:hover {
-      background-color: var(--white);
+    .status-dot.live {
+      background-color: #388e3c;
     }
 
-    .btn-result-action.dark {
-      background-color: var(--ink);
-      color: var(--paper);
-      border-color: var(--paper);
-    }
-
-    .engine-status-tag {
-      font-size: 11px;
-      color: var(--taupe);
+    .tryon-icon-btn {
+      width: 36px;
+      height: 36px;
+      background: transparent;
+      border: 1px solid var(--stone);
+      color: var(--ink);
       display: flex;
       align-items: center;
-      gap: 6px;
-      margin-top: 14px;
+      justify-content: center;
+      cursor: pointer;
+      transition: background-color var(--duration-fast) var(--ease-editorial);
+    }
+
+    .tryon-icon-btn:hover {
+      background-color: var(--stone);
+    }
+
+    .tryon-viewport-wrap {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 4 / 3;
+      max-height: 520px;
+      background-color: #0d0c0b;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .tryon-viewport-wrap video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transform: scaleX(-1);
+    }
+
+    .tryon-loader {
+      position: absolute;
+      inset: 0;
+      background-color: rgba(18, 17, 16, 0.9);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      color: var(--paper);
+      z-index: 5;
+      transition: opacity var(--duration-fast) var(--ease-editorial);
+    }
+
+    .tryon-loader.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .tryon-spinner {
+      width: 36px;
+      height: 36px;
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      border-top-color: var(--paper);
+      border-radius: 50%;
+      animation: tryon-spin 0.8s linear infinite;
+    }
+
+    @keyframes tryon-spin {
+      to { transform: rotate(360deg); }
+    }
+
+    #tryon-loader-text {
+      font-size: 13px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--paper);
+      margin: 0;
+    }
+
+    .tryon-telemetry {
+      position: absolute;
+      bottom: 12px;
+      left: 12px;
+      background-color: rgba(18, 17, 16, 0.75);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      padding: 4px 10px;
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      color: rgba(255, 255, 255, 0.85);
+      display: flex;
+      gap: 12px;
+      z-index: 4;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .tryon-footer {
+      padding: 16px 24px;
+      border-top: 1px solid var(--stone);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+      background-color: var(--paper);
+    }
+
+    .tryon-garment-select {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .tryon-footer-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--taupe);
+    }
+
+    .tryon-swatches {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .tryon-swatch {
+      padding: 6px 12px;
+      border: 1px solid var(--stone);
+      font-family: var(--font-body);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #ffffff;
+      cursor: pointer;
+      transition: border-color var(--duration-fast) var(--ease-editorial);
+    }
+
+    .tryon-swatch.active {
+      border: 2px solid var(--ink);
+      box-shadow: 0 0 0 1px var(--ink);
+    }
+
+    .tryon-footer-controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .tryon-footer-btn {
+      height: 40px;
+      padding: 0 16px;
+      background: transparent;
+      border: 1px solid var(--ink);
+      color: var(--ink);
+      font-family: var(--font-body);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: background-color var(--duration-fast) var(--ease-editorial), color var(--duration-fast) var(--ease-editorial);
+    }
+
+    .tryon-footer-btn:hover {
+      background-color: var(--stone);
+    }
+
+    .tryon-footer-btn.primary {
+      background-color: var(--ink);
+      color: var(--paper);
+      border-color: var(--ink);
+    }
+
+    .tryon-footer-btn.primary:hover {
+      background-color: var(--charcoal);
     }
   </style>
 </head>
@@ -918,14 +1108,14 @@
   <header class="main-nav">
     <nav>
       <ul class="nav-links">
-        <li><a href="/collection/" class="nav-link">Women</a></li>
-        <li><a href="/collection/" class="nav-link">Men</a></li>
-        <li><a href="/collection/" class="nav-link">New</a></li>
-        <li><a href="/collection/" class="nav-link">Sale</a></li>
-        <li><a href="/styleguide/" class="nav-link" style="color: var(--clay);">Styleguide</a></li>
+        <li><a href="../collection/index.html?category=women" class="nav-link">Women</a></li>
+        <li><a href="../collection/index.html?category=men" class="nav-link">Men</a></li>
+        <li><a href="../collection/index.html?category=new" class="nav-link">New</a></li>
+        <li><a href="../collection/index.html?category=sale" class="nav-link">Sale</a></li>
+        <li><a href="../collection/index.html?category=all" class="nav-link" style="color: var(--clay);">All Tops</a></li>
       </ul>
     </nav>
-    <a href="/" class="brand-wordmark">AELIA</a>
+    <a href="../index.html" class="brand-wordmark">AELIA</a>
     <div class="nav-actions">
       <a href="#" class="nav-action-link">Search</a>
       <a href="#" class="nav-action-link">Account</a>
@@ -938,13 +1128,31 @@
   <!-- Product Detail Page Layout -->
   <main class="pdp-main">
     <div class="gallery-layout">
-      <div class="thumb-strip">
-        <div class="thumb-btn active">
-          <img src="/fixtures/sample-tshirt.png" alt="Black Boxy T-Shirt Thumbnail" />
-        </div>
+      <div class="thumb-strip" id="thumb-strip">
+        <button class="thumb-btn active" data-img="/fixtures/sample-tshirt.png" aria-label="Front View">
+          <img src="/fixtures/sample-tshirt.png" alt="Black Boxy T-Shirt Front View" />
+        </button>
+        <button class="thumb-btn" data-img="/fixtures/tshirt-side.jpg" aria-label="Side Profile / Hanger View">
+          <img src="/fixtures/tshirt-side.jpg" alt="Black Boxy T-Shirt Side Angle Drape" />
+        </button>
+        <button class="thumb-btn" data-img="/fixtures/tshirt-back.jpg" aria-label="Back View">
+          <img src="/fixtures/tshirt-back.jpg" alt="Black Boxy T-Shirt Back View" />
+        </button>
+        <button class="thumb-btn" data-img="/fixtures/tshirt-collar.jpg" aria-label="Collar and Texture Detail">
+          <img src="/fixtures/tshirt-collar.jpg" alt="Black Boxy T-Shirt Collar and Texture Detail" />
+        </button>
       </div>
-      <div class="main-image-viewport">
-        <img src="/fixtures/sample-tshirt.png" alt="Classic Heavyweight Boxy Tee Front View" />
+      <div class="main-image-viewport" id="main-viewport-container" role="button" tabindex="0" aria-label="Enlarge and zoom product photo">
+        <img id="main-product-img" src="/fixtures/sample-tshirt.png" alt="Classic Heavyweight Boxy Tee Front View" />
+        <div class="zoom-hint-badge">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            <line x1="11" y1="8" x2="11" y2="14"></line>
+            <line x1="8" y1="11" x2="14" y2="11"></line>
+          </svg>
+          <span>Enlarge & Zoom</span>
+        </div>
       </div>
     </div>
 
@@ -963,8 +1171,9 @@
           <span class="option-title">Colour: Charcoal</span>
         </div>
         <div class="swatches-row">
-          <button class="swatch-circle active" style="background-color: #2b2926;" aria-label="Charcoal"></button>
-          <button class="swatch-circle" style="background-color: #4b4b3b;" aria-label="Olive"></button>
+          <button class="swatch-circle active" data-color="charcoal" style="background-color: #2b2926;" aria-label="Charcoal"></button>
+          <button class="swatch-circle" data-color="oatmeal" style="background-color: #e2ded7;" aria-label="Oatmeal"></button>
+          <button class="swatch-circle" data-color="olive" style="background-color: #4b4b3b;" aria-label="Olive"></button>
         </div>
       </div>
 
@@ -991,13 +1200,36 @@
       </div>
 
       <div class="buttons-container">
-        <button id="pdp-add-to-bag" class="btn-add-to-bag">Add to Bag</button>
-        <button id="pdp-try-on" class="btn-try-on">
+        <div id="pdp-bag-cta-wrap" class="pdp-bag-cta-wrap">
+          <button id="pdp-add-to-bag" class="btn-add-to-bag" aria-label="Add to Bag">
+            <span class="btn-add-label">Add to Bag</span>
+          </button>
+          <div id="pdp-stepper" class="pdp-stepper" aria-label="Quantity in Bag">
+            <button id="pdp-qty-minus" class="stepper-btn stepper-btn-minus" aria-label="Decrease quantity" title="Decrease">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="square">
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+              </svg>
+            </button>
+            <div class="stepper-center">
+              <span class="stepper-status-label">In Bag</span>
+              <div class="stepper-num-box">
+                <span id="pdp-qty-num" class="stepper-num">1</span>
+              </div>
+            </div>
+            <button id="pdp-qty-plus" class="stepper-btn stepper-btn-plus" aria-label="Increase quantity" title="Increase">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="square">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+              </svg>
+            </button>
+          </div>
+        </div>
+        <button id="pdp-try-on" class="btn-try-on" title="Live Try-On via Decart Lucy VTON Real-Time WebRTC">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
             <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"></path>
             <circle cx="12" cy="13" r="3"></circle>
           </svg>
-          Try On
+          Try On Live
         </button>
       </div>
 
@@ -1028,106 +1260,167 @@
     </div>
   </main>
 
-  <!-- Try-on Modal Hierarchy -->
-  <div id="tryon-scrim" class="tryon-scrim" role="dialog" aria-modal="true">
-    <!-- Consent Screen -->
-    <div id="consent-view" class="consent-dialog">
-      <h2 class="consent-title">Try this on using your camera</h2>
-      <p class="consent-text">
-        Your camera is used only to show this item on you, live. Nothing is recorded, saved, or sent anywhere. Everything stays on your device.
-      </p>
-      <p class="consent-disclaimer">
-        Shows how it looks, not how it fits.
-      </p>
-      <div class="consent-btn-group">
-        <button id="btn-start-camera" class="btn-add-to-bag" style="width: 100%;">Start Camera</button>
-        <button id="btn-dismiss-consent" class="btn-dismiss">Not Now</button>
+  <!-- UGC Community Showcase Section -->
+  <section class="ugc-section">
+    <div class="ugc-header">
+      <div class="ugc-kicker">COMMUNITY SHOWCASE</div>
+      <h2 class="ugc-title">Styled by You</h2>
+      <p class="ugc-subtitle">Explore authentic styling of the Heavyweight Boxy Tee across silhouettes and cities.</p>
+    </div>
+    <div class="ugc-grid">
+      <div class="ugc-card" data-ugc-color="oatmeal">
+        <div class="ugc-img-wrap" data-enlarge="/fixtures/ugc-oatmeal-copenhagen.jpg" title="Click to enlarge">
+          <img src="/fixtures/ugc-oatmeal-copenhagen.jpg" alt="Freja wearing Oatmeal Boxy Tee in Copenhagen" loading="lazy" />
+          <span class="ugc-color-tag">Oatmeal &bull; Size M</span>
+        </div>
+        <div class="ugc-meta">
+          <span class="ugc-author">@freja.k &bull; Copenhagen</span>
+          <button class="ugc-shop-btn" data-color="oatmeal">View Oatmeal &rarr;</button>
+        </div>
+      </div>
+      <div class="ugc-card" data-ugc-color="charcoal">
+        <div class="ugc-img-wrap" data-enlarge="/fixtures/ugc-charcoal-london.jpg" title="Click to enlarge">
+          <img src="/fixtures/ugc-charcoal-london.jpg" alt="Marcus wearing Charcoal Boxy Tee in London" loading="lazy" />
+          <span class="ugc-color-tag">Charcoal &bull; Size L</span>
+        </div>
+        <div class="ugc-meta">
+          <span class="ugc-author">@marcus.a &bull; London</span>
+          <button class="ugc-shop-btn" data-color="charcoal">View Charcoal &rarr;</button>
+        </div>
+      </div>
+      <div class="ugc-card" data-ugc-color="olive">
+        <div class="ugc-img-wrap" data-enlarge="/fixtures/ugc-olive-tokyo.jpg" title="Click to enlarge">
+          <img src="/fixtures/ugc-olive-tokyo.jpg" alt="Kenji wearing Olive Boxy Tee in Tokyo" loading="lazy" />
+          <span class="ugc-color-tag">Olive &bull; Size M</span>
+        </div>
+        <div class="ugc-meta">
+          <span class="ugc-author">@kenji.s &bull; Tokyo</span>
+          <button class="ugc-shop-btn" data-color="olive">View Olive &rarr;</button>
+        </div>
+      </div>
+      <div class="ugc-card" data-ugc-color="oatmeal">
+        <div class="ugc-img-wrap" data-enlarge="/fixtures/ugc-oatmeal-studio.jpg" title="Click to enlarge">
+          <img src="/fixtures/ugc-oatmeal-studio.jpg" alt="Clara wearing Oatmeal Boxy Tee in Paris" loading="lazy" />
+          <span class="ugc-color-tag">Oatmeal &bull; Size S</span>
+        </div>
+        <div class="ugc-meta">
+          <span class="ugc-author">@clara_m &bull; Paris</span>
+          <button class="ugc-shop-btn" data-color="oatmeal">View Oatmeal &rarr;</button>
+        </div>
       </div>
     </div>
+  </section>
 
-    <!-- Live Try On Modal -->
-    <div id="live-view" class="live-tryon-modal">
-      <div class="camera-viewport">
-        <!-- Live Status Chip -->
-        <div class="chip-status">
-          <div class="dot-moss"></div>
-          <span id="pdp-camera-status">Live Neural Try-On</span>
+  <!-- Full-Screen Editorial Lightbox with Pan & Zoom -->
+  <div id="image-lightbox" class="lightbox-modal" aria-hidden="true">
+    <div class="lightbox-backdrop" id="lightbox-backdrop"></div>
+    <div class="lightbox-content">
+      <div class="lightbox-header">
+        <div class="lightbox-title-wrap">
+          <span class="lightbox-product-title">Classic Heavyweight Boxy Tee</span>
+          <span class="lightbox-counter" id="lightbox-counter">1 / 4</span>
         </div>
-
-        <button id="btn-exit-tryon" class="chip-close" aria-label="Close try on">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-            <line x1="18" y1="6" x2="6" y2="18"></line>
-            <line x1="6" y1="6" x2="18" y2="18"></line>
-          </svg>
-        </button>
-
-        <!-- Active Video Input Source (offscreen to preserve continuous hardware decoding) -->
-        <video id="webcam-video" playsinline muted autoplay style="position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; z-index: -100;"></video>
-
-        <!-- Live Neural Video Canvas -->
-        <canvas id="live-stream-canvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;"></canvas>
-
-        <!-- Floating Live Garment Switcher -->
-        <div class="live-garment-bar">
-          <span class="live-garment-title">Wearing Live:</span>
-          <div class="color-pills-row">
-            <button class="color-pill active" data-color="charcoal">
-              <span class="color-pill-dot" style="background: #2b2926;"></span>
-              Charcoal
-            </button>
-            <button class="color-pill" data-color="oatmeal">
-              <span class="color-pill-dot" style="background: #e2ded7;"></span>
-              Oatmeal
-            </button>
-            <button class="color-pill" data-color="olive">
-              <span class="color-pill-dot" style="background: #4b4b3b;"></span>
-              Olive
-            </button>
-          </div>
+        <div class="lightbox-toolbar">
+          <button id="zoom-in-btn" class="lightbox-tool-btn" title="Zoom In (+)">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              <line x1="11" y1="8" x2="11" y2="14"></line>
+              <line x1="8" y1="11" x2="14" y2="11"></line>
+            </svg>
+          </button>
+          <button id="zoom-out-btn" class="lightbox-tool-btn" title="Zoom Out (-)">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              <line x1="8" y1="11" x2="14" y2="11"></line>
+            </svg>
+          </button>
+          <button id="zoom-reset-btn" class="lightbox-tool-btn" title="Reset (1:1)">
+            1:1
+          </button>
+          <button id="lightbox-close-btn" class="lightbox-tool-btn" title="Close (Esc)">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
         </div>
       </div>
 
-      <!-- Side Control Panel -->
-      <div class="modal-side-panel">
-        <div>
-          <h3 class="modal-p-title">Classic Heavyweight Boxy Tee</h3>
-          <div class="modal-p-price">₹1,990</div>
+      <div class="lightbox-stage" id="lightbox-stage">
+        <img id="lightbox-img" src="" alt="Enlarged garment view" draggable="false" />
+      </div>
 
-          <div class="option-block">
-            <div class="option-label-row">
-              <span class="option-title">Colour: <span id="modal-active-color-name">Charcoal</span></span>
-            </div>
-            <div class="swatches-row">
-              <button class="swatch-circle active" data-color="charcoal" style="background-color: #2b2926;" aria-label="Charcoal"></button>
-              <button class="swatch-circle" data-color="oatmeal" style="background-color: #e2ded7;" aria-label="Oatmeal"></button>
-              <button class="swatch-circle" data-color="olive" style="background-color: #4b4b3b;" aria-label="Olive"></button>
-            </div>
+      <div class="lightbox-footer">
+        <div class="lightbox-nav-thumbs" id="lightbox-thumbs"></div>
+        <div class="lightbox-hint">Scroll or pinch to zoom &bull; Drag to pan &bull; Double click to zoom &bull; Esc to close</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Live Try-On Real-Time WebRTC Modal -->
+  <div id="tryon-modal" class="tryon-modal" aria-hidden="true">
+    <div class="tryon-backdrop" id="tryon-backdrop"></div>
+    <div class="tryon-dialog">
+      <div class="tryon-header">
+        <div class="tryon-header-info">
+          <span class="tryon-brand-tag">AELIA &bull; VIRTUAL FITTING</span>
+          <h3 class="tryon-title">Live Video-to-Video Try-On</h3>
+        </div>
+        <div class="tryon-header-actions">
+          <div class="tryon-status-badge" id="tryon-status-badge">
+            <span class="status-dot" id="tryon-status-dot"></span>
+            <span id="tryon-status-text">Ready</span>
           </div>
-
-          <div class="option-block">
-            <div class="option-label-row">
-              <span class="option-title">Select Size</span>
-            </div>
-            <div class="size-selector-row">
-              <button class="size-box">S</button>
-              <button class="size-box active">M</button>
-              <button class="size-box">L</button>
-              <button class="size-box">XL</button>
-            </div>
-          </div>
-
-          <button id="btn-modal-add-to-bag" class="btn-add-to-bag" style="width: 100%; margin-top: 24px;">Add to Bag — ₹1,990</button>
-
-          <div class="engine-status-tag">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+          <button id="tryon-close-btn" class="tryon-icon-btn" title="Close (Esc)">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
             </svg>
-            <span>Generative V-TON Engine • Ephemeral, 0 frames stored</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="tryon-viewport-wrap">
+        <!-- Live Video Element for WebRTC remote stream -->
+        <video id="tryon-video" autoplay playsinline muted></video>
+        
+        <!-- Loading / Connecting Overlay -->
+        <div id="tryon-loader" class="tryon-loader">
+          <div class="tryon-spinner"></div>
+          <p id="tryon-loader-text">Starting Camera &amp; Decart WebRTC...</p>
+        </div>
+
+        <!-- Telemetry bar -->
+        <div class="tryon-telemetry" id="tryon-telemetry">
+          <span>Decart Lucy VTON</span>
+          <span id="tryon-fps">30 FPS</span>
+          <span id="tryon-latency">RTT: &lt;150ms</span>
+        </div>
+      </div>
+
+      <div class="tryon-footer">
+        <div class="tryon-garment-select">
+          <span class="tryon-footer-label">Try Color:</span>
+          <div class="tryon-swatches">
+            <button class="tryon-swatch active" data-tryon-color="charcoal" style="background-color: #2b2926;" title="Charcoal">Charcoal</button>
+            <button class="tryon-swatch" data-tryon-color="oatmeal" style="background-color: #e2ded7; color: #121110;" title="Oatmeal">Oatmeal</button>
+            <button class="tryon-swatch" data-tryon-color="olive" style="background-color: #4b4b3b;" title="Olive">Olive</button>
           </div>
         </div>
 
-        <div class="modal-disclaimer-note">
-          Shows how it looks, not how it fits.
+        <div class="tryon-footer-controls">
+          <button id="tryon-snapshot-btn" class="tryon-footer-btn" title="Capture Snapshot">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <circle cx="12" cy="12" r="3"></circle>
+              <path d="M19 4h-3.5L14 2H10L8.5 4H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"></path>
+            </svg>
+            Capture Still
+          </button>
+          <button id="tryon-bag-btn" class="tryon-footer-btn primary">
+            Add to Bag
+          </button>
         </div>
       </div>
     </div>

@@ -3,9 +3,41 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Tops & Tailoring — Studio Aelia</title>
-  <link rel="stylesheet" href="/src/tokens.css" />
+  <title>Apparel & Tailoring — Studio Aelia</title>
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Hanken+Grotesk:wght@400;500;600&display=swap');
+
+    :root {
+      --paper: #F7F4EF;
+      --white: #FFFFFF;
+      --sand: #ECE7DF;
+      --stone: #D9D2C7;
+      --taupe: #6B655C;
+      --ink: #141311;
+      --charcoal: #2B2926;
+      --clay: #A24A33;
+      --moss: #3E5B45;
+      --font-display: 'Cormorant Garamond', Georgia, serif;
+      --font-body: 'Hanken Grotesk', -apple-system, sans-serif;
+      --duration-fast: 150ms;
+      --ease-editorial: cubic-bezier(0.2, 0, 0, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      border-radius: 0;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      background-color: var(--paper);
+      color: var(--ink);
+      font-family: var(--font-body);
+      min-height: 100vh;
+    }
+
     .announcement-bar {
       background-color: var(--ink);
       color: var(--paper);
@@ -38,6 +70,8 @@
       display: flex;
       gap: 28px;
       list-style: none;
+      margin: 0;
+      padding: 0;
     }
 
     .nav-link {
@@ -45,8 +79,21 @@
       font-weight: 500;
       letter-spacing: 0.12em;
       text-transform: uppercase;
-      color: var(--ink);
+      color: var(--taupe);
       text-decoration: none;
+      transition: color var(--duration-fast) var(--ease-editorial);
+      padding-bottom: 4px;
+      border-bottom: 2px solid transparent;
+    }
+
+    .nav-link:hover {
+      color: var(--ink);
+    }
+
+    .nav-link.active {
+      color: var(--ink);
+      font-weight: 600;
+      border-bottom-color: var(--ink);
     }
 
     .brand-wordmark {
@@ -78,27 +125,33 @@
     }
 
     .bag-count {
-      width: 16px;
-      height: 16px;
+      width: 18px;
+      height: 18px;
+      min-width: 18px;
+      box-sizing: border-box;
       background-color: var(--ink);
       color: var(--paper);
       border-radius: 50%;
       font-size: 10px;
       font-weight: 600;
+      letter-spacing: 0;
       display: inline-flex;
       align-items: center;
       justify-content: center;
+      line-height: 1;
+      text-align: center;
+      margin-left: 2px;
     }
 
     /* Collection Header */
     .collection-header {
       max-width: 1440px;
       margin: 0 auto;
-      padding: 48px 40px 24px 40px;
+      padding: 44px 40px 24px 40px;
     }
 
     .breadcrumb {
-      font-size: 12px;
+      font-size: 11px;
       font-weight: 500;
       letter-spacing: 0.12em;
       text-transform: uppercase;
@@ -109,7 +162,9 @@
     .collection-title-row {
       display: flex;
       justify-content: space-between;
-      align-items: baseline;
+      align-items: flex-end;
+      flex-wrap: wrap;
+      gap: 16px;
     }
 
     .collection-title {
@@ -118,10 +173,12 @@
       line-height: 52px;
       font-weight: 500;
       color: var(--ink);
+      margin: 0;
     }
 
     .product-counter {
-      font-size: 14px;
+      font-size: 13px;
+      letter-spacing: 0.04em;
       color: var(--taupe);
     }
 
@@ -132,16 +189,20 @@
       background-color: var(--paper);
       border-top: 1px solid var(--stone);
       border-bottom: 1px solid var(--stone);
-      padding: 14px 40px;
+      padding: 12px 40px;
       display: flex;
       justify-content: space-between;
       align-items: center;
       z-index: 40;
+      gap: 16px;
+      flex-wrap: wrap;
     }
 
     .filter-chips {
       display: flex;
       gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
     }
 
     .filter-chip {
@@ -149,7 +210,7 @@
       padding: 0 16px;
       border: 1px solid var(--stone);
       background-color: var(--white);
-      font-size: 12px;
+      font-size: 11px;
       font-weight: 500;
       letter-spacing: 0.08em;
       text-transform: uppercase;
@@ -158,6 +219,12 @@
       align-items: center;
       gap: 8px;
       cursor: pointer;
+      border-radius: 0;
+      transition: all var(--duration-fast) var(--ease-editorial);
+    }
+
+    .filter-chip:hover {
+      border-color: var(--ink);
     }
 
     .filter-chip.active {
@@ -166,39 +233,92 @@
       border-color: var(--ink);
     }
 
+    .filter-chip.tryon-toggle {
+      border-color: var(--charcoal);
+    }
+
+    .filter-chip.tryon-toggle.active {
+      background-color: var(--ink);
+      color: var(--paper);
+    }
+
+    .sort-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--taupe);
+    }
+
+    .sort-select {
+      background: transparent;
+      border: none;
+      font-family: var(--font-body);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-weight: 600;
+      color: var(--ink);
+      cursor: pointer;
+      outline: none;
+      padding-right: 4px;
+    }
+
     /* Grid */
     .grid-container {
       max-width: 1440px;
       margin: 0 auto;
-      padding: 48px 40px;
+      padding: 40px 40px 80px 40px;
     }
 
     .product-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 24px;
+      gap: 28px;
       row-gap: 56px;
       margin-bottom: 64px;
     }
 
-    @media (max-width: 1024px) {
+    @media (max-width: 1200px) {
       .product-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
-      .filter-toolbar {
-        padding: 12px 16px;
-      }
-      .grid-container {
-        padding: 24px 16px;
-      }
-      .collection-header {
-        padding: 24px 16px;
+        grid-template-columns: repeat(3, 1fr);
       }
     }
 
-    .card-link {
+    @media (max-width: 860px) {
+      .product-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+        row-gap: 40px;
+      }
+      .filter-toolbar {
+        padding: 12px 20px;
+      }
+      .grid-container {
+        padding: 24px 20px;
+      }
+      .collection-header {
+        padding: 28px 20px 16px 20px;
+      }
+      .main-nav {
+        padding: 0 20px;
+      }
+    }
+
+    @media (max-width: 540px) {
+      .product-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .product-card {
       text-decoration: none;
       color: var(--ink);
+      display: flex;
+      flex-direction: column;
+      position: relative;
     }
 
     .card-photo-box {
@@ -206,11 +326,24 @@
       aspect-ratio: 3 / 4;
       background-color: var(--sand);
       position: relative;
-      margin-bottom: 12px;
+      margin-bottom: 14px;
       overflow: hidden;
       display: flex;
       align-items: center;
       justify-content: center;
+      border: 1px solid rgba(0, 0, 0, 0.04);
+    }
+
+    .card-photo-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transform: scale(1);
+      transition: transform 0.45s cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
+    .product-card:hover .card-photo-box img {
+      transform: scale(1.04);
     }
 
     .badge-label {
@@ -218,23 +351,90 @@
       top: 12px;
       left: 12px;
       background-color: var(--white);
-      font-size: 11px;
-      font-weight: 500;
-      letter-spacing: 0.12em;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.14em;
       text-transform: uppercase;
-      padding: 4px 10px;
+      padding: 4px 8px;
+      z-index: 2;
+    }
+
+    .badge-label.sale {
+      color: var(--clay);
     }
 
     .camera-badge {
       font-size: 11px;
-      font-weight: 500;
-      letter-spacing: 0.1em;
+      font-weight: 600;
+      letter-spacing: 0.08em;
       text-transform: uppercase;
-      color: var(--taupe);
-      display: flex;
+      color: var(--ink);
+      display: inline-flex;
       align-items: center;
       gap: 6px;
-      margin-top: 6px;
+      margin-top: 8px;
+      padding-top: 4px;
+    }
+
+    .camera-badge svg {
+      stroke: var(--ink);
+    }
+
+    .card-title {
+      font-family: var(--font-body);
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--ink);
+      line-height: 20px;
+      margin-bottom: 2px;
+    }
+
+    .card-fabric {
+      font-size: 12px;
+      color: var(--taupe);
+      line-height: 16px;
+      margin-bottom: 6px;
+    }
+
+    .card-price-row {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--ink);
+    }
+
+    .card-price-row .original-price {
+      text-decoration: line-through;
+      color: var(--taupe);
+      font-size: 13px;
+    }
+
+    .card-price-row .sale-price {
+      color: var(--clay);
+    }
+
+    .swatch-dots {
+      display: flex;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .swatch-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      border: 1px solid rgba(0, 0, 0, 0.2);
+      display: inline-block;
+    }
+
+    .no-results {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 64px 20px;
+      color: var(--taupe);
+      font-size: 16px;
     }
 
     .pagination-row {
@@ -245,49 +445,31 @@
       padding: 40px 0;
       border-top: 1px solid var(--stone);
     }
-
-    .btn-load-more {
-      height: 48px;
-      padding: 0 32px;
-      background-color: transparent;
-      border: 1px solid var(--ink);
-      color: var(--ink);
-      font-family: var(--font-body);
-      font-size: 12px;
-      font-weight: 600;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      cursor: pointer;
-    }
-
-    .btn-load-more:hover {
-      background-color: var(--ink);
-      color: var(--paper);
-    }
   </style>
 </head>
 <body>
   <!-- Announcement -->
   <div class="announcement-bar">
-    Free shipping over ₹1,999. Easy 7-day returns.
+    Free express shipping over ₹1,999 • Live Real-Time AI Try-On Available
   </div>
 
   <!-- Header -->
   <header class="main-nav">
     <nav>
       <ul class="nav-links">
-        <li><a href="/collection/" class="nav-link" style="color: var(--ink); font-weight: 600;">Women</a></li>
-        <li><a href="/collection/" class="nav-link">Men</a></li>
-        <li><a href="/collection/" class="nav-link">New</a></li>
-        <li><a href="/collection/" class="nav-link">Sale</a></li>
-        <li><a href="/styleguide/" class="nav-link" style="color: var(--clay);">Styleguide</a></li>
+        <li><a href="index.html?category=women" class="nav-link" data-nav-category="women">Women</a></li>
+        <li><a href="index.html?category=men" class="nav-link" data-nav-category="men">Men</a></li>
+        <li><a href="index.html?category=new" class="nav-link" data-nav-category="new">New</a></li>
+        <li><a href="index.html?category=sale" class="nav-link" data-nav-category="sale">Sale</a></li>
+        <li><a href="index.html?category=all" class="nav-link" data-nav-category="all">All Tops</a></li>
+        <li><a href="../pdp/index.html" class="nav-link" style="color: var(--clay);">Try-On Studio</a></li>
       </ul>
     </nav>
-    <a href="/" class="brand-wordmark">AELIA</a>
+    <a href="../index.html" class="brand-wordmark">AELIA</a>
     <div class="nav-actions">
       <a href="#" class="nav-action-link">Search</a>
       <a href="#" class="nav-action-link">Account</a>
-      <a href="#" class="nav-action-link">
+      <a href="../pdp/index.html" class="nav-action-link">
         Bag <span class="bag-count">0</span>
       </a>
     </div>
@@ -295,92 +477,387 @@
 
   <!-- Collection Header -->
   <div class="collection-header">
-    <div class="breadcrumb">Home / Apparel / Tops</div>
+    <div class="breadcrumb" id="col-breadcrumb">Home / Apparel / All Tops</div>
     <div class="collection-title-row">
-      <h1 class="collection-title">Tops & Tailoring</h1>
-      <span class="product-counter">Showing 8 of 32 items</span>
+      <h1 class="collection-title" id="col-title">Tops & Tailoring</h1>
+      <span class="product-counter" id="col-counter">Showing 9 items</span>
     </div>
   </div>
 
-  <!-- Toolbar -->
+  <!-- Filter Toolbar -->
   <div class="filter-toolbar">
-    <div class="filter-chips">
-      <button class="filter-chip active">All Tops</button>
-      <button class="filter-chip">T-Shirts</button>
-      <button class="filter-chip">Shirts</button>
-      <button class="filter-chip active" style="border-color: var(--ink);">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+    <div class="filter-chips" id="filter-chips-bar">
+      <button class="filter-chip active" data-filter="all">All Items</button>
+      <button class="filter-chip" data-filter="women">Women</button>
+      <button class="filter-chip" data-filter="men">Men</button>
+      <button class="filter-chip" data-filter="new">New Arrivals</button>
+      <button class="filter-chip" data-filter="sale">Sale</button>
+      <button class="filter-chip tryon-toggle" data-filter="tryon">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"></path>
           <circle cx="12" cy="13" r="3"></circle>
         </svg>
-        Try On Available
+        Try-On Available
       </button>
     </div>
-    <div style="font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--taupe);">
-      Sort: Featured
+    <div class="sort-wrap">
+      <label for="sort-select">Sort By:</label>
+      <select id="sort-select" class="sort-select">
+        <option value="featured">Featured</option>
+        <option value="price-asc">Price: Low to High</option>
+        <option value="price-desc">Price: High to Low</option>
+      </select>
     </div>
   </div>
 
   <!-- Grid -->
   <main class="grid-container">
-    <div class="product-grid">
-      <!-- Item 1: Try on active -->
-      <a href="/pdp/" class="card-link">
-        <div class="card-photo-box">
-          <span class="badge-label">New</span>
-          <img src="/fixtures/sample-tshirt.png" alt="Classic Boxy Tee" style="width: 100%; height: 100%; object-fit: cover;" />
-        </div>
-        <div style="font-size: 14px; font-weight: 500;">Classic Heavyweight Boxy Tee</div>
-        <div style="font-size: 15px; font-weight: 500; margin-top: 4px;">₹1,990</div>
-        <div class="camera-badge">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-            <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"></path>
-            <circle cx="12" cy="13" r="3"></circle>
-          </svg>
-          <span>Try On</span>
-        </div>
-      </a>
-
-      <!-- Item 2 -->
-      <a href="/pdp/" class="card-link">
-        <div class="card-photo-box">
-          <span style="font-size: 12px; color: var(--taupe); text-transform: uppercase;">Product Image 3:4</span>
-        </div>
-        <div style="font-size: 14px; font-weight: 500;">Relaxed Poplin Shirt</div>
-        <div style="font-size: 15px; font-weight: 500; margin-top: 4px;">₹2,490</div>
-        <div class="camera-badge">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-            <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"></path>
-            <circle cx="12" cy="13" r="3"></circle>
-          </svg>
-          <span>Try On</span>
-        </div>
-      </a>
-
-      <!-- Item 3 -->
-      <div class="card-link">
-        <div class="card-photo-box">
-          <span style="font-size: 12px; color: var(--taupe); text-transform: uppercase;">Product Image 3:4</span>
-        </div>
-        <div style="font-size: 14px; font-weight: 500;">Fine Knit Mercerized Tee</div>
-        <div style="font-size: 15px; font-weight: 500; margin-top: 4px;">₹1,790</div>
-      </div>
-
-      <!-- Item 4 -->
-      <div class="card-link">
-        <div class="card-photo-box">
-          <span class="badge-label" style="color: var(--clay);">Sale</span>
-          <span style="font-size: 12px; color: var(--taupe); text-transform: uppercase;">Product Image 3:4</span>
-        </div>
-        <div style="font-size: 14px; font-weight: 500;">Linen Studio Kurta</div>
-        <div style="font-size: 15px; font-weight: 500; margin-top: 4px; color: var(--clay);">₹2,890 <span style="text-decoration: line-through; color: var(--taupe); font-size: 14px; margin-left: 6px;">₹3,400</span></div>
-      </div>
+    <div class="product-grid" id="product-grid">
+      <!-- Injected via JavaScript -->
     </div>
 
     <div class="pagination-row">
-      <span style="font-size: 13px; color: var(--taupe);">Showing 4 of 32 items</span>
-      <button class="btn-load-more">Load More</button>
+      <span style="font-size: 13px; color: var(--taupe);" id="footer-counter">All 9 editorial garments loaded</span>
     </div>
   </main>
+
+  <script>
+    // Complete Editorial Garment Roster (Zero Placeholders)
+    const PRODUCTS = [
+      {
+        id: 'silk-blouse',
+        title: 'Relaxed Silk Crepe Blouse',
+        fabric: '100% Mulberry Silk Crepe • Ivory Bone',
+        price: 3490,
+        priceDisplay: '₹3,490',
+        categories: ['women', 'new', 'blouse'],
+        badge: 'New',
+        isNew: true,
+        isSale: false,
+        tryOn: true,
+        image: '../fixtures/women-silk-blouse.jpg',
+        pdpUrl: '../pdp/index.html?item=silk-blouse',
+        swatches: ['#f5f3ee', '#dfdbd4']
+      },
+      {
+        id: 'linen-shirt',
+        title: 'Studio Oversized Linen Shirt',
+        fabric: 'Artisanal French Flax • Terracotta Blush',
+        price: 2890,
+        originalPrice: 3490,
+        priceDisplay: '₹2,890',
+        originalPriceDisplay: '₹3,490',
+        categories: ['women', 'sale', 'shirt'],
+        badge: 'Sale',
+        isNew: false,
+        isSale: true,
+        tryOn: true,
+        image: '../fixtures/women-linen-shirt.jpg',
+        pdpUrl: '../pdp/index.html?item=linen-shirt',
+        swatches: ['#c47b6a', '#e8dfd8']
+      },
+      {
+        id: 'merino-knit',
+        title: 'Ribbed Merino Wool Knit Top',
+        fabric: '19.5µ Extrafine Merino • Soft Camel',
+        price: 3890,
+        priceDisplay: '₹3,890',
+        categories: ['women', 'new', 'knitwear'],
+        badge: 'New',
+        isNew: true,
+        isSale: false,
+        tryOn: true,
+        image: '../fixtures/women-merino-knit.jpg',
+        pdpUrl: '../pdp/index.html?item=merino-knit',
+        swatches: ['#c8a782', '#e5ded6']
+      },
+      {
+        id: 'charcoal-tee',
+        title: 'Classic Heavyweight Boxy Tee',
+        fabric: '280gsm Combed Cotton • Washed Charcoal',
+        price: 1990,
+        priceDisplay: '₹1,990',
+        categories: ['men', 'new', 'tee'],
+        badge: 'Essential',
+        isNew: true,
+        isSale: false,
+        tryOn: true,
+        image: '../fixtures/charcoal-front.jpg',
+        pdpUrl: '../pdp/index.html?color=charcoal',
+        swatches: ['#222326', '#e2ded7', '#4b4b3b']
+      },
+      {
+        id: 'poplin-shirt',
+        title: 'Relaxed Giza Poplin Shirt',
+        fabric: '120s Two-Ply Egyptian Cotton • Chalk White',
+        price: 2690,
+        priceDisplay: '₹2,690',
+        categories: ['men', 'new', 'shirt'],
+        badge: 'New',
+        isNew: true,
+        isSale: false,
+        tryOn: true,
+        image: '../fixtures/men-poplin-shirt.jpg',
+        pdpUrl: '../pdp/index.html?item=poplin-shirt',
+        swatches: ['#ffffff', '#cbd4dc']
+      },
+      {
+        id: 'linen-kurta',
+        title: 'Linen Studio Kurta Tunic',
+        fabric: 'Hand-Spun Flax Linen • Natural Oatmeal',
+        price: 2490,
+        originalPrice: 3400,
+        priceDisplay: '₹2,490',
+        originalPriceDisplay: '₹3,400',
+        categories: ['men', 'sale', 'shirt'],
+        badge: 'Sale',
+        isNew: false,
+        isSale: true,
+        tryOn: true,
+        image: '../fixtures/linen-studio-kurta.jpg',
+        pdpUrl: '../pdp/index.html?item=linen-kurta',
+        swatches: ['#dcd6cc', '#3d3c39']
+      },
+      {
+        id: 'twill-overshirt',
+        title: 'Structured Twill Overshirt',
+        fabric: '340gsm Japanese Twill • Slate Indigo',
+        price: 4290,
+        priceDisplay: '₹4,290',
+        categories: ['men', 'new', 'overshirt'],
+        badge: 'New',
+        isNew: true,
+        isSale: false,
+        tryOn: true,
+        image: '../fixtures/men-overshirt.jpg',
+        pdpUrl: '../pdp/index.html?item=overshirt',
+        swatches: ['#3d4954', '#262627']
+      },
+      {
+        id: 'oatmeal-tee',
+        title: 'Organic Cotton Relaxed Tee',
+        fabric: 'Midweight Organic Cotton • Oatmeal Melange',
+        price: 1990,
+        priceDisplay: '₹1,990',
+        categories: ['women', 'men', 'tee'],
+        badge: 'Restocked',
+        isNew: false,
+        isSale: false,
+        tryOn: true,
+        image: '../fixtures/oatmeal-tshirt.jpg',
+        pdpUrl: '../pdp/index.html?color=oatmeal',
+        swatches: ['#e2ded7', '#222326']
+      },
+      {
+        id: 'olive-tee',
+        title: 'Minimalist Mercerized Boxy Tee',
+        fabric: 'Mercerized Cotton • Muted Olive',
+        price: 1990,
+        priceDisplay: '₹1,990',
+        categories: ['men', 'tee'],
+        badge: 'Essential',
+        isNew: false,
+        isSale: false,
+        tryOn: true,
+        image: '../fixtures/olive-tshirt.jpg',
+        pdpUrl: '../pdp/index.html?color=olive',
+        swatches: ['#4b4b3b', '#222326']
+      }
+    ];
+
+    let currentFilter = 'all';
+    let currentSort = 'featured';
+
+    const CATEGORY_META = {
+      all: {
+        title: 'Tops & Tailoring',
+        breadcrumb: 'Home / Apparel / All Tops',
+        desc: 'Complete seasonal tops, knitwear, and tailoring.'
+      },
+      women: {
+        title: 'Women’s Collection',
+        breadcrumb: 'Home / Apparel / Women',
+        desc: 'Silk crepe blouses, relaxed studio linen, and fine merino knits.'
+      },
+      men: {
+        title: 'Men’s Collection',
+        breadcrumb: 'Home / Apparel / Men',
+        desc: 'Heavyweight boxy tees, Egyptian Giza poplin, and structured overshirts.'
+      },
+      new: {
+        title: 'New Arrivals',
+        breadcrumb: 'Home / New In',
+        desc: 'The latest silhouettes crafted in small artisanal runs.'
+      },
+      sale: {
+        title: 'Archive & Seasonal Sale',
+        breadcrumb: 'Home / Sale',
+        desc: 'Curated archive editions offered with exceptional consideration.'
+      },
+      tryon: {
+        title: 'Live Try-On Available',
+        breadcrumb: 'Home / Virtual Dressing Room',
+        desc: 'Pieces ready for real-time video virtual try-on in your browser.'
+      }
+    };
+
+    function renderProducts() {
+      const grid = document.getElementById('product-grid');
+      const counter = document.getElementById('col-counter');
+      const title = document.getElementById('col-title');
+      const breadcrumb = document.getElementById('col-breadcrumb');
+
+      // Filter
+      let filtered = PRODUCTS.filter((p) => {
+        if (currentFilter === 'all') return true;
+        if (currentFilter === 'women') return p.categories.includes('women');
+        if (currentFilter === 'men') return p.categories.includes('men');
+        if (currentFilter === 'new') return p.isNew;
+        if (currentFilter === 'sale') return p.isSale;
+        if (currentFilter === 'tryon') return p.tryOn;
+        return p.categories.includes(currentFilter);
+      });
+
+      // Sort
+      if (currentSort === 'price-asc') {
+        filtered.sort((a, b) => a.price - b.price);
+      } else if (currentSort === 'price-desc') {
+        filtered.sort((a, b) => b.price - a.price);
+      }
+
+      // Update Header Text
+      const meta = CATEGORY_META[currentFilter] || CATEGORY_META.all;
+      title.textContent = meta.title;
+      breadcrumb.textContent = meta.breadcrumb;
+      counter.textContent = `Showing ${filtered.length} of ${PRODUCTS.length} items`;
+
+      // Update Nav active indicator
+      document.querySelectorAll('.nav-link').forEach((link) => {
+        const cat = link.getAttribute('data-nav-category');
+        if (cat === currentFilter) {
+          link.classList.add('active');
+        } else {
+          link.classList.remove('active');
+        }
+      });
+
+      // Update Filter Chips
+      document.querySelectorAll('.filter-chip').forEach((chip) => {
+        const f = chip.getAttribute('data-filter');
+        if (f === currentFilter) {
+          chip.classList.add('active');
+        } else {
+          chip.classList.remove('active');
+        }
+      });
+
+      // Render Cards
+      if (filtered.length === 0) {
+        grid.innerHTML = '<div class="no-results">No garments found in this category.</div>';
+        return;
+      }
+
+      grid.innerHTML = filtered.map((item) => {
+        const badgeHtml = item.badge
+          ? `<span class="badge-label ${item.isSale ? 'sale' : ''}">${item.badge}</span>`
+          : '';
+
+        const priceHtml = item.isSale
+          ? `<div class="card-price-row">
+               <span class="sale-price">${item.priceDisplay}</span>
+               <span class="original-price">${item.originalPriceDisplay}</span>
+             </div>`
+          : `<div class="card-price-row"><span>${item.priceDisplay}</span></div>`;
+
+        const swatchesHtml = item.swatches && item.swatches.length
+          ? `<div class="swatch-dots">
+               ${item.swatches.map(hex => `<span class="swatch-dot" style="background-color: ${hex};"></span>`).join('')}
+             </div>`
+          : '';
+
+        const tryonHtml = item.tryOn
+          ? `<div class="camera-badge">
+               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                 <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"></path>
+                 <circle cx="12" cy="13" r="3"></circle>
+               </svg>
+               <span>Try On Live</span>
+             </div>`
+          : '';
+
+        return `
+          <a href="${item.pdpUrl}" class="product-card">
+            <div class="card-photo-box">
+              ${badgeHtml}
+              <img src="${item.image}" alt="${item.title}" loading="lazy" />
+            </div>
+            <div class="card-title">${item.title}</div>
+            <div class="card-fabric">${item.fabric}</div>
+            ${priceHtml}
+            ${swatchesHtml}
+            ${tryonHtml}
+          </a>
+        `;
+      }).join('');
+    }
+
+    // Initialize from URL query params
+    function init() {
+      const params = new URLSearchParams(window.location.search);
+      const catParam = params.get('category');
+      if (catParam && (CATEGORY_META[catParam] || ['women', 'men', 'new', 'sale', 'all', 'tryon'].includes(catParam))) {
+        currentFilter = catParam;
+      }
+
+      // Filter chips click handling
+      document.querySelectorAll('.filter-chip').forEach((chip) => {
+        chip.addEventListener('click', (e) => {
+          e.preventDefault();
+          const targetFilter = chip.getAttribute('data-filter');
+          if (targetFilter) {
+            currentFilter = targetFilter;
+            const newUrl = new URL(window.location.href);
+            newUrl.searchParams.set('category', targetFilter);
+            window.history.replaceState({}, '', newUrl.toString());
+            renderProducts();
+          }
+        });
+      });
+
+      // Sort change handling
+      const sortSelect = document.getElementById('sort-select');
+      if (sortSelect) {
+        sortSelect.addEventListener('change', (e) => {
+          currentSort = e.target.value;
+          renderProducts();
+        });
+      }
+
+      // Navbar links click handling to update category without full refresh
+      document.querySelectorAll('.nav-link[data-nav-category]').forEach((link) => {
+        link.addEventListener('click', (e) => {
+          e.preventDefault();
+          const cat = link.getAttribute('data-nav-category');
+          if (cat) {
+            currentFilter = cat;
+            const newUrl = new URL(window.location.href);
+            newUrl.searchParams.set('category', cat);
+            window.history.pushState({}, '', newUrl.toString());
+            renderProducts();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }
+        });
+      });
+
+      renderProducts();
+    }
+
+    window.addEventListener('DOMContentLoaded', init);
+    window.addEventListener('popstate', () => {
+      const params = new URLSearchParams(window.location.search);
+      currentFilter = params.get('category') || 'all';
+      renderProducts();
+    });
+  </script>
 </body>
 </html>

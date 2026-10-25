@@ -1,0 +1,43 @@
+# Pre-Send Hook: Harvey Email Deliverability Gate
+# Fires before harvey-agent stages or sends any email
+# Enforces mandatory MX-record and RFC 5322 validation
+
+name: harvey-email-gate
+event: pre_command
+scope:
+  - harvey/harvey/agents/sender.py
+  - harvey/harvey/cli.py
+
+triggers:
+  commands:
+    - "python -m harvey send"
+    - "python -m harvey stage"
+    - "harvey send"
+    - "harvey stage"
+
+checks:
+  - name: verify_called_before_send
+    description: |
+      Ensures verify_email_deliverability() is called before send/stage.
+      This is enforced in code (sender.py) but also checked here as a second gate.
+    command: "grep -n 'verify_email_deliverability' harvey/harvey/agents/sender.py"
+    mustMatch: true
+    message: "CRITICAL: Email send path missing verify_email_deliverability() call."
+    severity: error
+
+  - name: no_bulk_override
+    description: "Prevent --skip-verify flags from being passed"
+    pattern: "--skip-verify|--no-verify|bypass.*verify"
+    message: "BLOCKED: Cannot bypass email deliverability verification."
+    severity: error
+
+  - name: rate_limit_check
+    description: "Check that rate limiting is configured"
+    command: "grep -n 'DAILY_LIMIT\\|daily_cap\\|rate_limit' harvey/harvey/agents/sender.py"
+    mustMatch: true
+    message: "WARNING: No rate limiting found in sender.py"
+    severity: warning
+
+onViolation:
+  error: block_command
+  warning: log_and_continue

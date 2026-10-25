@@ -1,0 +1,29 @@
+{
+  "browser": {
+    "mode": "launch",
+    "executable_path": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+    "headless": true
+  },
+  "start_url": { "url": "https://www.vaniger.com/" },
+  "actions": [
+    { "step_id": "homepage-settle", "action": "wait_for_timeout", "duration_ms": 1500 },
+    {
+      "step_id": "open-teleprompter-faq",
+      "action": "click",
+      "locator": { "kind": "css", "selector": "#faq button[id='radix-_R_156avjb_']" },
+      "timeout_ms": 10000
+    },
+    {
+      "step_id": "follow-login-link",
+      "action": "click",
+      "locator": { "kind": "css", "selector": "nav a[href='/login']" },
+      "timeout_ms": 10000
+    },
+    { "step_id": "login-settle", "action": "wait_for_timeout", "duration_ms": 1000 }
+  ],
+  "capture": {
+    "after_each_step": ["dom", "accessibility", "url"],
+    "at_end": ["dom", "accessibility", "url"],
+    "events": ["network", "page-errors"]
+  }
+}

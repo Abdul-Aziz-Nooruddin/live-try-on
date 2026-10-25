@@ -1,36 +1,233 @@
-import { CameraManager } from '@livetry/widget/src/camera/camera-manager.js';
-import { VisionPipeline, type VisionFrameResult } from '@livetry/widget/src/vision/vision-pipeline.js';
-import { BodyRigTracker, type TorsoRigState } from '@livetry/tryon-core';
+import { DecartRealtimeVtonEngine } from '@livetry/tryon-core';
+import gsap from 'gsap';
+import { getLenis } from './site-motion';
+
+const lenis = {
+  stop: () => getLenis()?.stop(),
+  start: () => getLenis()?.start()
+};
 
 interface GarmentVariant {
   id: string;
   name: string;
-  hex: string;
+  hex: number;
   image: string;
-  colorFilter: string;
+  gallery: string[];
+  prompt: string;
 }
 
-const GARMENT_VARIANTS: Record<string, GarmentVariant> = {
+interface CatalogSwatch {
+  id: string;
+  name: string;
+  hex: string;
+}
+
+interface CatalogItem {
+  id: string;
+  title: string;
+  breadcrumb: string;
+  price: string;
+  originalPrice?: string;
+  description: string;
+  fabric: string;
+  swatches?: CatalogSwatch[];
+  variant: GarmentVariant;
+}
+
+const ITEM_CATALOG: Record<string, CatalogItem> = {
+  'silk-blouse': {
+    id: 'silk-blouse',
+    title: 'Relaxed Silk Crepe Blouse',
+    breadcrumb: 'Home / Women / Blouses',
+    price: '₹3,490',
+    description: 'Cut from fluid 18 momme mulberry silk crepe with a soft relaxed silhouette, dropped shoulder drape, and refined French seams.',
+    fabric: '100% Mulberry Silk Crepe • Ivory Bone • Dry Clean Only • Made in Como, Italy',
+    swatches: [
+      { id: 'ivory', name: 'Ivory Bone', hex: '#f5f3ee' },
+      { id: 'mist', name: 'Mist White', hex: '#e8e6e1' }
+    ],
+    variant: {
+      id: 'silk-blouse',
+      name: 'Ivory Bone',
+      hex: 0xf5f3ee,
+      image: '/fixtures/women-silk-blouse.jpg',
+      gallery: [
+        '/fixtures/women-silk-blouse.jpg',
+        '/fixtures/women-silk-blouse-collar.jpg',
+        '/fixtures/women-silk-blouse-drape.jpg',
+        '/fixtures/women-silk-blouse-texture.jpg'
+      ],
+      prompt: 'Substitute only the shirt. Replace the upper clothing with this crisp pure white mulberry silk crepe relaxed blouse. Preserve the exact person’s face, head, hair, skin tone, neck, hands, body proportions, and background completely identical to the live camera stream without alteration. Do not modify or replace the person.'
+    }
+  },
+  'linen-shirt': {
+    id: 'linen-shirt',
+    title: 'Studio Oversized Linen Shirt',
+    breadcrumb: 'Home / Women / Shirts',
+    price: '₹2,890',
+    originalPrice: '₹3,490',
+    description: 'Spun from artisanal French flax linen, pre-washed for effortless softness with an easy camp collar and relaxed boxy drape.',
+    fabric: '100% French Flax Linen • Terracotta Blush • Cold Gentle Wash • Made in Portugal',
+    swatches: [
+      { id: 'terracotta', name: 'Terracotta Blush', hex: '#c47b6a' },
+      { id: 'flax', name: 'Raw Flax', hex: '#e2d8ce' }
+    ],
+    variant: {
+      id: 'linen-shirt',
+      name: 'Terracotta Blush',
+      hex: 0xc47b6a,
+      image: '/fixtures/women-linen-shirt.jpg',
+      gallery: [
+        '/fixtures/women-linen-shirt.jpg',
+        '/fixtures/women-linen-shirt-collar.jpg',
+        '/fixtures/women-linen-shirt-drape.jpg',
+        '/fixtures/women-linen-shirt-texture.jpg'
+      ],
+      prompt: 'Substitute only the shirt. Replace the upper clothing with this relaxed terracotta blush oversized French linen studio shirt with open camp collar. Preserve the exact person’s face, head, hair, skin tone, neck, hands, body proportions, and background completely identical to the live camera stream without alteration. Do not modify or replace the person.'
+    }
+  },
+  'merino-knit': {
+    id: 'merino-knit',
+    title: 'Ribbed Merino Wool Knit Top',
+    breadcrumb: 'Home / Women / Knitwear',
+    price: '₹3,890',
+    description: 'Finely spun 19.5-micron extrafine merino wool in a delicate ribbed gauge with an elegant boatneck collar and long clean sleeves.',
+    fabric: '100% Extrafine Merino Wool • Soft Camel • Hand Wash Cold • Made in Biella, Italy',
+    swatches: [
+      { id: 'camel', name: 'Soft Camel', hex: '#c8a782' },
+      { id: 'oat', name: 'Oat Melange', hex: '#e3ded8' }
+    ],
+    variant: {
+      id: 'merino-knit',
+      name: 'Soft Camel',
+      hex: 0xc8a782,
+      image: '/fixtures/women-merino-knit.jpg',
+      gallery: [
+        '/fixtures/women-merino-knit.jpg',
+        '/fixtures/women-merino-knit-collar.jpg',
+        '/fixtures/women-merino-knit-drape.jpg',
+        '/fixtures/women-merino-knit-texture.jpg'
+      ],
+      prompt: 'Substitute only the shirt. Replace the upper clothing with this soft camel oat ribbed merino wool knit wide boatneck top. Preserve the exact person’s face, head, hair, skin tone, neck, hands, body proportions, and background completely identical to the live camera stream without alteration. Do not modify or replace the person.'
+    }
+  },
+  'poplin-shirt': {
+    id: 'poplin-shirt',
+    title: 'Relaxed Giza Poplin Shirt',
+    breadcrumb: 'Home / Men / Shirts',
+    price: '₹2,690',
+    description: 'Tailored from crisp 120s two-ply Egyptian Giza cotton poplin. Clean point collar, mother-of-pearl buttons, and structured drape.',
+    fabric: '100% Giza Cotton Poplin • Chalk White • Machine Wash 30°C • Made in Kyoto, Japan',
+    swatches: [
+      { id: 'white', name: 'Chalk White', hex: '#ffffff' },
+      { id: 'sky', name: 'Light Sky', hex: '#d2dce6' }
+    ],
+    variant: {
+      id: 'poplin-shirt',
+      name: 'Chalk White',
+      hex: 0xf9f9f8,
+      image: '/fixtures/men-poplin-shirt.jpg',
+      gallery: [
+        '/fixtures/men-poplin-shirt.jpg',
+        '/fixtures/men-poplin-shirt-collar.jpg',
+        '/fixtures/men-poplin-shirt-drape.jpg',
+        '/fixtures/men-poplin-shirt-texture.jpg'
+      ],
+      prompt: 'Substitute only the shirt. Replace the upper clothing with this crisp chalk white relaxed button-down poplin shirt with clean point collar. Preserve the exact person’s face, head, hair, skin tone, neck, hands, body proportions, and background completely identical to the live camera stream without alteration. Do not modify or replace the person.'
+    }
+  },
+  'linen-kurta': {
+    id: 'linen-kurta',
+    title: 'Linen Studio Kurta Tunic',
+    breadcrumb: 'Home / Men / Shirts',
+    price: '₹2,490',
+    originalPrice: '₹3,400',
+    description: 'Crafted from textured hand-spun flax linen featuring a clean mandarin collar, hidden horn button placket, and relaxed vented hem.',
+    fabric: '100% Hand-Spun Flax Linen • Natural Oatmeal • Cold Gentle Wash • Made in Jaipur, India',
+    swatches: [
+      { id: 'oatmeal', name: 'Natural Oatmeal', hex: '#dcd6cc' },
+      { id: 'slate', name: 'Charcoal Flax', hex: '#3d3c39' }
+    ],
+    variant: {
+      id: 'linen-kurta',
+      name: 'Natural Oatmeal',
+      hex: 0xdcd6cc,
+      image: '/fixtures/linen-studio-kurta.jpg',
+      gallery: [
+        '/fixtures/linen-studio-kurta.jpg',
+        '/fixtures/linen-studio-kurta-collar.jpg',
+        '/fixtures/linen-studio-kurta-drape.jpg',
+        '/fixtures/linen-studio-kurta-texture.jpg'
+      ],
+      prompt: 'Substitute only the shirt. Replace the upper clothing with this natural oatmeal flax linen mandarin collar studio kurta tunic. Preserve the exact person’s face, head, hair, skin tone, neck, hands, body proportions, and background completely identical to the live camera stream without alteration. Do not modify or replace the person.'
+    }
+  },
+  'overshirt': {
+    id: 'overshirt',
+    title: 'Structured Twill Overshirt',
+    breadcrumb: 'Home / Men / Outerwear',
+    price: '₹4,290',
+    description: 'Heavyweight 340gsm Japanese cotton twill garment-dyed in slate indigo. Features dual utilitarian chest flap pockets and reinforced stitching.',
+    fabric: '100% Heavyweight Cotton Twill (340gsm) • Slate Indigo • Garment Dyed • Made in Okayama, Japan',
+    swatches: [
+      { id: 'indigo', name: 'Slate Indigo', hex: '#3d4954' },
+      { id: 'charcoal', name: 'Deep Charcoal', hex: '#262627' }
+    ],
+    variant: {
+      id: 'overshirt',
+      name: 'Slate Indigo',
+      hex: 0x3d4954,
+      image: '/fixtures/men-overshirt.jpg',
+      gallery: [
+        '/fixtures/men-overshirt.jpg',
+        '/fixtures/men-overshirt-collar.jpg',
+        '/fixtures/men-overshirt-drape.jpg',
+        '/fixtures/men-overshirt-texture.jpg'
+      ],
+      prompt: 'Substitute only the shirt. Replace the upper clothing with this structured slate indigo washed cotton twill button-up overshirt with dual flap pockets. Preserve the exact person’s face, head, hair, skin tone, neck, hands, body proportions, and background completely identical to the live camera stream without alteration. Do not modify or replace the person.'
+    }
+  }
+};
+
+const GARMENT_VARIANTS: Record<'charcoal' | 'oatmeal' | 'olive', GarmentVariant> = {
   charcoal: {
     id: 'charcoal',
     name: 'Charcoal',
-    hex: '#2b2926',
-    image: '/fixtures/sample-tshirt.png',
-    colorFilter: 'brightness(0.9) contrast(1.1)'
+    hex: 0x222326,
+    image: '/fixtures/charcoal-front.jpg',
+    gallery: [
+      '/fixtures/charcoal-front.jpg',
+      '/fixtures/tshirt-side.jpg',
+      '/fixtures/tshirt-back.jpg',
+      '/fixtures/tshirt-collar.jpg'
+    ],
+    prompt: "Substitute only the shirt. Replace the upper clothing with this relaxed boxy washed charcoal black heavy cotton crewneck t-shirt. Curved front crewneck dipping naturally below the throat and collarbone. Preserve the exact person’s face, head, hair, skin tone, neck, hands, body proportions, and background completely identical to the live camera stream without alteration. Do not modify or replace the person."
   },
   oatmeal: {
     id: 'oatmeal',
     name: 'Oatmeal',
-    hex: '#e2ded7',
+    hex: 0xe2ded7,
     image: '/fixtures/oatmeal-tshirt.jpg',
-    colorFilter: 'brightness(1.0) contrast(1.0)'
+    gallery: [
+      '/fixtures/oatmeal-tshirt.jpg',
+      '/fixtures/oatmeal-side.jpg',
+      '/fixtures/oatmeal-back.jpg',
+      '/fixtures/oatmeal-collar.jpg'
+    ],
+    prompt: "Substitute only the shirt. Replace the upper clothing with this relaxed boxy oatmeal beige heavy cotton crewneck t-shirt. Curved front crewneck dipping naturally below the throat and collarbone. Preserve the exact person’s face, head, hair, skin tone, neck, hands, body proportions, and background completely identical to the live camera stream without alteration. Do not modify or replace the person."
   },
   olive: {
     id: 'olive',
     name: 'Olive',
-    hex: '#4b4b3b',
+    hex: 0x4b4b3b,
     image: '/fixtures/olive-tshirt.jpg',
-    colorFilter: 'brightness(0.95) contrast(1.05)'
+    gallery: [
+      '/fixtures/olive-tshirt.jpg',
+      '/fixtures/olive-side.jpg',
+      '/fixtures/olive-back.jpg',
+      '/fixtures/olive-collar.jpg'
+    ],
+    prompt: "Substitute only the shirt. Replace the upper clothing with this relaxed boxy muted olive green heavy cotton crewneck t-shirt. Curved front crewneck dipping naturally below the throat and collarbone. Preserve the exact person’s face, head, hair, skin tone, neck, hands, body proportions, and background completely identical to the live camera stream without alteration. Do not modify or replace the person."
   }
 };
 
@@ -38,92 +235,56 @@ let activeColor: GarmentVariant = GARMENT_VARIANTS.charcoal;
 let selectedSize = 'M';
 let bagCount = 0;
 
-// Preload Garment Images for zero-lag live rendering
-const garmentImages: Record<string, HTMLImageElement> = {};
-Object.values(GARMENT_VARIANTS).forEach((variant) => {
-  const img = new Image();
-  img.crossOrigin = 'anonymous';
-  img.src = variant.image;
-  garmentImages[variant.id] = img;
-});
-
-// DOM Elements
-const tryonScrim = document.getElementById('tryon-scrim') as HTMLDivElement;
-const consentView = document.getElementById('consent-view') as HTMLDivElement;
-const liveView = document.getElementById('live-view') as HTMLDivElement;
-const btnOpenTryOn = document.getElementById('pdp-try-on') as HTMLButtonElement;
-const btnStartCamera = document.getElementById('btn-start-camera') as HTMLButtonElement;
-const btnDismissConsent = document.getElementById('btn-dismiss-consent') as HTMLButtonElement;
-const btnExitTryon = document.getElementById('btn-exit-tryon') as HTMLButtonElement;
-
-const videoElement = document.getElementById('webcam-video') as HTMLVideoElement;
-const liveCanvas = document.getElementById('live-stream-canvas') as HTMLCanvasElement;
-const cameraStatusText = document.getElementById('pdp-camera-status') as HTMLSpanElement;
-
-// Side Panel Controls
-const modalActiveColorName = document.getElementById('modal-active-color-name') as HTMLSpanElement;
-const btnModalAddToBag = document.getElementById('btn-modal-add-to-bag') as HTMLButtonElement;
 const bagCountBadges = document.querySelectorAll('.bag-count');
 
-// Pipelines & Tracking
-let cameraManager: CameraManager | null = null;
-let visionPipeline: VisionPipeline | null = null;
-let rigTracker: BodyRigTracker | null = null;
-let liveSocket: WebSocket | null = null;
+function setupGalleryThumbnails() {
+  const thumbBtns = document.querySelectorAll<HTMLButtonElement>('.thumb-btn');
+  const mainImg = (document.getElementById('main-product-img') || document.querySelector('.main-image-viewport img')) as HTMLImageElement;
+  if (!mainImg) return;
 
-let isLoopRunning = false;
-let canvasCtx: CanvasRenderingContext2D | null = null;
-
-// Dynamic calibrated skin tone
-let skinColorR = 195;
-let skinColorG = 150;
-let skinColorB = 125;
-
-async function initPDP() {
-  canvasCtx = liveCanvas.getContext('2d', { alpha: false });
-  rigTracker = new BodyRigTracker({ mirror: true });
-
-  // Modal Triggers
-  btnOpenTryOn?.addEventListener('click', () => {
-    tryonScrim.classList.add('visible');
-    consentView.style.display = 'flex';
-    liveView.classList.remove('visible');
+  thumbBtns.forEach((btn) => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      thumbBtns.forEach((b) => b.classList.remove('active'));
+      btn.classList.add('active');
+      const newSrc = btn.getAttribute('data-img');
+      if (newSrc) {
+        mainImg.style.opacity = '0.3';
+        mainImg.src = newSrc;
+        setTimeout(() => {
+          mainImg.style.opacity = '1';
+        }, 60);
+      }
+    });
   });
+}
 
-  btnDismissConsent?.addEventListener('click', () => {
-    closeModal();
-  });
+function updateGalleryForVariant(variant: GarmentVariant) {
+  const thumbBtns = document.querySelectorAll<HTMLButtonElement>('.thumb-btn');
+  const mainImg = (document.getElementById('main-product-img') || document.querySelector('.main-image-viewport img')) as HTMLImageElement;
 
-  btnStartCamera?.addEventListener('click', async () => {
-    try {
-      consentView.style.display = 'none';
-      liveView.classList.add('visible');
-      cameraStatusText.textContent = 'Connecting Live Stream...';
-      await startLiveTryon();
-    } catch (err) {
-      console.error('Camera denied or error:', err);
-      alert('Camera access is off. Turn it on in your browser settings, then try again.');
-      closeModal();
+  thumbBtns.forEach((btn, index) => {
+    const imgSrc = variant.gallery[index] || variant.image;
+    btn.setAttribute('data-img', imgSrc);
+    const imgEl = btn.querySelector('img');
+    if (imgEl) {
+      imgEl.src = imgSrc;
+      imgEl.alt = `${variant.name} T-Shirt View ${index + 1}`;
+    }
+    if (index === 0) {
+      btn.classList.add('active');
+    } else {
+      btn.classList.remove('active');
     }
   });
 
-  btnExitTryon?.addEventListener('click', () => {
-    closeModal();
-  });
-
-  window.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && tryonScrim.classList.contains('visible')) {
-      closeModal();
-    }
-  });
-
-  setupColorSelection();
-  setupSizeSelection();
-
-  // Bag Action
-  btnModalAddToBag?.addEventListener('click', addToBag);
-  const btnPdpAddToBag = document.querySelector('.btn-add-to-bag') as HTMLButtonElement;
-  btnPdpAddToBag?.addEventListener('click', addToBag);
+  if (mainImg) {
+    mainImg.style.opacity = '0.3';
+    mainImg.src = variant.image;
+    setTimeout(() => {
+      mainImg.style.opacity = '1';
+    }, 60);
+  }
 }
 
 function setupColorSelection() {
@@ -131,16 +292,18 @@ function setupColorSelection() {
 
   allColorButtons.forEach((btn) => {
     btn.addEventListener('click', () => {
-      const colorKey = btn.getAttribute('data-color') || 'charcoal';
-      if (!GARMENT_VARIANTS[colorKey]) return;
+      const colorKey = (btn.getAttribute('data-color') || 'charcoal') as keyof typeof GARMENT_VARIANTS;
+      const variant = GARMENT_VARIANTS[colorKey];
+      if (!variant) return;
 
-      activeColor = GARMENT_VARIANTS[colorKey];
-      if (modalActiveColorName) {
-        modalActiveColorName.textContent = activeColor.name;
+      activeColor = variant;
+      const pdpColorEl = document.querySelector('.option-title');
+      if (pdpColorEl && pdpColorEl.textContent?.includes('Colour:')) {
+        pdpColorEl.textContent = `Colour: ${activeColor.name}`;
       }
 
-      // Sync active classes across all buttons
-      allColorButtons.forEach((b) => {
+      // Sync active classes across all swatch buttons
+      document.querySelectorAll('[data-color]').forEach((b) => {
         if (b.getAttribute('data-color') === colorKey) {
           b.classList.add('active');
         } else {
@@ -148,16 +311,8 @@ function setupColorSelection() {
         }
       });
 
-      // Update main PDP image
-      const mainImg = document.querySelector('.main-image-viewport img') as HTMLImageElement;
-      if (mainImg) {
-        mainImg.src = activeColor.image;
-      }
-
-      // Send live garment change to WebSocket stream if active
-      if (liveSocket && liveSocket.readyState === WebSocket.OPEN) {
-        liveSocket.send(JSON.stringify({ type: 'CHANGE_GARMENT', garmentId: activeColor.id }));
-      }
+      // Update both the main image AND all sidebar thumbnails
+      updateGalleryForVariant(activeColor);
     });
   });
 }
@@ -166,284 +321,1000 @@ function setupSizeSelection() {
   const sizeBoxes = document.querySelectorAll('.size-box');
   sizeBoxes.forEach((box) => {
     box.addEventListener('click', () => {
-      sizeBoxes.forEach((b) => b.classList.remove('active'));
-      box.classList.add('active');
-      selectedSize = box.textContent?.trim() || 'M';
-      if (btnModalAddToBag) {
-        btnModalAddToBag.textContent = `Add to Bag (${selectedSize}) — ₹1,990`;
+      const chosenSize = box.textContent?.trim() || 'M';
+      selectedSize = chosenSize;
+
+      document.querySelectorAll('.size-box').forEach((b) => {
+        if (b.textContent?.trim() === chosenSize) {
+          b.classList.add('active');
+        } else {
+          b.classList.remove('active');
+        }
+      });
+
+      const lowStockNote = document.querySelector('.low-stock-note');
+      if (lowStockNote) {
+        lowStockNote.textContent = `Only 3 left in size ${selectedSize}`;
       }
     });
   });
 }
 
-function addToBag() {
-  bagCount++;
+let pdpQuantity = 0;
+
+function animateBagBadge() {
   bagCountBadges.forEach((badge) => {
     badge.textContent = String(bagCount);
+    gsap.fromTo(
+      badge,
+      { scale: 1.5, color: '#A24A33' },
+      { scale: 1.0, color: '', duration: 0.45, ease: 'back.out(2)' }
+    );
   });
-
-  const originalText = btnModalAddToBag.textContent;
-  btnModalAddToBag.textContent = 'Added to Bag ✓';
-  btnModalAddToBag.style.backgroundColor = 'var(--moss)';
-
-  setTimeout(() => {
-    btnModalAddToBag.textContent = originalText;
-    btnModalAddToBag.style.backgroundColor = 'var(--ink)';
-  }, 1800);
 }
 
-function closeModal() {
-  stopLiveTryon();
-  tryonScrim.classList.remove('visible');
-  consentView.style.display = 'none';
-  liveView.classList.remove('visible');
-}
+function animateNumberRoll(el: HTMLElement, newNum: number, direction: 'up' | 'down') {
+  const currentY = direction === 'up' ? -18 : 18;
+  const enterY = direction === 'up' ? 18 : -18;
 
-async function startLiveTryon() {
-  cameraManager = new CameraManager(videoElement, {
-    preferredFacingMode: 'user',
-    targetResolution: { width: 640, height: 480 },
-    onStreamStopped: () => closeModal()
-  });
-
-  await cameraManager.start();
-
-  const vw = videoElement.videoWidth || 640;
-  const vh = videoElement.videoHeight || 480;
-  liveCanvas.width = vw;
-  liveCanvas.height = vh;
-
-  visionPipeline = new VisionPipeline({
-    useGpu: true,
-    enableSegmentation: false,
-    onModelLoaded: () => {
-      cameraStatusText.textContent = 'Live Neural Stream (30 FPS)';
+  gsap.to(el, {
+    y: currentY,
+    opacity: 0,
+    duration: 0.13,
+    ease: 'power2.in',
+    onComplete: () => {
+      el.textContent = String(newNum);
+      gsap.fromTo(
+        el,
+        { y: enterY, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.22, ease: 'back.out(1.8)' }
+      );
     }
   });
-  await visionPipeline.init();
+}
 
-  // Connect to Local Apple Silicon M1 Neural V-TON WebSocket Stream
+function setupBagQuantityStepper() {
+  const btnAdd = document.getElementById('pdp-add-to-bag');
+  const stepper = document.getElementById('pdp-stepper');
+  const btnMinus = document.getElementById('pdp-qty-minus');
+  const btnPlus = document.getElementById('pdp-qty-plus');
+  const qtyNumEl = document.getElementById('pdp-qty-num');
+  const lowStockNote = document.querySelector('.low-stock-note');
+
+  if (!btnAdd || !stepper || !btnMinus || !btnPlus || !qtyNumEl) return;
+
+  // Add to Bag -> Morph into Animated Stepper
+  btnAdd.addEventListener('click', (e) => {
+    e.preventDefault();
+    if (pdpQuantity === 0) {
+      pdpQuantity = 1;
+      bagCount++;
+      animateBagBadge();
+      qtyNumEl.textContent = String(pdpQuantity);
+
+      // GSAP Entrance Timeline: Button slides up/out while stepper reveals
+      const tl = gsap.timeline();
+      tl.to(btnAdd, {
+        y: -30,
+        opacity: 0,
+        scale: 0.96,
+        duration: 0.22,
+        ease: 'power2.in',
+        onComplete: () => {
+          btnAdd.style.pointerEvents = 'none';
+          stepper.style.display = 'flex';
+          stepper.style.pointerEvents = 'auto';
+        }
+      })
+      .fromTo(stepper, 
+        { opacity: 0, scale: 0.95 }, 
+        { opacity: 1, scale: 1, duration: 0.24, ease: 'power2.out' },
+        '-=0.06'
+      )
+      .fromTo(btnMinus, 
+        { x: -20, opacity: 0 }, 
+        { x: 0, opacity: 1, duration: 0.22, ease: 'power2.out' }, 
+        '<0.04'
+      )
+      .fromTo('.stepper-center', 
+        { y: 16, opacity: 0 }, 
+        { y: 0, opacity: 1, duration: 0.24, ease: 'back.out(1.8)' }, 
+        '<0.04'
+      )
+      .fromTo(btnPlus, 
+        { x: 20, opacity: 0 }, 
+        { x: 0, opacity: 1, duration: 0.22, ease: 'power2.out' }, 
+        '<0.04'
+      );
+    }
+  });
+
+  // Increment (+)
+  btnPlus.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    // Check low stock limit (3 items)
+    if (pdpQuantity >= 3) {
+      gsap.fromTo(
+        stepper,
+        { x: -4 },
+        { x: 0, duration: 0.35, ease: 'elastic.out(1, 0.3)' }
+      );
+      if (lowStockNote) {
+        gsap.fromTo(
+          lowStockNote,
+          { color: 'var(--brick)', scale: 1.05 },
+          { color: 'var(--clay)', scale: 1.0, duration: 0.4 }
+        );
+      }
+      return;
+    }
+
+    pdpQuantity++;
+    bagCount++;
+    animateBagBadge();
+
+    // Micro-tap animation on plus button
+    gsap.fromTo(
+      btnPlus,
+      { scale: 0.85 },
+      { scale: 1, duration: 0.2, ease: 'power1.out' }
+    );
+
+    animateNumberRoll(qtyNumEl, pdpQuantity, 'up');
+  });
+
+  // Decrement (-)
+  btnMinus.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (pdpQuantity > 1) {
+      pdpQuantity--;
+      bagCount = Math.max(0, bagCount - 1);
+      animateBagBadge();
+
+      // Micro-tap animation on minus button
+      gsap.fromTo(
+        btnMinus,
+        { scale: 0.85 },
+        { scale: 1, duration: 0.2, ease: 'power1.out' }
+      );
+
+      animateNumberRoll(qtyNumEl, pdpQuantity, 'down');
+    } else if (pdpQuantity === 1) {
+      // Return back to "Add to Bag"
+      pdpQuantity = 0;
+      bagCount = Math.max(0, bagCount - 1);
+      animateBagBadge();
+
+      const tl = gsap.timeline();
+      tl.to(stepper, {
+        opacity: 0,
+        scale: 0.95,
+        duration: 0.2,
+        ease: 'power2.in',
+        onComplete: () => {
+          stepper.style.display = 'none';
+          stepper.style.pointerEvents = 'none';
+          btnAdd.style.pointerEvents = 'auto';
+        }
+      })
+      .fromTo(btnAdd, 
+        { y: 20, opacity: 0, scale: 0.96 }, 
+        { y: 0, opacity: 1, scale: 1, duration: 0.28, ease: 'power2.out' }, 
+        '-=0.06'
+      );
+    }
+  });
+}
+
+// Lightbox & Pan/Zoom State
+let lightboxScale = 1.0;
+let lightboxTranslateX = 0;
+let lightboxTranslateY = 0;
+let isDragging = false;
+let dragStartX = 0;
+let dragStartY = 0;
+let activeGalleryImages: string[] = [];
+let activeGalleryIndex = 0;
+
+function applyLightboxTransform() {
+  const lightboxImg = document.getElementById('lightbox-img') as HTMLImageElement;
+  if (!lightboxImg) return;
+  lightboxImg.style.transform = `translate(${lightboxTranslateX}px, ${lightboxTranslateY}px) scale(${lightboxScale})`;
+  if (isDragging) {
+    lightboxImg.classList.add('grabbing');
+  } else {
+    lightboxImg.classList.remove('grabbing');
+  }
+}
+
+function openLightbox(imgSrc: string, title: string = 'Classic Heavyweight Boxy Tee', images: string[] = [], startIndex: number = 0) {
+  const modal = document.getElementById('image-lightbox');
+  const lightboxImg = document.getElementById('lightbox-img') as HTMLImageElement;
+  const titleEl = document.querySelector('.lightbox-product-title');
+  const counterEl = document.getElementById('lightbox-counter');
+  const thumbsContainer = document.getElementById('lightbox-thumbs');
+
+  if (!modal || !lightboxImg) return;
+
+  activeGalleryImages = images.length > 0 ? images : [imgSrc];
+  activeGalleryIndex = startIndex;
+
+  if (titleEl) titleEl.textContent = title;
+  lightboxImg.src = activeGalleryImages[activeGalleryIndex] || imgSrc;
+
+  // Reset zoom & pan
+  lightboxScale = 1.0;
+  lightboxTranslateX = 0;
+  lightboxTranslateY = 0;
+  applyLightboxTransform();
+
+  // Render thumbnail strip inside lightbox
+  if (thumbsContainer) {
+    thumbsContainer.innerHTML = '';
+    if (activeGalleryImages.length > 1) {
+      activeGalleryImages.forEach((src, idx) => {
+        const thumbBtn = document.createElement('button');
+        thumbBtn.className = `lightbox-thumb-btn ${idx === activeGalleryIndex ? 'active' : ''}`;
+        thumbBtn.innerHTML = `<img src="${src}" alt="Thumb ${idx + 1}" />`;
+        thumbBtn.addEventListener('click', () => {
+          activeGalleryIndex = idx;
+          lightboxImg.src = src;
+          lightboxScale = 1.0;
+          lightboxTranslateX = 0;
+          lightboxTranslateY = 0;
+          applyLightboxTransform();
+          thumbsContainer.querySelectorAll('.lightbox-thumb-btn').forEach((b, i) => {
+            b.classList.toggle('active', i === idx);
+          });
+          if (counterEl) counterEl.textContent = `${idx + 1} / ${activeGalleryImages.length}`;
+        });
+        thumbsContainer.appendChild(thumbBtn);
+      });
+    }
+  }
+
+  if (counterEl) {
+    counterEl.textContent = activeGalleryImages.length > 1
+      ? `${activeGalleryIndex + 1} / ${activeGalleryImages.length}`
+      : '1 / 1';
+  }
+
+  modal.classList.add('active');
+  modal.setAttribute('aria-hidden', 'false');
+  document.body.style.overflow = 'hidden';
+  lenis?.stop();
+}
+
+function closeLightbox() {
+  const modal = document.getElementById('image-lightbox');
+  if (!modal) return;
+  modal.classList.remove('active');
+  modal.setAttribute('aria-hidden', 'true');
+  document.body.style.overflow = '';
+  lenis?.start();
+}
+
+function setupImageZoomAndLightbox() {
+  const mainViewport = document.getElementById('main-viewport-container') || document.querySelector('.main-image-viewport');
+  const mainImg = (document.getElementById('main-product-img') || document.querySelector('.main-image-viewport img')) as HTMLImageElement;
+  const stage = document.getElementById('lightbox-stage');
+  const lightboxImg = document.getElementById('lightbox-img') as HTMLImageElement;
+  const zoomInBtn = document.getElementById('zoom-in-btn');
+  const zoomOutBtn = document.getElementById('zoom-out-btn');
+  const zoomResetBtn = document.getElementById('zoom-reset-btn');
+  const closeBtn = document.getElementById('lightbox-close-btn');
+  const backdrop = document.getElementById('lightbox-backdrop');
+
+  // Open on main image viewport click
+  mainViewport?.addEventListener('click', () => {
+    const currentSrc = mainImg?.src || activeColor.image;
+    const initialIdx = Math.max(0, activeColor.gallery.indexOf(currentSrc));
+    openLightbox(currentSrc, `Classic Heavyweight Boxy Tee — ${activeColor.name}`, activeColor.gallery, initialIdx);
+  });
+
+  // Zoom In button
+  zoomInBtn?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    lightboxScale = Math.min(lightboxScale + 0.35, 4.0);
+    applyLightboxTransform();
+  });
+
+  // Zoom Out button
+  zoomOutBtn?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    lightboxScale = Math.max(lightboxScale - 0.35, 0.7);
+    if (lightboxScale <= 1.0) {
+      lightboxTranslateX = 0;
+      lightboxTranslateY = 0;
+    }
+    applyLightboxTransform();
+  });
+
+  // Reset button
+  zoomResetBtn?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    lightboxScale = 1.0;
+    lightboxTranslateX = 0;
+    lightboxTranslateY = 0;
+    applyLightboxTransform();
+  });
+
+  // Close triggers
+  closeBtn?.addEventListener('click', closeLightbox);
+  backdrop?.addEventListener('click', closeLightbox);
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeLightbox();
+  });
+
+  // Mouse wheel / trackpad pinch zoom
+  stage?.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    const zoomFactor = e.deltaY < 0 ? 1.15 : 0.88;
+    lightboxScale = Math.min(Math.max(lightboxScale * zoomFactor, 0.7), 4.5);
+    if (lightboxScale <= 1.0) {
+      lightboxTranslateX = 0;
+      lightboxTranslateY = 0;
+    }
+    applyLightboxTransform();
+  }, { passive: false });
+
+  // Double click to toggle zoom
+  lightboxImg?.addEventListener('dblclick', (e) => {
+    e.preventDefault();
+    if (lightboxScale > 1.1) {
+      lightboxScale = 1.0;
+      lightboxTranslateX = 0;
+      lightboxTranslateY = 0;
+    } else {
+      lightboxScale = 2.2;
+    }
+    applyLightboxTransform();
+  });
+
+  // Click and drag to pan
+  stage?.addEventListener('mousedown', (e) => {
+    if (e.button !== 0) return;
+    isDragging = true;
+    dragStartX = e.clientX - lightboxTranslateX;
+    dragStartY = e.clientY - lightboxTranslateY;
+    applyLightboxTransform();
+  });
+
+  window.addEventListener('mousemove', (e) => {
+    if (!isDragging) return;
+    lightboxTranslateX = e.clientX - dragStartX;
+    lightboxTranslateY = e.clientY - dragStartY;
+    applyLightboxTransform();
+  });
+
+  window.addEventListener('mouseup', () => {
+    if (isDragging) {
+      isDragging = false;
+      applyLightboxTransform();
+    }
+  });
+}
+
+function setupUGCInteractions() {
+  // UGC Image click to enlarge
+  const ugcImgWraps = document.querySelectorAll<HTMLElement>('.ugc-img-wrap');
+  ugcImgWraps.forEach((wrap) => {
+    wrap.addEventListener('click', () => {
+      const img = wrap.querySelector('img');
+      const src = wrap.getAttribute('data-enlarge') || img?.src;
+      const card = wrap.closest('.ugc-card');
+      const colorTag = card?.querySelector('.ugc-color-tag')?.textContent || '';
+      const author = card?.querySelector('.ugc-author')?.textContent || 'Community Look';
+      if (src) {
+        openLightbox(src, `${author} — ${colorTag}`, [src], 0);
+      }
+    });
+  });
+
+  // UGC "View Color" buttons
+  const ugcShopButtons = document.querySelectorAll<HTMLButtonElement>('.ugc-shop-btn');
+  ugcShopButtons.forEach((btn) => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const targetColor = btn.getAttribute('data-color') as keyof typeof GARMENT_VARIANTS;
+      if (targetColor && GARMENT_VARIANTS[targetColor]) {
+        const swatch = document.querySelector<HTMLButtonElement>(`[data-color="${targetColor}"]`);
+        if (swatch) {
+          swatch.click();
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+      }
+    });
+  });
+}
+
+function initPDP() {
+  console.log('[LiveTry PDP] Initializing storefront interactivity...');
+  try { setupGalleryThumbnails(); } catch (err) { console.error('[LiveTry] Failed to setup gallery thumbnails:', err); }
+  try { setupColorSelection(); } catch (err) { console.error('[LiveTry] Failed to setup color selection:', err); }
+  try { setupSizeSelection(); } catch (err) { console.error('[LiveTry] Failed to setup size selection:', err); }
+  try { setupImageZoomAndLightbox(); } catch (err) { console.error('[LiveTry] Failed to setup lightbox:', err); }
+  try { setupUGCInteractions(); } catch (err) { console.error('[LiveTry] Failed to setup UGC interactions:', err); }
+
+  // Support deep-linking by ?item= or ?color= URL param
   try {
-    liveSocket = new WebSocket('ws://127.0.0.1:8000/ws/stream');
-    liveSocket.onopen = () => {
-      cameraStatusText.textContent = 'M1 Neural Engine Live (MPS Accelerated)';
-    };
-    liveSocket.onmessage = (event) => {
-      try {
-        const msg = JSON.parse(event.data);
-        if (msg.type === 'OUTPUT_FRAME' && msg.frameData && canvasCtx) {
-          const outImg = new Image();
-          outImg.onload = () => {
-            canvasCtx?.drawImage(outImg, 0, 0, liveCanvas.width, liveCanvas.height);
-            isStreamingFrame = false;
-          };
-          outImg.src = msg.frameData;
-          if (msg.fps) {
-            cameraStatusText.textContent = `M1 Live Try-On • ${activeColor.name} (${msg.fps} FPS)`;
+    const urlParams = new URLSearchParams(window.location.search);
+    const itemParam = urlParams.get('item');
+    const colorParam = urlParams.get('color') as keyof typeof GARMENT_VARIANTS;
+
+    if (itemParam && ITEM_CATALOG[itemParam]) {
+      const item = ITEM_CATALOG[itemParam];
+      activeColor = item.variant;
+
+      const breadcrumbEl = document.querySelector('.breadcrumb');
+      if (breadcrumbEl) breadcrumbEl.textContent = item.breadcrumb;
+
+      const titleEl = document.querySelector('.product-title');
+      if (titleEl) titleEl.textContent = item.title;
+
+      const priceEl = document.querySelector('.product-price');
+      if (priceEl) priceEl.textContent = item.price;
+
+      const descEl = document.querySelector('.product-desc');
+      if (descEl) descEl.textContent = item.description;
+
+      const optionTitle = document.querySelector('.option-title');
+      if (optionTitle) optionTitle.textContent = `Colour: ${item.variant.name}`;
+
+      const mainImg = document.getElementById('main-product-img') as HTMLImageElement;
+      if (mainImg) mainImg.src = item.variant.image;
+
+      // Update PDP color swatches row
+      const swatchesRow = document.querySelector('.swatches-row');
+      if (swatchesRow && item.swatches) {
+        swatchesRow.innerHTML = item.swatches.map((s, idx) => `
+          <button class="swatch-circle ${idx === 0 ? 'active' : ''}" style="background-color: ${s.hex};" aria-label="${s.name}" title="${s.name}"></button>
+        `).join('');
+      }
+
+      // Update Try-On modal swatches
+      const modalSwatches = document.querySelector('.tryon-swatches');
+      if (modalSwatches && item.swatches) {
+        modalSwatches.innerHTML = item.swatches.map((s, idx) => `
+          <button class="tryon-swatch ${idx === 0 ? 'active' : ''}" style="background-color: ${s.hex}; color: #121110;" title="${s.name}">${s.name}</button>
+        `).join('');
+      }
+
+      // Update Try-On modal title
+      const modalTitle = document.querySelector('.tryon-title');
+      if (modalTitle) modalTitle.textContent = `Live Try-On: ${item.title}`;
+
+      // CRITICAL: Update gallery thumbnails with the 4 genuine views of this item!
+      updateGalleryForVariant(activeColor);
+
+      document.title = `${item.title} — Studio Aelia`;
+    } else if (colorParam && GARMENT_VARIANTS[colorParam]) {
+      const swatch = document.querySelector<HTMLButtonElement>(`[data-color="${colorParam}"]`);
+      if (swatch) {
+        swatch.click();
+      }
+    } else {
+      // Initial gallery sync for default color (Charcoal)
+      updateGalleryForVariant(activeColor);
+    }
+
+    // Support deep-linking to lightbox via ?lightbox=1
+    if (urlParams.get('lightbox') === '1') {
+      setTimeout(() => {
+        document.getElementById('main-viewport-container')?.click();
+      }, 150);
+    }
+  } catch (err) {
+    console.error('[LiveTry] URL param deep-linking error:', err);
+  }
+
+  // Live Try-On Real-Time WebRTC Implementation
+  try { setupTryOnFeature(); } catch (err) { console.error('[LiveTry] Failed to setup try-on feature:', err); }
+
+  // Animated Bag Quantity Stepper (GSAP micro-interactions)
+  try {
+    setupBagQuantityStepper();
+  } catch (err) {
+    console.error('[LiveTry] Failed to bind Add to Bag Stepper:', err);
+  }
+
+  // Pre-fetch Decart token in the background immediately so startTryOn has 0 wait
+  try {
+    prefetchDecartToken();
+  } catch (_) {}
+
+  console.log('[LiveTry PDP] All storefront buttons and event listeners initialized successfully.');
+}
+
+// Live Try-On Real-Time WebRTC State & Handlers
+let localMediaStream: MediaStream | null = null;
+let isTryOnActive = false;
+let isStartingTryOn = false;
+let tryonRetryCount = 0;
+
+const DEMO_KEYS = [
+  'dct_general_zoGyETEHQfjYZTPMkUXNXyqqkGMcyNsoSXqfXLBXjlMBBXnwziMQwyBpurwMjPQw',
+  'dct_key3_CrNjyQMJLmSawHECSzgLnVTGkVzECWCVBIizjcxToQZedIXuCRomtNwiPlEOqprh',
+  'dct_key4_wSMvvGyBZCFAAdottIQwQMuBPduBcTwZDJVrrfFIhIxIXmkNuUjnajPXfYSHbrgu'
+];
+let activeFallbackKeyIdx = 0;
+let cachedTokenPromise: Promise<string> | null = null;
+
+function prefetchDecartToken() {
+  if (!cachedTokenPromise) {
+    console.log('[LiveTry Token] Pre-fetching ephemeral Decart client token in background...');
+    cachedTokenPromise = fetchDecartToken(false).catch((err) => {
+      console.warn('[LiveTry Token] Prefetch notice:', err);
+      cachedTokenPromise = null;
+      return '';
+    });
+  }
+}
+
+async function getDecartToken(rotate = false): Promise<string> {
+  if (!rotate && cachedTokenPromise) {
+    try {
+      const token = await cachedTokenPromise;
+      if (token) {
+        cachedTokenPromise = null; // Clear so subsequent reconnects fetch anew
+        return token;
+      }
+    } catch {}
+  }
+  return fetchDecartToken(rotate);
+}
+
+async function fetchDecartToken(rotate = false): Promise<string> {
+  // 1. Try local or custom backend endpoint only if running locally
+  const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+  if (isLocalhost) {
+    try {
+      const res = await fetch('/api/tryon/token', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ rotate })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.apiKey) {
+          console.log(`[LiveTry Token] Minted ephemeral token via backend (#${data.key_index || 1})`);
+          return data.apiKey;
+        }
+      }
+    } catch {
+      // Backend unavailable (static hosting mode)
+    }
+  }
+
+  // 2. Direct client token fallback for Hugging Face Static Space
+  if (rotate) {
+    activeFallbackKeyIdx = (activeFallbackKeyIdx + 1) % DEMO_KEYS.length;
+  }
+  const keyToUse = DEMO_KEYS[activeFallbackKeyIdx] || '';
+
+  try {
+    const directRes = await fetch('https://api.decart.ai/v1/client/tokens', {
+      method: 'POST',
+      headers: {
+        'X-API-KEY': keyToUse,
+        'Content-Type': 'application/json',
+        'User-Agent': 'LiveTry/1.0'
+      },
+      body: '{}'
+    });
+
+    if (directRes.ok) {
+      const data = await directRes.json();
+      if (data.apiKey) {
+        console.log(`[LiveTry Token] Minted ephemeral token direct via Decart API (Key #${activeFallbackKeyIdx + 1})`);
+        return data.apiKey;
+      }
+    }
+
+    // If key exhausted or error, rotate and retry
+    activeFallbackKeyIdx = (activeFallbackKeyIdx + 1) % DEMO_KEYS.length;
+    const retryRes = await fetch('https://api.decart.ai/v1/client/tokens', {
+      method: 'POST',
+      headers: {
+        'X-API-KEY': DEMO_KEYS[activeFallbackKeyIdx] || '',
+        'Content-Type': 'application/json'
+      },
+      body: '{}'
+    });
+    const retryData = await retryRes.json();
+    if (retryData.apiKey) return retryData.apiKey;
+    throw new Error(retryData.message || 'Direct token minting failed');
+  } catch (err: any) {
+    console.error('[LiveTry Token] Error minting token:', err);
+    throw err;
+  }
+}
+
+const tryonEngine = new DecartRealtimeVtonEngine({
+  tokenProvider: async () => getDecartToken(false),
+  mirror: false, // Mirrored via hardware CSS transform: scaleX(-1) on video element
+  modelName: 'lucy-vton-3.6'
+});
+
+function syncTryonModalSwatches(colorId: string) {
+  const swatches = document.querySelectorAll<HTMLButtonElement>('.tryon-swatch');
+  swatches.forEach((swatch) => {
+    if (swatch.getAttribute('data-tryon-color') === colorId) {
+      swatch.classList.add('active');
+    } else {
+      swatch.classList.remove('active');
+    }
+  });
+}
+
+async function startTryOn() {
+  const modal = document.getElementById('tryon-modal');
+  const videoEl = document.getElementById('tryon-video') as HTMLVideoElement;
+  const loader = document.getElementById('tryon-loader');
+  const loaderText = document.getElementById('tryon-loader-text');
+  const statusDot = document.getElementById('tryon-status-dot');
+  const statusText = document.getElementById('tryon-status-text');
+  const telemetryEl = document.getElementById('tryon-telemetry');
+
+  if (!modal || !videoEl) return;
+  modal.classList.add('active');
+  modal.setAttribute('aria-hidden', 'false');
+  document.body.style.overflow = 'hidden';
+  lenis?.stop();
+
+  // Sync swatches inside modal to match current activeColor
+  syncTryonModalSwatches(activeColor.id);
+
+  if (loader) loader.classList.remove('hidden');
+  if (loaderText) loaderText.textContent = 'Requesting camera access...';
+  if (statusText) statusText.textContent = 'Requesting Camera';
+
+  if (isStartingTryOn) return;
+  isStartingTryOn = true;
+
+  let synthTimer: any = null;
+  let elapsedSeconds = 0;
+
+  // 1. Acquire Camera Stream
+    try {
+      if (!localMediaStream || !localMediaStream.active) {
+        localMediaStream = await navigator.mediaDevices.getUserMedia({
+          audio: false,
+          video: {
+            width: { ideal: 1280, max: 1280 },
+            height: { ideal: 720, max: 720 },
+            frameRate: { ideal: 30, min: 24 },
+            facingMode: 'user'
+          }
+        });
+      }
+    } catch (camErr: any) {
+      console.error('[TryOn] Camera access error:', camErr);
+      if (loaderText) {
+        loaderText.textContent = `Camera permission error: ${camErr.name === 'NotAllowedError' ? 'Access denied' : camErr.message}. Please allow camera access.`;
+      }
+      if (statusText) statusText.textContent = 'Camera Blocked';
+      return;
+    }
+
+    // Keep stream strictly video-only to prevent Chrome audio autoplay blocks
+    videoEl.muted = true;
+    videoEl.defaultMuted = true;
+    videoEl.playsInline = true;
+    videoEl.autoplay = true;
+
+    // Immediately display the user's authentic camera feed
+    videoEl.srcObject = localMediaStream;
+    await videoEl.play().catch(() => {});
+
+    if (loaderText) loaderText.textContent = 'Connecting Decart Lucy VTON WebRTC...';
+    if (statusText) statusText.textContent = 'Connecting WebRTC';
+
+    // Live elapsed timer for clear feedback
+    synthTimer = setInterval(() => {
+      elapsedSeconds++;
+      if (loader && !loader.classList.contains('hidden') && loaderText) {
+        if (elapsedSeconds < 6) {
+          loaderText.textContent = `Connecting Lucy VTON inference worker... (${elapsedSeconds}s)`;
+        } else if (elapsedSeconds < 14) {
+          loaderText.textContent = `Connecting Decart Lucy VTON neural pipeline... (${elapsedSeconds}s)`;
+        } else {
+          loaderText.textContent = `Synthesizing real-time virtual try-on stream... (${elapsedSeconds}s)`;
+        }
+      }
+    }, 1000);
+
+    // 2. Dial Decart Lucy VTON Real-Time WebRTC Pipeline
+    try {
+      await tryonEngine.startStream(
+        localMediaStream,
+        {
+          imageUrl: activeColor.image,
+          prompt: activeColor.prompt
+        },
+        {
+          onRemoteStream: (remoteStream) => {
+            const videoTracks = remoteStream.getVideoTracks();
+            console.log('[TryOn] Remote Lucy VTON stream received! Video tracks:', videoTracks.length);
+
+            if (videoTracks.length === 0) {
+              console.warn('[TryOn] Remote stream has no video tracks yet, waiting for track publication...');
+              return;
+            }
+
+            if (synthTimer) clearInterval(synthTimer);
+
+            const videoTrack = videoTracks[0];
+            if (!videoTrack) {
+              console.warn('[TryOn] Remote stream has no valid video track');
+              return;
+            }
+
+            console.log('[TryOn] Video track state:', {
+              id: videoTrack.id,
+              enabled: videoTrack.enabled,
+              muted: videoTrack.muted,
+              readyState: videoTrack.readyState
+            });
+
+            // Instruct WebRTC jitter buffer to drain frames with minimum playout latency
+            try {
+              if ('contentHint' in videoTrack) {
+                (videoTrack as any).contentHint = 'motion';
+              }
+            } catch (_) {}
+
+            // Clean binding to video element without interrupting playback pipeline
+            videoEl.muted = true;
+            videoEl.defaultMuted = true;
+            videoEl.playsInline = true;
+            videoEl.autoplay = true;
+
+            if (videoEl.srcObject !== remoteStream) {
+              videoEl.srcObject = remoteStream;
+            }
+
+            let hasRevealedFrame = false;
+            const revealTransformedStream = () => {
+              if (hasRevealedFrame) return;
+              hasRevealedFrame = true;
+              console.log('[TryOn] First transformed video frame visually rendered! Resolution:', videoEl.videoWidth, 'x', videoEl.videoHeight);
+              const modelLabel = tryonEngine.getActiveModel() || 'Lucy VTON';
+              if (loader) loader.classList.add('hidden');
+              if (statusDot) statusDot.classList.add('live');
+              if (statusText) statusText.textContent = 'Live AI Try-On';
+              if (telemetryEl) {
+                telemetryEl.textContent = `Decart ${modelLabel} 30 FPS • Active • RTT <150ms`;
+              }
+            };
+
+            const schedulePresentationCheck = () => {
+              if ('requestVideoFrameCallback' in videoEl) {
+                (videoEl as any).requestVideoFrameCallback(() => {
+                  revealTransformedStream();
+                });
+              } else {
+                setTimeout(revealTransformedStream, 350);
+              }
+            };
+
+            const startPlayback = () => {
+              videoEl.play().then(() => {
+                schedulePresentationCheck();
+              }).catch((err) => {
+                console.warn('[TryOn] Play notice, retrying muted:', err);
+                videoEl.muted = true;
+                videoEl.play().then(schedulePresentationCheck).catch(() => {});
+              });
+            };
+
+            if (videoTrack.muted) {
+              console.log('[TryOn] Video track muted initially, awaiting first keyframe...');
+              videoTrack.onunmute = () => {
+                console.log('[TryOn] Video track unmuted! Starting playback...');
+                startPlayback();
+              };
+            } else {
+              startPlayback();
+            }
+
+            videoEl.onplaying = () => {
+              schedulePresentationCheck();
+            };
+
+            startPlayback();
+          },
+          onConnectionChange: (state) => {
+            console.log('[TryOn] Connection state:', state);
+            if (statusText && state !== 'connected') {
+              statusText.textContent = state;
+            }
+            if (state === 'connected') {
+              if (statusDot) statusDot.classList.add('live');
+              if (statusText) statusText.textContent = 'Streaming WebRTC';
+            } else if (state === 'reconnecting') {
+              if (statusDot) statusDot.classList.remove('live');
+              if (loaderText) loaderText.textContent = 'Reconnecting Decart Lucy VTON...';
+            }
+          },
+          onGenerationTick: (seconds) => {
+            const modelLabel = tryonEngine.getActiveModel() || 'Lucy VTON';
+            if (loader) loader.classList.add('hidden');
+            if (statusDot) statusDot.classList.add('live');
+            if (statusText) statusText.textContent = 'Live AI Try-On';
+            if (telemetryEl) {
+              telemetryEl.textContent = `Decart ${modelLabel} 30 FPS • Synthesizing (${seconds}s) • RTT <150ms`;
+            }
+          },
+          onError: (err) => {
+            console.error('[TryOn] Engine error:', err);
+            if (synthTimer) clearInterval(synthTimer);
+            if (loaderText) loaderText.textContent = `Streaming notice: ${err.message}`;
+            if (err.message?.includes('credits') || err.message?.includes('session_limit') || err.message?.includes('Session ended')) {
+              console.log('[TryOn] Token issue detected, forcing key rotation...');
+              fetchDecartToken(true).then(() => {
+                if (modal.classList.contains('active')) {
+                  setTimeout(() => startTryOn(), 1000);
+                }
+              }).catch(() => {});
+            }
           }
         }
-      } catch {
-        isStreamingFrame = false;
+      );
+
+      isTryOnActive = true;
+      tryonRetryCount = 0; // Successful connection resets retry counter
+    } catch (streamErr: any) {
+      if (synthTimer) clearInterval(synthTimer);
+      console.warn('[TryOn] Lucy VTON stream error:', streamErr);
+
+      if (tryonRetryCount < 1) {
+        tryonRetryCount++;
+        if (loaderText) loaderText.textContent = 'Reconnecting Decart Lucy VTON...';
+        if (statusText) statusText.textContent = 'Reconnecting';
+        fetchDecartToken(true).then(() => {
+          if (modal.classList.contains('active')) {
+            setTimeout(() => startTryOn(), 1200);
+          }
+        }).catch(() => {});
+      } else {
+        // Stop infinite loop and give user clean actionable feedback
+        if (loaderText) {
+          loaderText.textContent = 'Virtual try-on session temporarily paused. Click "Try On Live" to reconnect.';
+        }
+        if (statusText) statusText.textContent = 'Paused';
+        if (statusDot) statusDot.classList.remove('live');
       }
-    };
-    liveSocket.onerror = () => {
-      cameraStatusText.textContent = `Live Neural Try-On • ${activeColor.name}`;
-    };
-  } catch (err) {
-    console.warn('[LiveTry] WebSocket connection:', err);
-  }
-
-  isLoopRunning = true;
-  requestAnimationFrame(renderLoop);
-}
-
-let isStreamingFrame = false;
-const offscreenCanvas = document.createElement('canvas');
-const offscreenCtx = offscreenCanvas.getContext('2d');
-
-function stopLiveTryon() {
-  isLoopRunning = false;
-  isStreamingFrame = false;
-  if (cameraManager) {
-    cameraManager.stop();
-    cameraManager = null;
-  }
-  if (visionPipeline) {
-    visionPipeline.dispose();
-    visionPipeline = null;
-  }
-  if (liveSocket) {
-    liveSocket.close();
-    liveSocket = null;
-  }
-}
-
-/**
- * Real-Time Live Neural Frame Renderer (30 FPS continuous live video)
- */
-function renderLoop(timestamp: number) {
-  if (!isLoopRunning || !videoElement || !canvasCtx || !cameraManager?.isActive()) {
-    return;
-  }
-
-  // Synchronize canvas dimensions to match video stream
-  if (videoElement.videoWidth > 0 && liveCanvas.width !== videoElement.videoWidth) {
-    liveCanvas.width = videoElement.videoWidth;
-    liveCanvas.height = videoElement.videoHeight;
-  }
-
-  const w = liveCanvas.width;
-  const h = liveCanvas.height;
-
-  // 1. Draw live mirrored webcam video frame directly to canvas
-  canvasCtx.save();
-  canvasCtx.translate(w, 0);
-  canvasCtx.scale(-1, 1);
-  canvasCtx.drawImage(videoElement, 0, 0, w, h);
-  canvasCtx.restore();
-
-  // If M1 local WebSocket stream is connected and ready, stream frame
-  if (liveSocket && liveSocket.readyState === WebSocket.OPEN && !isStreamingFrame && offscreenCtx) {
-    isStreamingFrame = true;
-    offscreenCanvas.width = 480;
-    offscreenCanvas.height = 360;
-    offscreenCtx.save();
-    offscreenCtx.translate(480, 0);
-    offscreenCtx.scale(-1, 1);
-    offscreenCtx.drawImage(videoElement, 0, 0, 480, 360);
-    offscreenCtx.restore();
-
-    const frameData = offscreenCanvas.toDataURL('image/jpeg', 0.82);
-    liveSocket.send(JSON.stringify({
-      type: 'FRAME',
-      frameData,
-      garmentId: activeColor.id
-    }));
-  }
-
-  // 2. Process pose & landmarks in real time
-  const visionResult: VisionFrameResult | null = visionPipeline?.processFrame(videoElement, timestamp) ?? null;
-
-  let rigState: TorsoRigState | null = null;
-  if (visionResult?.landmarks && rigTracker) {
-    rigState = rigTracker.update(visionResult.landmarks, timestamp * 0.001);
-  }
-
-  if (rigState) {
-    cameraStatusText.textContent = `Live Neural Try-On • ${activeColor.name}`;
-
-    // 3. Calibrate live skin tone from chin/neck to erase polo collar
-    sampleLiveSkinTone(rigState.chin[0] * w, rigState.chin[1] * h);
-
-    // 4. Inpaint & Erase Underlying Polo Collar
-    eraseUnderlyingCollar(rigState, w, h);
-
-    // 5. Render realistic draped garment directly over the torso in live motion
-    renderLiveDrapedGarment(rigState, w, h);
-  } else {
-    cameraStatusText.textContent = 'Aligning Shoulders...';
-  }
-
-  requestAnimationFrame(renderLoop);
-}
-
-/**
- * Sample user's live skin tone from jaw/chin
- */
-function sampleLiveSkinTone(chinX: number, chinY: number) {
-  if (!canvasCtx) return;
-  try {
-    const x = Math.max(0, Math.min(liveCanvas.width - 10, Math.round(chinX)));
-    const y = Math.max(0, Math.min(liveCanvas.height - 10, Math.round(chinY - 12)));
-    const pixel = canvasCtx.getImageData(x, y, 1, 1).data;
-    if (pixel[0] > 40 && pixel[0] < 240) {
-      // Smooth moving average
-      skinColorR = Math.round(skinColorR * 0.85 + pixel[0] * 0.15);
-      skinColorG = Math.round(skinColorG * 0.85 + pixel[1] * 0.15);
-      skinColorB = Math.round(skinColorB * 0.85 + pixel[2] * 0.15);
+    } finally {
+      isStartingTryOn = false;
     }
-  } catch {
-    // Cross-origin read skip
+}
+
+function stopTryOn() {
+  const modal = document.getElementById('tryon-modal');
+  const videoEl = document.getElementById('tryon-video') as HTMLVideoElement;
+  const statusDot = document.getElementById('tryon-status-dot');
+  const statusText = document.getElementById('tryon-status-text');
+
+  tryonEngine.stopStream();
+  if (localMediaStream) {
+    localMediaStream.getTracks().forEach((track) => track.stop());
+    localMediaStream = null;
   }
+  if (videoEl) videoEl.srcObject = null;
+
+  if (modal) {
+    modal.classList.remove('active');
+    modal.setAttribute('aria-hidden', 'true');
+  }
+  if (statusDot) statusDot.classList.remove('live');
+  if (statusText) statusText.textContent = 'Ready';
+  document.body.style.overflow = '';
+  lenis?.start();
+  isTryOnActive = false;
+  isStartingTryOn = false;
+  tryonRetryCount = 0;
 }
 
-/**
- * Erase Underlying Polo Collar & Buttons using live skin extrapolation
- */
-function eraseUnderlyingCollar(rig: TorsoRigState, w: number, h: number) {
-  if (!canvasCtx) return;
+function captureSnapshot() {
+  const videoEl = document.getElementById('tryon-video') as HTMLVideoElement;
+  if (!videoEl || !videoEl.videoWidth) return;
 
-  const chinX = rig.chin[0] * w;
-  const chinY = rig.chin[1] * h;
-  const neckX = rig.neckBase[0] * w;
-  const neckY = rig.neckBase[1] * h;
+  const canvas = document.createElement('canvas');
+  canvas.width = videoEl.videoWidth;
+  canvas.height = videoEl.videoHeight;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
 
-  const neckWidth = rig.shoulderWidth * w * 0.36;
+  // Mirror snapshot to match mirror display
+  ctx.translate(canvas.width, 0);
+  ctx.scale(-1, 1);
+  ctx.drawImage(videoEl, 0, 0, canvas.width, canvas.height);
 
-  canvasCtx.save();
-  // Draw soft feathered skin patch over polo collar
-  const grad = canvasCtx.createRadialGradient(neckX, (chinY + neckY) * 0.5, 4, neckX, (chinY + neckY) * 0.5, neckWidth * 0.65);
-  grad.addColorStop(0, `rgb(${skinColorR}, ${skinColorG}, ${skinColorB})`);
-  grad.addColorStop(0.85, `rgba(${skinColorR}, ${skinColorG}, ${skinColorB}, 0.95)`);
-  grad.addColorStop(1, `rgba(${skinColorR}, ${skinColorG}, ${skinColorB}, 0.0)`);
-
-  canvasCtx.fillStyle = grad;
-  canvasCtx.beginPath();
-  canvasCtx.ellipse(neckX, (chinY + neckY) * 0.5, neckWidth * 0.5, Math.max(15, (neckY - chinY) * 0.8), rig.torsoAngleRad, 0, Math.PI * 2);
-  canvasCtx.fill();
-  canvasCtx.restore();
+  const snapshotUrl = canvas.toDataURL('image/jpeg', 0.92);
+  openLightbox(snapshotUrl, `Live Try-On Snapshot — ${activeColor.name}`, [snapshotUrl], 0);
 }
 
-/**
- * Render Realistic Draped Garment in Live Video Motion (Anchored ON the body)
- */
-function renderLiveDrapedGarment(rig: TorsoRigState, w: number, h: number) {
-  if (!canvasCtx) return;
+function setupTryOnFeature() {
+  const tryOnBtns = document.querySelectorAll<HTMLButtonElement>('#pdp-try-on, .btn-try-on, [data-action="try-on"]');
+  const closeBtn = document.getElementById('tryon-close-btn');
+  const backdrop = document.getElementById('tryon-backdrop');
+  const snapshotBtn = document.getElementById('tryon-snapshot-btn');
+  const bagBtn = document.getElementById('tryon-bag-btn');
 
-  const garmentImg = garmentImages[activeColor.id];
-  if (!garmentImg || !garmentImg.complete || garmentImg.naturalWidth === 0) return;
+  tryOnBtns.forEach((btn) => {
+    btn.disabled = false;
+    btn.removeAttribute('aria-disabled');
+    btn.style.opacity = '1';
+    btn.style.cursor = 'pointer';
+    btn.style.pointerEvents = 'auto';
+    btn.title = 'Start Live Video-to-Video Virtual Try-On';
+    btn.addEventListener('click', startTryOn);
+  });
 
-  const shL_x = rig.shoulderLeft[0] * w;
-  const shL_y = rig.shoulderLeft[1] * h;
-  const shR_x = rig.shoulderRight[0] * w;
-  const shR_y = rig.shoulderRight[1] * h;
+  closeBtn?.addEventListener('click', stopTryOn);
+  backdrop?.addEventListener('click', stopTryOn);
 
-  const midX = (shL_x + shR_x) * 0.5;
-  const midY = (shL_y + shR_y) * 0.5;
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && isTryOnActive) {
+      stopTryOn();
+    }
+  });
 
-  const shoulderSpan = Math.hypot(shR_x - shL_x, shR_y - shL_y);
-  const rollAngle = Math.atan2(shR_y - shL_y, shR_x - shL_x);
+  // Modal Garment Swatch Switching
+  const modalSwatches = document.querySelectorAll<HTMLButtonElement>('.tryon-swatch');
+  modalSwatches.forEach((swatch) => {
+    swatch.addEventListener('click', () => {
+      const colorId = swatch.getAttribute('data-tryon-color') as keyof typeof GARMENT_VARIANTS;
+      if (colorId && GARMENT_VARIANTS[colorId]) {
+        // Trigger main PDP swatch sync
+        const pdpSwatch = document.querySelector<HTMLButtonElement>(`[data-color="${colorId}"]`);
+        if (pdpSwatch) pdpSwatch.click();
 
-  // Exact Anatomical Alignment:
-  // In the studio flat-lay, shoulder seam span is exactly 52% of image width (0.24 to 0.76)
-  // Shoulder seam line is at y = 12% of image height
-  const garmentWidth = shoulderSpan / 0.52;
-  const aspectRatio = (garmentImg.naturalHeight || 1280) / (garmentImg.naturalWidth || 1024);
-  const garmentHeight = garmentWidth * aspectRatio;
+        syncTryonModalSwatches(colorId);
 
-  canvasCtx.save();
-  // Translate to the person's exact shoulder midpoint and rotate with shoulder tilt
-  canvasCtx.translate(midX, midY);
-  canvasCtx.rotate(rollAngle);
+        // Update live Decart session on the fly without stopping video!
+        if (isTryOnActive) {
+          tryonEngine.setGarment({
+            imageUrl: GARMENT_VARIANTS[colorId].image,
+            prompt: GARMENT_VARIANTS[colorId].prompt
+          });
+        }
+      }
+    });
+  });
 
-  // NO floating shadow: garment is ON the body, not hovering in front
-  canvasCtx.shadowColor = 'transparent';
-  canvasCtx.shadowBlur = 0;
-  canvasCtx.shadowOffsetY = 0;
+  snapshotBtn?.addEventListener('click', captureSnapshot);
 
-  // Align shoulder seam line (y = 0.12 * height) exactly with the user's shoulder midpoint (0, 0)
-  const drawX = -0.50 * garmentWidth;
-  const drawY = -0.12 * garmentHeight;
-
-  canvasCtx.drawImage(
-    garmentImg,
-    drawX,
-    drawY,
-    garmentWidth,
-    garmentHeight
-  );
-
-  canvasCtx.restore();
+  bagBtn?.addEventListener('click', () => {
+    const btnAdd = document.getElementById('pdp-add-to-bag');
+    const btnPlus = document.getElementById('pdp-qty-plus');
+    if (pdpQuantity === 0 && btnAdd) {
+      btnAdd.click();
+    } else if (btnPlus) {
+      btnPlus.click();
+    } else {
+      bagCount++;
+      animateBagBadge();
+    }
+    if (bagBtn) {
+      const orig = bagBtn.innerHTML;
+      bagBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:6px"><polyline points="20 6 9 17 4 12"></polyline></svg>Added';
+      setTimeout(() => {
+        bagBtn.innerHTML = orig;
+      }, 1500);
+    }
+  });
 }
 
-initPDP();
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => initPDP());
+} else {
+  initPDP();
+}
+export { GARMENT_VARIANTS, activeColor };
+

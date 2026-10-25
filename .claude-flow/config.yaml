@@ -1,0 +1,86 @@
+# RuFlo V3 Runtime Configuration — LiveTry
+# Updated: 2026-10-21 — Full agent/workflow/hook registration
+
+version: "3.0.0"
+project: live-try-on
+description: "LiveTry: Real-time WebRTC VTON + Harvey B2B outbound engine"
+
+# ─── Swarm Topology ────────────────────────────────────────────────────────────
+swarm:
+  topology: mesh
+  maxAgents: 6           # 2 leads + 4 specialists
+  autoScale: false       # Fixed topology for predictability
+  coordinationStrategy: consensus
+  agents:
+    leads:
+      - agents/frontend-lead.yaml
+      - agents/backend-lead.yaml
+    specialists:
+      - agents/demo-site-agent.yaml
+      - agents/widget-agent.yaml
+      - agents/vton-server-agent.yaml
+      - agents/harvey-agent.yaml
+
+# ─── Workflows ─────────────────────────────────────────────────────────────────
+workflows:
+  - workflows/livetry-dev.yaml        # Full-stack feature development
+  - workflows/harvey-pipeline.yaml   # Autonomous outreach pipeline
+
+# ─── Hooks ─────────────────────────────────────────────────────────────────────
+hooks:
+  enabled: true
+  autoExecute: true
+  definitions:
+    - hooks/validate-design-tokens.yaml   # Block DESIGN.md violations
+    - hooks/vton-prompt-safety.yaml       # Block identity-substituting prompts
+    - hooks/harvey-email-gate.yaml        # Block unverified email sends
+
+# ─── Memory ────────────────────────────────────────────────────────────────────
+memory:
+  backend: memory
+  enableHNSW: false
+  persistPath: .claude-flow/data
+  cacheSize: 100
+  namespaces:
+    - livetry-frontend
+    - livetry-backend
+    - harvey-outreach
+  learningBridge:
+    enabled: false
+  memoryGraph:
+    enabled: false
+  agentScopes:
+    enabled: false
+    defaultScope: project
+
+# ─── Neural / Learning ─────────────────────────────────────────────────────────
+neural:
+  enabled: false
+  modelPath: .claude-flow/neural
+
+# ─── MCP Server ────────────────────────────────────────────────────────────────
+mcp:
+  autoStart: false
+  port: 3000
+
+# ─── Quality Standards ─────────────────────────────────────────────────────────
+standards:
+  design:
+    fonts: ["Cormorant Garamond", "Hanken Grotesk"]
+    borderRadius: "0"
+    noGradients: true
+    noGlassmorphism: true
+    noPurpleBlue: true
+  privacy:
+    zeroFrameRetention: true
+    ephemeralTokens: true
+    sessionTTL: "30m"
+  performance:
+    webrtcLatency: "150ms"
+    widgetBundleSize: "80KB"
+    targetFPS: "15-30"
+  outreach:
+    emailVerificationRequired: true
+    dailyEmailCap: 50
+    hourlyEmailCap: 10
+    deduplicationWindow: "7d"

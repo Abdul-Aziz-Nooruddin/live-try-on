@@ -1,0 +1,306 @@
+- document:
+  - navigation:
+    - link "Vaniger":
+      - /url: /
+      - img "Vaniger"
+    - link "Product":
+      - /url: /#product
+    - link "Pricing":
+      - /url: /#pricing
+    - link "Enterprise":
+      - /url: /#enterprise
+    - link "Book a Demo":
+      - /url: /#book-a-meeting
+    - link "FAQ":
+      - /url: /#faq
+    - link "Affiliates":
+      - /url: /affiliates
+    - link "Blogs":
+      - /url: /blogs
+    - link "Login":
+      - /url: /login
+  - text: Power dialer + live AI teleprompter • $5 Free Credits in First Month
+  - heading "Know who you're calling. Know what to say." [level=1]
+  - paragraph: Vaniger researches your prospect before you call, then gives you a live AI teleprompter while you talk. Just read the screen and close.
+  - link "Start dialing":
+    - /url: /login
+  - link "View Pricing":
+    - /url: "#pricing"
+  - text: 🎁 $5 USD Free Credits • Get $5 USD worth of credits for free in your first month included JB
+  - strong: Jordan Bell
+  - text: LIVE Live 00:03 Prospect We're trying to keep costs down right now. You That makes sense. What are you comparing it to? Prospect Well, honestly, it just sounds expensive. Live AI Suggestion High Confidence
+  - strong: Price Objection Detected
+  - emphasis: "\"Ask if it's a budget constraint or an ROI concern.\""
+  - heading "Cold calls shouldn't start cold." [level=2]
+  - paragraph: Your prospect already has a company, a role, a history and a problem. You shouldn't have to spend ten minutes finding all of it before saying hello.
+  - link "Let Vaniger do it for you":
+    - /url: /login
+  - text: The usual way With Vaniger Research every prospect manually Prospect research, ready before the call Dig through LinkedIn & company pages Relevant context in one place Write scripts and talking points Live, context-aware suggestions Scramble when the conversation changes AI adapts as the call happens Switch between tools while talking Everything beside the call
+  - button "AI Teleprompter":
+    - heading "AI Teleprompter" [level=3]
+  - button "Lead Intelligence":
+    - heading "Lead Intelligence" [level=3]
+  - button "Inbound":
+    - heading "Inbound" [level=3]
+  - button "SpeedDialer":
+    - heading "SpeedDialer" [level=3]
+  - button "Lead DB":
+    - heading "Lead DB" [level=3]
+  - text: AI POWERED
+  - heading "AI Teleprompter" [level=2]
+  - heading "Never wonder what to say next." [level=3]
+  - paragraph: Vaniger listens as you talk and generates live, context- aware suggestions based on your prospect and the conversation.
+  - list:
+    - listitem: Real - time, context - aware suggestions
+    - listitem: Adapts to the prospect and conversation
+    - listitem: Helps you stay on track and confident
+  - link "See Live Coaching":
+    - /url: /login
+    - button "See Live Coaching"
+  - region "Vaniger live call widget":
+    - text: Vaniger Listening...
+    - time: 00:02:20
+    - text: Live Suggestions
+    - paragraph: Ask about their current solution and what's not working for them.
+    - paragraph: Mention how Vaniger can save time on follow-ups.
+    - paragraph: Ask if they'd be open to a quick demo this week.
+    - button "Mute microphone"
+    - button "End call"
+    - button "More options"
+  - heading "From lead to conversation in three steps." [level=2]
+  - paragraph: You bring the pitch. Vaniger handles everything around it.
+  - text: "01"
+  - heading "Pick who to call" [level=3]
+  - paragraph: Bring your leads. Or find them in Vaniger.
+  - text: "02"
+  - heading "Start Calling" [level=3]
+  - paragraph: Let Vaniger do the dialing. Dial up to 5 leads at once.
+  - text: "03"
+  - heading "Just Talk" [level=3]
+  - paragraph: We'll handle the rest, just read off the screen.
+  - link "Start dialing":
+    - /url: /login
+    - text: Start dialing
+    - img
+  - heading "Simple pricing. Serious calling." [level=2]
+  - paragraph:
+    - text: Billed monthly per user.
+    - strong: Get $5 USD worth of credits for free in your first month
+    - text: . Free dedicated number included.
+  - text: Feature Autocaller — $25 / mo per user, billed monthly • $5 USD free credits first mo Autopitch — $35 / mo per user, billed monthly • $5 USD free credits first mo Enterprise — Custom custom seats & volume First-month credits $5 USD (500 credits free) $5 USD (500 credits free) Included / Custom Inbound & outbound calling
+  - img
+  - img
+  - img
+  - text: Vaniger number
+  - img
+  - img
+  - img
+  - text: Call recordings & transcripts
+  - img
+  - img
+  - img
+  - text: SpeedDialer Up to 5 Up to 10 Custom Lead database
+  - img
+  - img
+  - img
+  - text: Campaigns & lists
+  - img
+  - img
+  - img
+  - text: AI lead enrichment
+  - img
+  - img
+  - img
+  - text: AI Teleprompter
+  - img
+  - img
+  - img
+  - text: Live call guidance
+  - img
+  - img
+  - img
+  - text: Person + company intelligence
+  - img
+  - img
+  - img
+  - text: Personalized talking points
+  - img
+  - img
+  - img
+  - text: Advanced team controls
+  - img
+  - img
+  - img
+  - text: Custom integrations
+  - img
+  - img
+  - img
+  - link "Start Calling":
+    - /url: /signup
+  - link "Get Autopitch":
+    - /url: /signup
+  - button "Talk to Sales"
+  - text: Transparent Billing Model
+  - heading "How Vaniger Subscriptions & Credits Work" [level=3]
+  - text: 🎁 $5 USD Free Credits In First Month 01
+  - heading "Monthly Software Plan" [level=4]
+  - paragraph:
+    - text: Your
+    - strong: $25/mo
+    - text: or
+    - strong: $35/mo
+    - text: "seat unlocks full access to the software: live AI teleprompter, SpeedDialer engine, CRM, unlimited call recording/transcription storage, and 1 free dedicated phone number."
+  - text: "02"
+  - heading "Usage Credits (100 = $1 USD)" [level=4]
+  - paragraph:
+    - text: 100 credits equal $1.00 USD. Every new account receives
+    - strong: $5 USD worth of credits for free in your first month
+    - text: (500 credits) to test and dial immediately. Outbound carrier minutes and real-time AI transcription are deducted from credits at transparent wholesale rates (~2 to 3 credits/min).
+  - text: "03"
+  - heading "Rollover & Auto-Refill" [level=4]
+  - paragraph: Unused credits never expire while your account is active. Enable optional auto-refills so your reps never run out of minutes mid-pitch. Top up or modify settings anytime in Billing.
+  - text: Vaniger Enterprise
+  - heading "Built around your sales operation, not the other way around." [level=2]
+  - paragraph: Dedicated telephony infrastructure, custom feature engineering, and tailored AI workflows designed for high-velocity teams.
+  - text: Capacity & Scale
+  - heading "High-volume calling" [level=3]
+  - paragraph: Custom line capacity, number pools and usage limits.
+  - text: Telephony & BYOP
+  - heading "Bring Your Own Provider (BYOP)" [level=3]
+  - paragraph: Connect your existing telephony infrastructure/provider.
+  - text: Trained AI
+  - heading "Custom AI & Workflows" [level=3]
+  - paragraph: Train Vaniger around the company's sales playbook, processes and requirements.
+  - text: API & Webhooks
+  - heading "Custom Integrations" [level=3]
+  - paragraph: CRM, API, webhooks and internal-system integrations based on requirements.
+  - text: Team Governance
+  - heading "Advanced Team Controls" [level=3]
+  - paragraph: Custom roles, permissions and workspace configuration.
+  - text: Custom Engineering
+  - heading "Dedicated Infrastructure & Features" [level=3]
+  - paragraph: Customer-specific functionality or deployment requirements where needed.
+  - text: Priority Support
+  - heading "Enterprise Support" [level=3]
+  - paragraph: Assisted onboarding, migration, training and priority support.
+  - text: Tailored SLA
+  - heading "Custom Pricing & SLA" [level=3]
+  - paragraph: Contract structured around seats, calling volume, AI usage and support requirements.
+  - heading "Ready to scale your sales operation?" [level=3]
+  - paragraph: Connect with our team to configure custom line capacity, BYOP infrastructure, custom AI playbooks, and dedicated SLAs.
+  - link "Book a Demo":
+    - /url: "#book-a-meeting"
+  - button "Talk to Sales"
+  - text: Book a Free Live Demo
+  - heading "See Vaniger in action with your own lead list." [level=2]
+  - paragraph: 15 minutes. We'll walk you through our multi-line speed dialer, test real-time AI teleprompter guidance on your actual scripts, and answer any team questions. No hard sell — just clarity on whether this fits your sales floor.
+  - text: Free 1-on-1 strategy & live walkthrough — no charge, ever Live SpeedDialer demo with 5–10 parallel lines on your list AI teleprompter tested live on your real sales objections Custom team ROI & seat sizing calculation, no fluff 15 minutes, zero sales pressure or commitment required Having trouble with the calendar?
+  - link "Open directly on Cal.com":
+    - /url: https://cal.com/sam-gogineni/vaniger
+  - iframe
+  - paragraph: FAQ
+  - heading "Frequently Asked Questions" [level=2]
+  - paragraph: Everything you need to know about Vaniger, billing, and how we help you close more deals.
+  - heading "Do I need to buy a separate phone number?" [level=3]:
+    - button "Do I need to buy a separate phone number?" [expanded]
+  - region "Do I need to buy a separate phone number?": No. Every Vaniger user seat includes a complimentary, dedicated phone number for making and receiving calls. You can choose your preferred US or international area code, or connect your existing telephony provider via BYOP (Bring Your Own Provider) if you already have numbers.
+  - heading "How do Vaniger usage credits work?" [level=3]:
+    - button "How do Vaniger usage credits work?"
+  - heading "Can I cancel or change plans anytime?" [level=3]:
+    - button "Can I cancel or change plans anytime?"
+  - heading "How does the live AI teleprompter work during a call?" [level=3]:
+    - button "How does the live AI teleprompter work during a call?"
+  - heading "What is SpeedDialer and how does parallel dialing work?" [level=3]:
+    - button "What is SpeedDialer and how does parallel dialing work?"
+  - heading "How does the affiliate and referral program work?" [level=3]:
+    - button "How does the affiliate and referral program work?"
+  - paragraph: Ready when you are
+  - heading "Your next call doesn't have to be a cold one." [level=2]
+  - paragraph: Know the prospect. Know what to say. Make the call.
+  - link "Get Started":
+    - /url: /signup
+  - paragraph: "🎁 Free First Month Perk: Get $5 USD worth of credits for free in your first month (500 credits)."
+  - contentinfo:
+    - link "Vaniger":
+      - /url: /
+      - img "Vaniger"
+    - paragraph: Vaniger is an AI power dialer with a live teleprompter that tells you what to say on sales calls in real time. Dial faster, handle objections instantly, and book more meetings.
+    - text: All systems operational
+    - heading "Product" [level=4]
+    - list:
+      - listitem:
+        - link "Live AI Teleprompter":
+          - /url: "#product"
+      - listitem:
+        - link "SpeedDialer (Parallel Lines)":
+          - /url: "#product"
+      - listitem:
+        - link "Pricing & Credits":
+          - /url: "#pricing"
+      - listitem:
+        - link "Enterprise Solutions":
+          - /url: "#enterprise"
+      - listitem:
+        - link "FAQ":
+          - /url: "#faq"
+    - heading "Partners" [level=4]
+    - list:
+      - listitem:
+        - link "Affiliate Program 20%":
+          - /url: /affiliates
+      - listitem:
+        - link "Affiliate Media Kit":
+          - /url: /affiliates#affiliate-kit
+      - listitem:
+        - link "Book a Demo":
+          - /url: "#book-a-meeting"
+      - listitem:
+        - link "Partner Portal":
+          - /url: /login
+    - heading "Legal & Support" [level=4]
+    - list:
+      - listitem:
+        - link "Terms of Service":
+          - /url: /terms
+      - listitem:
+        - link "Privacy Policy":
+          - /url: /privacy
+      - listitem:
+        - link "Cookie Policy":
+          - /url: /legal#cookie-policy
+      - listitem:
+        - link "Telephony Compliance":
+          - /url: /terms
+      - listitem:
+        - link "founders@vaniger.com":
+          - /url: mailto:founders@vaniger.com
+    - paragraph: © 2026 Vaniger Inc. All rights reserved.
+    - paragraph: Built for modern outbound sales teams & closers.
+  - dialog "See what Vaniger can do for your sales team":
+    - button "Close sales form"
+    - text: 1 Contact 2 Team Sizing 3 Timeline & Notes Reach Out to Sales
+    - heading "See what Vaniger can do for your sales team" [level=2]:
+      - text: See what
+      - strong: Vaniger
+      - text: can do for your sales team
+    - paragraph: Answer a few quick questions and our sales team will prepare a tailored walkthrough for your team.
+    - text: Full Name *
+    - textbox "Full Name *":
+      - /placeholder: Jane Smith
+    - text: Work Email *
+    - textbox "Work Email *":
+      - /placeholder: jane@company.com
+    - text: Phone Number (Required) *
+    - textbox "Phone Number (Required) *":
+      - /placeholder: +1 (555) 000-0000
+    - button "Continue"
+  - region "Cookie notice":
+    - paragraph:
+      - text: Vaniger uses cookies and similar technologies for service operation, security, analytics, and referral attribution.
+      - link "Cookie Policy":
+        - /url: /legal#cookie-policy
+    - button "OK"
+  - link "Vaniger - Your AI tells you what to say when they pick up. | Product Hunt":
+    - /url: https://www.producthunt.com/products/vaniger-stop-dialling-start-talking?embed=true&utm_source=badge-featured&utm_medium=badge&utm_campaign=badge-vaniger
+    - img "Vaniger - Your AI tells you what to say when they pick up. | Product Hunt"
+  - alert

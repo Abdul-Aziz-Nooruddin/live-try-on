@@ -1,0 +1,41 @@
+# Pre-Edit Hook: Design Token Validation
+# Fires before any agent edits a frontend file
+# Blocks edits that would violate DESIGN.md constraints
+
+name: validate-design-tokens
+event: pre_edit
+scope:
+  - apps/demo-site/src/**/*.css
+  - apps/demo-site/src/**/*.scss
+  - apps/marketing/src/**/*.css
+  - packages/widget/src/**/*.css
+
+checks:
+  - name: no_glassmorphism
+    pattern: "backdrop-filter|glass|blur\\("
+    message: "BLOCKED: Glassmorphism not allowed per DESIGN.md (flat editorial aesthetic only)"
+    severity: error
+
+  - name: no_gradients
+    pattern: "linear-gradient|radial-gradient|conic-gradient"
+    message: "BLOCKED: CSS gradients not allowed per DESIGN.md. Use flat brand colors only."
+    severity: error
+
+  - name: no_border_radius
+    pattern: "border-radius:\\s*(?!0)[^;]"
+    message: "BLOCKED: border-radius must be 0 per DESIGN.md (sharp editorial corners)"
+    severity: error
+
+  - name: no_purple_blue
+    pattern: "(?:#[0-9a-fA-F]{3,6}|rgb|hsl).*(?:blue|purple|violet|indigo)"
+    message: "WARNING: Purple/blue palette not allowed per DESIGN.md. Use brand neutrals."
+    severity: warning
+
+  - name: correct_fonts
+    pattern: "font-family:(?!.*(?:Cormorant|Hanken|Garamond|Grotesk))"
+    message: "WARNING: Only Cormorant Garamond and Hanken Grotesk allowed per DESIGN.md"
+    severity: warning
+
+onViolation:
+  error: block_edit
+  warning: log_and_continue

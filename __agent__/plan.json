@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "items": [
+    {
+      "title": "Review project rules and existing dependency decisions",
+      "status": "done"
+    },
+    {
+      "title": "Verify Agent Reach source, license, dependencies, and install path",
+      "status": "done"
+    },
+    {
+      "title": "Install Agent Reach and default channels",
+      "status": "done"
+    },
+    {
+      "title": "Add lead-research channels and verify health",
+      "status": "done"
+    },
+    {
+      "title": "Define lead-research output and limitations",
+      "status": "done"
+    }
+  ],
+  "updated_at": "2026-10-23T08:35:03.614Z",
+  "session_id": "01a167b2-e24f-769b-ad91-ee84f4ff07ba"
+}

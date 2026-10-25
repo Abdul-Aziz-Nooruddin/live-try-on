@@ -1,0 +1,26 @@
+{
+  "contract_ok": false,
+  "text": "",
+  "parsed_output": null,
+  "context_delta": null,
+  "private_delta": null,
+  "log_path": "stages/1-design-review/turns/005-gemini-editor/stdout.log",
+  "stderr_path": "stages/1-design-review/turns/005-gemini-editor/stderr.log",
+  "retry_log_path": null,
+  "retry_stderr_path": null,
+  "exit_code": 1,
+  "retry_count": 0,
+  "stderr_tail": "e to use models/gemini-3.5-flash-lite for the latest features and improvements. We recommend you to use the Interactions API (https://ai.google.dev/gemini-api/docs/get-started).\",\n    \"code\": 1\n  }\n}\n",
+  "duration_seconds": 2.815,
+  "error": {
+    "kind": "unknown",
+    "detail": "Gemini API returned ModelNotFoundError (404): models/gemini-2.5-flash-lite is no longer available to new users. Nonzero unknown failures are not retryable; no model substitution was made."
+  },
+  "model": "gemini-2.5-flash-lite",
+  "stats": null,
+  "prompt_tokens": null,
+  "completion_tokens": null,
+  "total_tokens": null,
+  "tokens_estimated": false,
+  "usage_reported": false
+}
