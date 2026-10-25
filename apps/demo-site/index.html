@@ -4,6 +4,26 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Studio Aelia — Quiet Apparel & Real-Time Virtual Fitting</title>
+  <script>
+    (function() {
+      try {
+        var p = new URLSearchParams(window.location.search);
+        if (p.has('item') || p.has('color') || p.has('studio')) {
+          window.location.replace('/pdp/index.html' + window.location.search + window.location.hash);
+          return;
+        }
+        if (p.has('category')) {
+          window.location.replace('/collection/index.html' + window.location.search + window.location.hash);
+          return;
+        }
+        if (window.history && window.history.replaceState) {
+          if (window.location.pathname.endsWith('index.html') || window.location.pathname.endsWith('/index.html')) {
+            window.history.replaceState(null, '', '/' + window.location.search + window.location.hash);
+          }
+        }
+      } catch (_) {}
+    })();
+  </script>
   <link rel="stylesheet" href="./src/tokens.css" />
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Hanken+Grotesk:wght@400;500;600&display=swap');
@@ -44,16 +64,18 @@
     .announcement-bar {
       background-color: var(--ink);
       color: var(--paper);
-      font-size: 11px;
-      line-height: 16px;
-      letter-spacing: 0.14em;
+      font-size: 10px;
+      line-height: 14px;
+      letter-spacing: 0.1em;
       text-transform: uppercase;
       font-weight: 500;
-      height: 36px;
+      min-height: 32px;
+      height: auto;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 0 16px;
+      padding: 6px 16px;
+      text-align: center;
     }
 
     /* Main Nav */
@@ -68,6 +90,116 @@
       position: sticky;
       top: 0;
       z-index: 50;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .mobile-menu-btn {
+      display: none;
+      background: transparent;
+      border: none;
+      color: var(--ink);
+      padding: 8px;
+      margin-left: -8px;
+      cursor: pointer;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Mobile Drawer */
+    .mobile-drawer {
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      display: flex;
+      pointer-events: none;
+      visibility: hidden;
+      transition: visibility 0.25s ease;
+    }
+
+    .mobile-drawer.open {
+      pointer-events: auto;
+      visibility: visible;
+    }
+
+    .mobile-drawer-backdrop {
+      position: absolute;
+      inset: 0;
+      background-color: rgba(20, 19, 17, 0.6);
+      opacity: 0;
+      transition: opacity 0.25s ease;
+    }
+
+    .mobile-drawer.open .mobile-drawer-backdrop {
+      opacity: 1;
+    }
+
+    .mobile-drawer-content {
+      position: relative;
+      width: 82%;
+      max-width: 320px;
+      height: 100%;
+      background-color: var(--paper);
+      border-right: 1px solid var(--stone);
+      display: flex;
+      flex-direction: column;
+      transform: translateX(-100%);
+      transition: transform 0.28s cubic-bezier(0.2, 0, 0, 1);
+      box-shadow: 4px 0 24px rgba(0, 0, 0, 0.15);
+      z-index: 2;
+      overflow-y: auto;
+    }
+
+    .mobile-drawer.open .mobile-drawer-content {
+      transform: translateX(0);
+    }
+
+    .mobile-drawer-header {
+      height: 56px;
+      padding: 0 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--stone);
+    }
+
+    .mobile-drawer-close {
+      background: transparent;
+      border: none;
+      color: var(--ink);
+      cursor: pointer;
+      padding: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .mobile-drawer-links {
+      list-style: none;
+      padding: 24px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      flex: 1;
+      margin: 0;
+    }
+
+    .mobile-drawer-link {
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink);
+      text-decoration: none;
+      transition: color var(--duration-fast);
+    }
+
+    .mobile-drawer-footer {
+      padding: 20px;
+      border-top: 1px solid var(--stone);
+      font-size: 11px;
+      color: var(--taupe);
+      letter-spacing: 0.08em;
     }
 
     .nav-links {
@@ -348,30 +480,119 @@
     }
 
     @media (max-width: 1024px) {
+      .main-nav {
+        height: 56px;
+        padding: 0 16px;
+        position: sticky;
+      }
+      .mobile-menu-btn {
+        display: flex;
+      }
+      .nav-links {
+        display: none !important;
+      }
+      .brand-wordmark {
+        font-size: 22px;
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+      }
+      .nav-actions {
+        gap: 12px;
+      }
+      .nav-actions .nav-action-link:not(:last-child) {
+        display: none;
+      }
       .hero-section {
-        padding: 60px 24px;
+        padding: 56px 20px;
       }
       .hero-headline {
-        font-size: 42px;
-        line-height: 48px;
+        font-size: 38px;
+        line-height: 44px;
       }
       .section-wrap {
-        padding: 56px 20px;
+        padding: 48px 16px;
       }
       .category-grid {
         grid-template-columns: 1fr;
       }
       .product-grid {
         grid-template-columns: repeat(2, 1fr);
-      }
-      .main-nav {
-        padding: 0 20px;
+        gap: 16px;
+        row-gap: 36px;
       }
     }
 
-    @media (max-width: 580px) {
+    @media (max-width: 680px) {
+      .hero-section {
+        padding: 40px 16px 36px 16px;
+        min-height: auto;
+      }
+      .hero-headline {
+        font-size: 28px;
+        line-height: 34px;
+        margin-bottom: 12px;
+      }
+      .hero-subhead {
+        font-size: 13px;
+        line-height: 20px;
+        margin-bottom: 24px;
+      }
+      .hero-cta-row {
+        flex-direction: column;
+        width: 100%;
+        gap: 10px;
+      }
+      .btn-hero-primary,
+      .btn-hero-secondary {
+        width: 100%;
+        height: 44px;
+        font-size: 11px;
+        box-sizing: border-box;
+      }
+      .section-wrap {
+        padding: 36px 16px;
+      }
+      .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+        margin-bottom: 20px;
+      }
+      .section-title {
+        font-size: 24px;
+        line-height: 30px;
+      }
       .product-grid {
         grid-template-columns: 1fr;
+        gap: 28px;
+      }
+      .tryon-strip {
+        padding: 40px 16px;
+      }
+      .tryon-strip-title {
+        font-size: 26px;
+        line-height: 32px;
+        margin-bottom: 24px;
+      }
+      .tryon-strip-cta {
+        width: 100%;
+        justify-content: center;
+        box-sizing: border-box;
+      }
+      footer {
+        padding: 40px 16px 24px 16px;
+      }
+      .footer-grid {
+        grid-template-columns: 1fr;
+        gap: 28px;
+        padding-bottom: 28px;
+      }
+      .footer-bottom {
+        flex-direction: column;
+        gap: 8px;
+        text-align: center;
+        font-size: 11px;
       }
     }
 
@@ -643,25 +864,68 @@
 
   <!-- Header -->
   <header class="main-nav">
-    <nav>
+    <button class="mobile-menu-btn" id="mobile-menu-btn" aria-label="Open Navigation Menu">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+        <line x1="3" y1="6" x2="21" y2="6"></line>
+        <line x1="3" y1="12" x2="21" y2="12"></line>
+        <line x1="3" y1="18" x2="21" y2="18"></line>
+      </svg>
+    </button>
+    <nav class="desktop-nav">
       <ul class="nav-links">
-        <li><a href="collection/index.html?category=women" class="nav-link">Women</a></li>
-        <li><a href="collection/index.html?category=men" class="nav-link">Men</a></li>
-        <li><a href="collection/index.html?category=new" class="nav-link">New</a></li>
-        <li><a href="collection/index.html?category=sale" class="nav-link">Sale</a></li>
-        <li><a href="collection/index.html?category=all" class="nav-link">All Tops</a></li>
-        <li><a href="pdp/index.html" class="nav-link" style="color: var(--clay);">Try-On Studio</a></li>
+        <li><a href="/?category=women" class="nav-link">Women</a></li>
+        <li><a href="/?category=men" class="nav-link">Men</a></li>
+        <li><a href="/?category=new" class="nav-link">New</a></li>
+        <li><a href="/?category=sale" class="nav-link">Sale</a></li>
+        <li><a href="/?category=all" class="nav-link">All Tops</a></li>
+        <li><a href="/?studio" class="nav-link" style="color: var(--clay);">Try-On Studio</a></li>
       </ul>
     </nav>
-    <a href="index.html" class="brand-wordmark">AELIA</a>
+    <a href="/" class="brand-wordmark">AELIA</a>
     <div class="nav-actions">
-      <a href="collection/index.html" class="nav-action-link">Search</a>
+      <a href="/?category=all" class="nav-action-link">Search</a>
       <a href="#" class="nav-action-link">Account</a>
-      <a href="pdp/index.html" class="nav-action-link">
+      <a href="/?studio" class="nav-action-link">
         Bag <span class="bag-count">0</span>
       </a>
     </div>
   </header>
+
+  <!-- Mobile Navigation Drawer -->
+  <div id="mobile-drawer" class="mobile-drawer" aria-hidden="true">
+    <div class="mobile-drawer-backdrop" id="mobile-drawer-backdrop"></div>
+    <div class="mobile-drawer-content">
+      <div class="mobile-drawer-header">
+        <span class="brand-wordmark" style="font-size: 20px;">AELIA</span>
+        <button id="mobile-drawer-close" class="mobile-drawer-close" aria-label="Close Menu">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      <ul class="mobile-drawer-links">
+        <li><a href="/?category=women" class="mobile-drawer-link">Women’s Collection</a></li>
+        <li><a href="/?category=men" class="mobile-drawer-link">Men’s Collection</a></li>
+        <li><a href="/?category=new" class="mobile-drawer-link">New Arrivals</a></li>
+        <li><a href="/?category=sale" class="mobile-drawer-link">Archive &amp; Sale</a></li>
+        <li><a href="/?category=all" class="mobile-drawer-link">All Tops</a></li>
+        <li style="margin-top: 12px; padding-top: 14px; border-top: 1px solid var(--stone);">
+          <a href="/?studio" class="mobile-drawer-link" style="color: var(--clay); font-weight: 600; display: flex; align-items: center; gap: 8px;">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"></path>
+              <circle cx="12" cy="13" r="3"></circle>
+            </svg>
+            Live Try-On Studio
+          </a>
+        </li>
+      </ul>
+      <div class="mobile-drawer-footer">
+        <div>Studio Aelia SS26</div>
+        <div style="font-size: 11px; color: var(--taupe); margin-top: 4px;">Real-Time WebRTC Lucy VTON</div>
+      </div>
+    </div>
+  </div>
 
   <!-- Hero Section -->
   <section class="hero-section">
@@ -674,8 +938,8 @@
         Artisanal French studio flax, heavyweight Japanese cottons, and fluid mulberry silk. Test live cloth drape and styling on your own camera stream before purchase.
       </p>
       <div class="hero-cta-row">
-        <a href="collection/index.html?category=new" class="btn-hero-primary">Explore New In</a>
-        <a href="pdp/index.html?color=charcoal" class="btn-hero-secondary">
+        <a href="/?category=new" class="btn-hero-primary">Explore New In</a>
+        <a href="/?color=charcoal" class="btn-hero-secondary">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"></path>
             <circle cx="12" cy="13" r="3"></circle>
@@ -690,30 +954,30 @@
   <section class="section-wrap">
     <div class="section-header">
       <h2 class="section-title">The Seasonal Edits</h2>
-      <a href="collection/index.html?category=all" class="section-link">View All Tops</a>
+      <a href="/?category=all" class="section-link">View All Tops</a>
     </div>
     <div class="category-grid">
-      <a href="collection/index.html?category=women" class="category-card">
+      <a href="/?category=women" class="category-card">
         <div class="category-image-wrap">
-          <img src="fixtures/women-silk-blouse.jpg" alt="Women's Collection" loading="lazy" />
+          <img src="/fixtures/women-silk-blouse.jpg" alt="Women's Collection" loading="eager" fetchpriority="high" decoding="async" />
         </div>
         <div class="category-title">Women’s Collection</div>
         <div class="category-desc">Mulberry silk blouses, camp collar studio linen, and fine merino knits.</div>
         <span class="section-link">Explore Women</span>
       </a>
 
-      <a href="collection/index.html?category=men" class="category-card">
+      <a href="/?category=men" class="category-card">
         <div class="category-image-wrap">
-          <img src="fixtures/men-poplin-shirt.jpg" alt="Men's Collection" loading="lazy" />
+          <img src="/fixtures/men-poplin-shirt.jpg" alt="Men's Collection" loading="eager" fetchpriority="high" decoding="async" />
         </div>
         <div class="category-title">Men’s Collection</div>
         <div class="category-desc">Heavyweight 280gsm boxy tees, Egyptian Giza cotton, and Japanese twill overshirts.</div>
         <span class="section-link">Explore Men</span>
       </a>
 
-      <a href="collection/index.html?category=sale" class="category-card">
+      <a href="/?category=sale" class="category-card">
         <div class="category-image-wrap">
-          <img src="fixtures/linen-studio-kurta.jpg" alt="Archive & Sale" loading="lazy" />
+          <img src="/fixtures/linen-studio-kurta.jpg" alt="Archive & Sale" loading="eager" decoding="async" />
         </div>
         <div class="category-title">Archive &amp; Sale</div>
         <div class="category-desc">Curated archive editions and limited-run pieces offered with consideration.</div>
@@ -726,14 +990,14 @@
   <section class="section-wrap" style="padding-top: 0;">
     <div class="section-header">
       <h2 class="section-title">Featured Garments</h2>
-      <a href="collection/index.html?category=new" class="section-link">Browse Full Catalog (9 Items)</a>
+      <a href="/?category=new" class="section-link">Browse Full Catalog (9 Items)</a>
     </div>
     <div class="product-grid">
       <!-- 1: Silk Blouse -->
-      <a href="pdp/index.html?item=silk-blouse" class="product-card">
+      <a href="/?item=silk-blouse" class="product-card">
         <div class="product-photo-box">
           <span class="badge-tag">New</span>
-          <img src="fixtures/women-silk-blouse.jpg" alt="Relaxed Silk Crepe Blouse" loading="lazy" />
+          <img src="/fixtures/women-silk-blouse.jpg" alt="Relaxed Silk Crepe Blouse" loading="eager" fetchpriority="high" decoding="async" />
         </div>
         <div class="card-title">Relaxed Silk Crepe Blouse</div>
         <div class="card-sub">100% Mulberry Silk Crepe • Ivory Bone</div>
@@ -748,10 +1012,10 @@
       </a>
 
       <!-- 2: Linen Shirt -->
-      <a href="pdp/index.html?item=linen-shirt" class="product-card">
+      <a href="/?item=linen-shirt" class="product-card">
         <div class="product-photo-box">
           <span class="badge-tag sale">Sale</span>
-          <img src="fixtures/women-linen-shirt.jpg" alt="Studio Oversized Linen Shirt" loading="lazy" />
+          <img src="/fixtures/women-linen-shirt.jpg" alt="Studio Oversized Linen Shirt" loading="eager" decoding="async" />
         </div>
         <div class="card-title">Studio Oversized Linen Shirt</div>
         <div class="card-sub">Artisanal French Flax • Terracotta Blush</div>
@@ -769,10 +1033,10 @@
       </a>
 
       <!-- 3: Merino Knit -->
-      <a href="pdp/index.html?item=merino-knit" class="product-card">
+      <a href="/?item=merino-knit" class="product-card">
         <div class="product-photo-box">
           <span class="badge-tag">New</span>
-          <img src="fixtures/women-merino-knit.jpg" alt="Ribbed Merino Wool Knit Top" loading="lazy" />
+          <img src="/fixtures/women-merino-knit.jpg" alt="Ribbed Merino Wool Knit Top" loading="eager" decoding="async" />
         </div>
         <div class="card-title">Ribbed Merino Wool Knit Top</div>
         <div class="card-sub">19.5µ Extrafine Merino • Soft Camel</div>
@@ -787,10 +1051,10 @@
       </a>
 
       <!-- 4: Heavyweight Boxy Tee -->
-      <a href="pdp/index.html?color=charcoal" class="product-card">
+      <a href="/?color=charcoal" class="product-card">
         <div class="product-photo-box">
           <span class="badge-tag">Essential</span>
-          <img src="fixtures/charcoal-front.jpg" alt="Classic Heavyweight Boxy Tee" loading="lazy" />
+          <img src="/fixtures/charcoal-front.jpg" alt="Classic Heavyweight Boxy Tee" loading="eager" fetchpriority="high" decoding="async" />
         </div>
         <div class="card-title">Classic Heavyweight Boxy Tee</div>
         <div class="card-sub">280gsm Organic Combed Cotton • Washed Charcoal</div>
@@ -805,10 +1069,10 @@
       </a>
 
       <!-- 5: Giza Poplin Shirt -->
-      <a href="pdp/index.html?item=poplin-shirt" class="product-card">
+      <a href="/?item=poplin-shirt" class="product-card">
         <div class="product-photo-box">
           <span class="badge-tag">New</span>
-          <img src="fixtures/men-poplin-shirt.jpg" alt="Relaxed Giza Poplin Shirt" loading="lazy" />
+          <img src="/fixtures/men-poplin-shirt.jpg" alt="Relaxed Giza Poplin Shirt" loading="lazy" decoding="async" />
         </div>
         <div class="card-title">Relaxed Giza Poplin Shirt</div>
         <div class="card-sub">120s Two-Ply Egyptian Cotton • Chalk White</div>
@@ -823,10 +1087,10 @@
       </a>
 
       <!-- 6: Twill Overshirt -->
-      <a href="pdp/index.html?item=overshirt" class="product-card">
+      <a href="/?item=overshirt" class="product-card">
         <div class="product-photo-box">
           <span class="badge-tag">New</span>
-          <img src="fixtures/men-overshirt.jpg" alt="Structured Twill Overshirt" loading="lazy" />
+          <img src="/fixtures/men-overshirt.jpg" alt="Structured Twill Overshirt" loading="lazy" decoding="async" />
         </div>
         <div class="card-title">Structured Twill Overshirt</div>
         <div class="card-sub">340gsm Japanese Twill • Slate Indigo</div>
@@ -864,7 +1128,7 @@
           <div class="step-desc">WebRTC video streams back at 30 FPS (&lt;150ms latency), showing dynamic cloth drape, collar hug, and natural sleeve motion.</div>
         </div>
       </div>
-      <a href="pdp/index.html?item=silk-blouse" class="tryon-strip-cta">
+      <a href="/?item=silk-blouse" class="tryon-strip-cta">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"></path>
           <circle cx="12" cy="13" r="3"></circle>
@@ -880,28 +1144,28 @@
       <div>
         <div class="footer-heading">Shop</div>
         <ul class="footer-links">
-          <li><a href="collection/index.html?category=women" class="footer-link">Women’s Collection</a></li>
-          <li><a href="collection/index.html?category=men" class="footer-link">Men’s Collection</a></li>
-          <li><a href="collection/index.html?category=new" class="footer-link">New Season In</a></li>
-          <li><a href="collection/index.html?category=sale" class="footer-link">Archive &amp; Sale</a></li>
-          <li><a href="collection/index.html?category=all" class="footer-link">All Tops</a></li>
+          <li><a href="/?category=women" class="footer-link">Women’s Collection</a></li>
+          <li><a href="/?category=men" class="footer-link">Men’s Collection</a></li>
+          <li><a href="/?category=new" class="footer-link">New Season In</a></li>
+          <li><a href="/?category=sale" class="footer-link">Archive &amp; Sale</a></li>
+          <li><a href="/?category=all" class="footer-link">All Tops</a></li>
         </ul>
       </div>
       <div>
         <div class="footer-heading">Try-On Studio</div>
         <ul class="footer-links">
-          <li><a href="pdp/index.html?item=silk-blouse" class="footer-link">Try Silk Crepe Blouse</a></li>
-          <li><a href="pdp/index.html?color=charcoal" class="footer-link">Try Boxy T-Shirt</a></li>
-          <li><a href="pdp/index.html?item=linen-shirt" class="footer-link">Try Studio Linen Shirt</a></li>
-          <li><a href="pdp/index.html?item=poplin-shirt" class="footer-link">Try Giza Poplin Shirt</a></li>
-          <li><a href="pdp/index.html?item=overshirt" class="footer-link">Try Twill Overshirt</a></li>
+          <li><a href="/?item=silk-blouse" class="footer-link">Try Silk Crepe Blouse</a></li>
+          <li><a href="/?color=charcoal" class="footer-link">Try Boxy T-Shirt</a></li>
+          <li><a href="/?item=linen-shirt" class="footer-link">Try Studio Linen Shirt</a></li>
+          <li><a href="/?item=poplin-shirt" class="footer-link">Try Giza Poplin Shirt</a></li>
+          <li><a href="/?item=overshirt" class="footer-link">Try Twill Overshirt</a></li>
         </ul>
       </div>
       <div>
         <div class="footer-heading">Studio Aelia</div>
         <ul class="footer-links">
-          <li><a href="index.html" class="footer-link">About the Brand</a></li>
-          <li><a href="collection/index.html" class="footer-link">Lookbook SS26</a></li>
+          <li><a href="/" class="footer-link">About the Brand</a></li>
+          <li><a href="/?category=all" class="footer-link">Lookbook SS26</a></li>
           <li><a href="#" class="footer-link">Privacy &amp; Ephemeral Sessions</a></li>
           <li><a href="#" class="footer-link">Care Instructions</a></li>
         </ul>
@@ -922,5 +1186,65 @@
       <div>Real-Time WebRTC Lucy VTON &bull; Ephemeral Client Tokens &bull; Zero Camera Retention</div>
     </div>
   </footer>
+
+  <script>
+    document.addEventListener('click', function(e) {
+      var a = e.target.closest('a');
+      if (!a || !a.href) return;
+      try {
+        var targetUrl = new URL(a.href, window.location.origin);
+        if (targetUrl.origin !== window.location.origin) return;
+        if (e.metaKey || e.ctrlKey || e.shiftKey || a.target === '_blank') return;
+
+        var p = targetUrl.searchParams;
+        if (p.has('item') || p.has('color') || p.has('studio')) {
+          e.preventDefault();
+          window.location.href = '/pdp/index.html' + targetUrl.search + targetUrl.hash;
+          return;
+        }
+        if (p.has('category')) {
+          e.preventDefault();
+          window.location.href = '/collection/index.html' + targetUrl.search + targetUrl.hash;
+          return;
+        }
+        if ((targetUrl.pathname === '/' || targetUrl.pathname.endsWith('index.html')) && targetUrl.search === '') {
+          e.preventDefault();
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+          if (window.history && window.history.replaceState) {
+            window.history.replaceState(null, '', '/');
+          }
+          return;
+        }
+      } catch (_) {}
+    });
+
+    // Mobile Navigation Drawer Toggle
+    (function() {
+      var menuBtn = document.getElementById('mobile-menu-btn');
+      var drawer = document.getElementById('mobile-drawer');
+      var drawerClose = document.getElementById('mobile-drawer-close');
+      var drawerBackdrop = document.getElementById('mobile-drawer-backdrop');
+
+      function openDrawer() {
+        if (drawer) {
+          drawer.classList.add('open');
+          drawer.setAttribute('aria-hidden', 'false');
+          document.body.style.overflow = 'hidden';
+        }
+      }
+
+      function closeDrawer() {
+        if (drawer) {
+          drawer.classList.remove('open');
+          drawer.setAttribute('aria-hidden', 'true');
+          document.body.style.overflow = '';
+        }
+      }
+
+      if (menuBtn) menuBtn.addEventListener('click', openDrawer);
+      if (drawerClose) drawerClose.addEventListener('click', closeDrawer);
+      if (drawerBackdrop) drawerBackdrop.addEventListener('click', closeDrawer);
+    })();
+  </script>
 </body>
 </html>

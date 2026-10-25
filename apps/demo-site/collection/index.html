@@ -4,6 +4,22 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Apparel & Tailoring — Studio Aelia</title>
+  <script>
+    (function() {
+      try {
+        if (window.history && window.history.replaceState) {
+          var p = new URLSearchParams(window.location.search);
+          var cat = p.get('category') || 'all';
+          window.history.replaceState(null, '', '/?category=' + encodeURIComponent(cat) + window.location.hash);
+        }
+      } catch (_) {}
+    })();
+  <link rel="preload" as="image" href="/fixtures/charcoal-front.jpg" fetchpriority="high">
+  <link rel="preload" as="image" href="/fixtures/men-poplin-shirt.jpg" fetchpriority="high">
+  <link rel="preload" as="image" href="/fixtures/linen-studio-kurta.jpg" fetchpriority="high">
+  <link rel="preload" as="image" href="/fixtures/men-overshirt.jpg" fetchpriority="high">
+  <link rel="preload" as="image" href="/fixtures/women-silk-blouse.jpg">
+  <link rel="preload" as="image" href="/fixtures/women-linen-shirt.jpg">
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Hanken+Grotesk:wght@400;500;600&display=swap');
 
@@ -41,16 +57,18 @@
     .announcement-bar {
       background-color: var(--ink);
       color: var(--paper);
-      font-size: 12px;
-      line-height: 16px;
-      letter-spacing: 0.12em;
+      font-size: 10px;
+      line-height: 14px;
+      letter-spacing: 0.1em;
       text-transform: uppercase;
       font-weight: 500;
-      height: 36px;
+      min-height: 32px;
+      height: auto;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 0 16px;
+      padding: 6px 16px;
+      text-align: center;
     }
 
     .main-nav {
@@ -64,6 +82,116 @@
       position: sticky;
       top: 0;
       z-index: 50;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .mobile-menu-btn {
+      display: none;
+      background: transparent;
+      border: none;
+      color: var(--ink);
+      padding: 8px;
+      margin-left: -8px;
+      cursor: pointer;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Mobile Drawer */
+    .mobile-drawer {
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      display: flex;
+      pointer-events: none;
+      visibility: hidden;
+      transition: visibility 0.25s ease;
+    }
+
+    .mobile-drawer.open {
+      pointer-events: auto;
+      visibility: visible;
+    }
+
+    .mobile-drawer-backdrop {
+      position: absolute;
+      inset: 0;
+      background-color: rgba(20, 19, 17, 0.6);
+      opacity: 0;
+      transition: opacity 0.25s ease;
+    }
+
+    .mobile-drawer.open .mobile-drawer-backdrop {
+      opacity: 1;
+    }
+
+    .mobile-drawer-content {
+      position: relative;
+      width: 82%;
+      max-width: 320px;
+      height: 100%;
+      background-color: var(--paper);
+      border-right: 1px solid var(--stone);
+      display: flex;
+      flex-direction: column;
+      transform: translateX(-100%);
+      transition: transform 0.28s cubic-bezier(0.2, 0, 0, 1);
+      box-shadow: 4px 0 24px rgba(0, 0, 0, 0.15);
+      z-index: 2;
+      overflow-y: auto;
+    }
+
+    .mobile-drawer.open .mobile-drawer-content {
+      transform: translateX(0);
+    }
+
+    .mobile-drawer-header {
+      height: 56px;
+      padding: 0 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--stone);
+    }
+
+    .mobile-drawer-close {
+      background: transparent;
+      border: none;
+      color: var(--ink);
+      cursor: pointer;
+      padding: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .mobile-drawer-links {
+      list-style: none;
+      padding: 24px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      flex: 1;
+      margin: 0;
+    }
+
+    .mobile-drawer-link {
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink);
+      text-decoration: none;
+      transition: color var(--duration-fast);
+    }
+
+    .mobile-drawer-footer {
+      padding: 20px;
+      border-top: 1px solid var(--stone);
+      font-size: 11px;
+      color: var(--taupe);
+      letter-spacing: 0.08em;
     }
 
     .nav-links {
@@ -287,29 +415,96 @@
       }
     }
 
-    @media (max-width: 860px) {
+    @media (max-width: 1024px) {
+      .main-nav {
+        height: 56px;
+        padding: 0 16px;
+      }
+      .mobile-menu-btn {
+        display: flex;
+      }
+      .nav-links {
+        display: none !important;
+      }
+      .brand-wordmark {
+        font-size: 22px;
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+      }
+      .nav-actions {
+        gap: 12px;
+      }
+      .nav-actions .nav-action-link:not(:last-child) {
+        display: none;
+      }
+      .filter-toolbar {
+        top: 56px;
+        padding: 10px 16px;
+        gap: 12px;
+      }
+      .filter-chips {
+        overflow-x: auto;
+        flex-wrap: nowrap;
+        -webkit-overflow-scrolling: touch;
+        padding-bottom: 4px;
+        max-width: 100%;
+      }
+      .filter-chip {
+        flex-shrink: 0;
+        white-space: nowrap;
+        height: 32px;
+        font-size: 10px;
+        padding: 0 12px;
+      }
+      .grid-container {
+        padding: 20px 16px;
+      }
+      .collection-header {
+        padding: 24px 16px 12px 16px;
+      }
+      .collection-title {
+        font-size: 32px;
+      }
       .product-grid {
         grid-template-columns: repeat(2, 1fr);
         gap: 16px;
-        row-gap: 40px;
-      }
-      .filter-toolbar {
-        padding: 12px 20px;
-      }
-      .grid-container {
-        padding: 24px 20px;
-      }
-      .collection-header {
-        padding: 28px 20px 16px 20px;
-      }
-      .main-nav {
-        padding: 0 20px;
+        row-gap: 36px;
       }
     }
 
-    @media (max-width: 540px) {
+    @media (max-width: 640px) {
       .product-grid {
         grid-template-columns: 1fr;
+        gap: 28px;
+      }
+      .collection-title {
+        font-size: 26px;
+        line-height: 32px;
+      }
+      .filter-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .sort-wrap {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+      }
+      footer {
+        padding: 40px 16px 24px 16px;
+      }
+      .footer-grid {
+        grid-template-columns: 1fr;
+        gap: 28px;
+        padding-bottom: 28px;
+      }
+      .footer-bottom {
+        flex-direction: column;
+        gap: 8px;
+        text-align: center;
+        font-size: 11px;
       }
     }
 
@@ -455,25 +650,68 @@
 
   <!-- Header -->
   <header class="main-nav">
-    <nav>
+    <button class="mobile-menu-btn" id="mobile-menu-btn" aria-label="Open Navigation Menu">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+        <line x1="3" y1="6" x2="21" y2="6"></line>
+        <line x1="3" y1="12" x2="21" y2="12"></line>
+        <line x1="3" y1="18" x2="21" y2="18"></line>
+      </svg>
+    </button>
+    <nav class="desktop-nav">
       <ul class="nav-links">
-        <li><a href="index.html?category=women" class="nav-link" data-nav-category="women">Women</a></li>
-        <li><a href="index.html?category=men" class="nav-link" data-nav-category="men">Men</a></li>
-        <li><a href="index.html?category=new" class="nav-link" data-nav-category="new">New</a></li>
-        <li><a href="index.html?category=sale" class="nav-link" data-nav-category="sale">Sale</a></li>
-        <li><a href="index.html?category=all" class="nav-link" data-nav-category="all">All Tops</a></li>
-        <li><a href="../pdp/index.html" class="nav-link" style="color: var(--clay);">Try-On Studio</a></li>
+        <li><a href="/?category=women" class="nav-link" data-nav-category="women">Women</a></li>
+        <li><a href="/?category=men" class="nav-link" data-nav-category="men">Men</a></li>
+        <li><a href="/?category=new" class="nav-link" data-nav-category="new">New</a></li>
+        <li><a href="/?category=sale" class="nav-link" data-nav-category="sale">Sale</a></li>
+        <li><a href="/?category=all" class="nav-link" data-nav-category="all">All Tops</a></li>
+        <li><a href="/?studio" class="nav-link" style="color: var(--clay);">Try-On Studio</a></li>
       </ul>
     </nav>
-    <a href="../index.html" class="brand-wordmark">AELIA</a>
+    <a href="/" class="brand-wordmark">AELIA</a>
     <div class="nav-actions">
       <a href="#" class="nav-action-link">Search</a>
       <a href="#" class="nav-action-link">Account</a>
-      <a href="../pdp/index.html" class="nav-action-link">
+      <a href="/?studio" class="nav-action-link">
         Bag <span class="bag-count">0</span>
       </a>
     </div>
   </header>
+
+  <!-- Mobile Navigation Drawer -->
+  <div id="mobile-drawer" class="mobile-drawer" aria-hidden="true">
+    <div class="mobile-drawer-backdrop" id="mobile-drawer-backdrop"></div>
+    <div class="mobile-drawer-content">
+      <div class="mobile-drawer-header">
+        <span class="brand-wordmark" style="font-size: 20px;">AELIA</span>
+        <button id="mobile-drawer-close" class="mobile-drawer-close" aria-label="Close Menu">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      <ul class="mobile-drawer-links">
+        <li><a href="/?category=women" class="mobile-drawer-link">Women’s Collection</a></li>
+        <li><a href="/?category=men" class="mobile-drawer-link">Men’s Collection</a></li>
+        <li><a href="/?category=new" class="mobile-drawer-link">New Arrivals</a></li>
+        <li><a href="/?category=sale" class="mobile-drawer-link">Archive &amp; Sale</a></li>
+        <li><a href="/?category=all" class="mobile-drawer-link">All Tops</a></li>
+        <li style="margin-top: 12px; padding-top: 14px; border-top: 1px solid var(--stone);">
+          <a href="/?studio" class="mobile-drawer-link" style="color: var(--clay); font-weight: 600; display: flex; align-items: center; gap: 8px;">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"></path>
+              <circle cx="12" cy="13" r="3"></circle>
+            </svg>
+            Live Try-On Studio
+          </a>
+        </li>
+      </ul>
+      <div class="mobile-drawer-footer">
+        <div>Studio Aelia SS26</div>
+        <div style="font-size: 11px; color: var(--taupe); margin-top: 4px;">Real-Time WebRTC Lucy VTON</div>
+      </div>
+    </div>
+  </div>
 
   <!-- Collection Header -->
   <div class="collection-header">
@@ -535,8 +773,8 @@
         isNew: true,
         isSale: false,
         tryOn: true,
-        image: '../fixtures/women-silk-blouse.jpg',
-        pdpUrl: '../pdp/index.html?item=silk-blouse',
+        image: '/fixtures/women-silk-blouse.jpg',
+        pdpUrl: '/?item=silk-blouse',
         swatches: ['#f5f3ee', '#dfdbd4']
       },
       {
@@ -552,8 +790,8 @@
         isNew: false,
         isSale: true,
         tryOn: true,
-        image: '../fixtures/women-linen-shirt.jpg',
-        pdpUrl: '../pdp/index.html?item=linen-shirt',
+        image: '/fixtures/women-linen-shirt.jpg',
+        pdpUrl: '/?item=linen-shirt',
         swatches: ['#c47b6a', '#e8dfd8']
       },
       {
@@ -567,8 +805,8 @@
         isNew: true,
         isSale: false,
         tryOn: true,
-        image: '../fixtures/women-merino-knit.jpg',
-        pdpUrl: '../pdp/index.html?item=merino-knit',
+        image: '/fixtures/women-merino-knit.jpg',
+        pdpUrl: '/?item=merino-knit',
         swatches: ['#c8a782', '#e5ded6']
       },
       {
@@ -582,8 +820,8 @@
         isNew: true,
         isSale: false,
         tryOn: true,
-        image: '../fixtures/charcoal-front.jpg',
-        pdpUrl: '../pdp/index.html?color=charcoal',
+        image: '/fixtures/charcoal-front.jpg',
+        pdpUrl: '/?color=charcoal',
         swatches: ['#222326', '#e2ded7', '#4b4b3b']
       },
       {
@@ -597,8 +835,8 @@
         isNew: true,
         isSale: false,
         tryOn: true,
-        image: '../fixtures/men-poplin-shirt.jpg',
-        pdpUrl: '../pdp/index.html?item=poplin-shirt',
+        image: '/fixtures/men-poplin-shirt.jpg',
+        pdpUrl: '/?item=poplin-shirt',
         swatches: ['#ffffff', '#cbd4dc']
       },
       {
@@ -614,8 +852,8 @@
         isNew: false,
         isSale: true,
         tryOn: true,
-        image: '../fixtures/linen-studio-kurta.jpg',
-        pdpUrl: '../pdp/index.html?item=linen-kurta',
+        image: '/fixtures/linen-studio-kurta.jpg',
+        pdpUrl: '/?item=linen-kurta',
         swatches: ['#dcd6cc', '#3d3c39']
       },
       {
@@ -629,8 +867,8 @@
         isNew: true,
         isSale: false,
         tryOn: true,
-        image: '../fixtures/men-overshirt.jpg',
-        pdpUrl: '../pdp/index.html?item=overshirt',
+        image: '/fixtures/men-overshirt.jpg',
+        pdpUrl: '/?item=overshirt',
         swatches: ['#3d4954', '#262627']
       },
       {
@@ -644,8 +882,8 @@
         isNew: false,
         isSale: false,
         tryOn: true,
-        image: '../fixtures/oatmeal-tshirt.jpg',
-        pdpUrl: '../pdp/index.html?color=oatmeal',
+        image: '/fixtures/oatmeal-tshirt.jpg',
+        pdpUrl: '/?color=oatmeal',
         swatches: ['#e2ded7', '#222326']
       },
       {
@@ -659,8 +897,8 @@
         isNew: false,
         isSale: false,
         tryOn: true,
-        image: '../fixtures/olive-tshirt.jpg',
-        pdpUrl: '../pdp/index.html?color=olive',
+        image: '/fixtures/olive-tshirt.jpg',
+        pdpUrl: '/?color=olive',
         swatches: ['#4b4b3b', '#222326']
       }
     ];
@@ -757,7 +995,7 @@
         return;
       }
 
-      grid.innerHTML = filtered.map((item) => {
+      grid.innerHTML = filtered.map((item, idx) => {
         const badgeHtml = item.badge
           ? `<span class="badge-label ${item.isSale ? 'sale' : ''}">${item.badge}</span>`
           : '';
@@ -789,7 +1027,7 @@
           <a href="${item.pdpUrl}" class="product-card">
             <div class="card-photo-box">
               ${badgeHtml}
-              <img src="${item.image}" alt="${item.title}" loading="lazy" />
+              <img src="${item.image}" alt="${item.title}" loading="${idx < 4 ? 'eager' : 'lazy'}" fetchpriority="${idx < 4 ? 'high' : 'auto'}" decoding="async" />
             </div>
             <div class="card-title">${item.title}</div>
             <div class="card-fabric">${item.fabric}</div>
@@ -816,9 +1054,7 @@
           const targetFilter = chip.getAttribute('data-filter');
           if (targetFilter) {
             currentFilter = targetFilter;
-            const newUrl = new URL(window.location.href);
-            newUrl.searchParams.set('category', targetFilter);
-            window.history.replaceState({}, '', newUrl.toString());
+            window.history.replaceState({}, '', '/?category=' + encodeURIComponent(targetFilter));
             renderProducts();
           }
         });
@@ -840,9 +1076,7 @@
           const cat = link.getAttribute('data-nav-category');
           if (cat) {
             currentFilter = cat;
-            const newUrl = new URL(window.location.href);
-            newUrl.searchParams.set('category', cat);
-            window.history.pushState({}, '', newUrl.toString());
+            window.history.pushState({}, '', '/?category=' + encodeURIComponent(cat));
             renderProducts();
             window.scrollTo({ top: 0, behavior: 'smooth' });
           }
@@ -858,6 +1092,57 @@
       currentFilter = params.get('category') || 'all';
       renderProducts();
     });
+  </script>
+  <script>
+    document.addEventListener('click', function(e) {
+      var a = e.target.closest('a');
+      if (!a || !a.href) return;
+      try {
+        var targetUrl = new URL(a.href, window.location.origin);
+        if (targetUrl.origin !== window.location.origin) return;
+        if (e.metaKey || e.ctrlKey || e.shiftKey || a.target === '_blank') return;
+
+        var p = targetUrl.searchParams;
+        if (p.has('item') || p.has('color') || p.has('studio')) {
+          e.preventDefault();
+          window.location.href = '/pdp/index.html' + targetUrl.search + targetUrl.hash;
+          return;
+        }
+        if ((targetUrl.pathname === '/' || targetUrl.pathname.endsWith('index.html')) && targetUrl.search === '') {
+          e.preventDefault();
+          window.location.href = '/index.html';
+          return;
+        }
+      } catch (_) {}
+    });
+
+    // Mobile Navigation Drawer Toggle
+    (function() {
+      var menuBtn = document.getElementById('mobile-menu-btn');
+      var drawer = document.getElementById('mobile-drawer');
+      var drawerClose = document.getElementById('mobile-drawer-close');
+      var drawerBackdrop = document.getElementById('mobile-drawer-backdrop');
+
+      function openDrawer() {
+        if (drawer) {
+          drawer.classList.add('open');
+          drawer.setAttribute('aria-hidden', 'false');
+          document.body.style.overflow = 'hidden';
+        }
+      }
+
+      function closeDrawer() {
+        if (drawer) {
+          drawer.classList.remove('open');
+          drawer.setAttribute('aria-hidden', 'true');
+          document.body.style.overflow = '';
+        }
+      }
+
+      if (menuBtn) menuBtn.addEventListener('click', openDrawer);
+      if (drawerClose) drawerClose.addEventListener('click', closeDrawer);
+      if (drawerBackdrop) drawerBackdrop.addEventListener('click', closeDrawer);
+    })();
   </script>
 </body>
 </html>
